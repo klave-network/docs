@@ -1,0 +1,20 @@
+{
+	"docs": {
+		"type": "page",
+		"title": "Documentation"
+	},
+	"whitepaper": {
+		"type": "page",
+		"title": "Whitepaper",
+		"theme": {
+			"breadcrumb": false,
+			"sidebar": false
+		}
+	},
+	"index": "Vision",
+	"get-started": "Get Started",
+	"concepts": "Concepts",
+	"enclave-sdk": "Enclave SDK",
+	"learn": "Learn",
+	"support": "Support"
+}

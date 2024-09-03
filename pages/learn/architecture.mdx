@@ -1,0 +1,79 @@
+---
+title: Architecture
+---
+
+## Klave Architecture
+
+Klave combines the power of [Confidential Computing](./confidential-computing/confidential-computing.md), Distributed Ledger Technology and an Open development environment to propel [Trustless apps](../concepts/trustless-app.md).
+
+### Isolation
+
+To enable Confidential Computing, applications are divided into two parts: the untrusted host and the trusted [enclave](./confidential-computing/tee.md#enclave). The untrusted component runs on the unsecured operating system, while the enclave component runs within secure hardware. Enclaves provide secure computations and ensure the protection of secrets. Klave enables confidential interaction between encrypted data in unsecured operating systems and the secure hardware enclaves.
+
+At his heart, the goal of Klave technology is to protect Trustless app business logic and data from untrusted parties or malicious actors (including platform provider) and vice-versa. To do so Klave leverages on the best hardware and sandbox isolation.
+
+#### Hardware isolation
+
+Each Trustless app deployed on Klave runs within a [Trusted Execution Environment](./confidential-computing/tee.md) called enclave. Enclaves are an exciting branch of Trusted Execution Environments where a general purpose chip (typically the main application processor of the system) offers a hardware isolation solution to execute critical code fragments protected from any other system component interference. Klave leverages on [Intel® Software Guard Extensions (Intel® SGX)](./confidential-computing/tee.md#intel-sgx) which offers hardware-based memory encryption that isolates specific application code and data in memory.
+
+Intel® SGX enables falsification resistance capabilities allowing to limit attacks vector coming from the Operating System (OS), maintains secrecy while processing, and provides remote attestation and hardware acceleration for cryptography.
+
+#### Runtime isolation
+
+The Klave Virtual machine hosting the Trustless apps is leveraging on [WebAssembly (WASM)](https://webassembly.org/). Each app is compiled in WASM and hosted within a WASM runtime on Klave ([WAMR](https://bytecodealliance.github.io/wamr.dev/)). In simpler terms, on every system which has a WASM virtual machine runtime, a WASM application (binary) will run in exactly the same way. In addition, they all benefit from the WASM sandboxed environment that is separated from the host runtime using fault isolation techniques and ultimately protecting the host from guests.
+
+Mixing both Hardware isolation through TEEs and Runtime isolation through WASM enable protection of the guest from the host for the first and protection of the host from the guest for the second.
+
+#### Host isolation
+
+As powerful as enclaves are they come with limitations. They live in their own segregated and protected memory area and prevent access to key operating system functionalities. Leveraging only on enclaves would be like having a powerful computer lacking essential components.To remediate and add essential components such as communications, logging infrastructure, and file-system access (database, file management) Klave provides a set of host side libraries. However, as the host cannot be trusted by enclaves, Klave introduced the concept of Crypto-delegate to maintain security between host and enclaves.
+
+#### Crypto-delegate
+
+The security model between enclaves and the host is crucial. Enclaves assume the host could be compromised, so they always demand proof of the host's integrity. This is achieved through a crypto-delegate, similar to a zero-knowledge proof. When an enclave calls the host, a cryptographic challenge is included. The host must respond with a proof associated with the challenge. Valid proof ensures acceptance of the call, while invalid proof leads to rejection and rescheduling. Klave calls these crypto-delegates and the concept is called crypto-delegation. They cover key OS functionalities like file-system access, mass storage, and environment variables. Klave provides substitutes for system calls, enabling secure sandboxed applications without compromising data integrity or privacy. Crypto-delegation techniques include various cryptographic challenge/proof pairs like reverse hash lookups, merkle proofs, and digital signatures.
+
+### Node
+
+A Klave node is a physical server hosting the Klave runtime composed of the host and enclaves part. The node in addition of running Klave enable to send, receive or forward information. Klave node are leveraging on hardware compatible with Intel SGX to support the hardware enclave. Each Klave nodes have their own identity leveraged on for attestation and direct client connections.
+
+### Cluster and distributed consensus algorithm
+
+To ensure high availability and business continuity, applications are deployed on clusters instead of single nodes. A cluster is a Network of Nodes communicating through a peer-to-peer protocol. While load balancing requests (queries or transactions) is a primary function of a cluster, it is equally important to maintain consistency across all nodes to behave as a single system. To achieve this, Klave uses the consensus algorithm Raft, which provides an easy implementation and formal safety guarantees.
+
+#### BFT-Raft
+
+[Raft](https://raft.github.io/) is a consensus algorithm that provides a way to distribute a state machine across a cluster of computing systems, ensuring that each node in the cluster agrees upon the same series of state transitions, though a total ordering of log entries. Raft implements consensus through a leader-based approach, where a leader is elected to manage the replication of the state machine. A Raft leader receives client requests, appends them to a log, and replicates them to the other nodes in the cluster. Once a majority of nodes have acknowledged the log entry, the leader commits the entry and notifies the client. 
+
+Raft provides a separation of logic that makes it more understandable than other consensus algorithms, such as Paxos, from which raft is derived. While Raft prevents random errors from having a significant effect, it is ineffective against a malicious adversary that tries to subvert its consistency (i.e. not byzantine fault-tolerant).
+
+To make Raft byzantine fault-tolerant, Klave leverages on the capabilities of TEEs. Klave implements features such as enabling mutual attestation between all peers in a cluster, addition of nodes to raft consensus and TEEs attestation, signed and encrypted messages between peers and finally the usage of a log journal where entries authenticate the entire history up to the entry.
+
+#### Logchain
+
+In our version of Raft, we use a log journal (aka. logchain) to store all transactions that are applied to the cluster. 
+
+To ensure the security and confidentiality of the data stored in the log, we encrypt the log entries using a strong encryption algorithm. In addition, we protect the encryption keys for the log entries using Shamir’s Secret Sharing scheme. Splitting the encryption key for each log entry into multiple shares, and distributing each share to different nodes in the cluster, ensures that the log entries are protected even if some nodes in the cluster are compromised. To access the encryption key and decrypt the log entry, a quorum of nodes must come together and combine their shares to reconstruct the key, and therefore it becomes necessary to compromise not one, but several nodes to read the log. 
+
+To ensure that a log entry authenticated the entire history up to the entry itself, log entries are chained cryptographically with each log entry containing a hash digest of the previous ones. This ensures the integrity of historical data, similar to the chaining mechanism used in a blockchain, but on logs and not on blocks.
+
+### Secure Connection Protocol (SCP)
+
+To connect to an application hosted on a Klave node, users must use the Secure Connection Protocol (SCP). This protocol is designed to authenticate the identity of the remote node owner, like any HTTPS would do. But more importantly, SCP allows the end client to verify the identity of the remote enclave running the application, and positively identify the code of the enclave.
+
+SCP builds upon TLS, which provides an encrypted channel of communication to the host layer of a Klave node. But additionally, the SCP provides an inner secure communication channel using an 256-bit elliptic curve keypair, where the key pair can be remotely attested to prove that the key has been generated by and protected by a valid TEE and that the TEE is running the correct code. As a result, with SCP, there is proof that the server-side program is the correct one, deployed with the integrity and confidentiality properties provided by the TEE. 
+
+SCP is a bi-directional authentication, forcing the client to reveal pseudonymous information for enforcing access rights and controls. The SCP is compatible with modern browsers and tablets, making it easy to integrate into web pages and mobile applications to deliver Trustless apps.
+
+### Ledger and integrity
+
+One of the key features of Klave is its ability to maintain the state of deployed applications through encrypted ledgers. These ledgers are stored in a key-value storage on the host side, but are protected from the host nonetheless. Both keys and values inserted are constantly subject to encryption and cryptographic integrity checks. When an application processes a log, it can result in a combination of multiple actions, such as updating its application state, notifying end users, interacting with other Trustless Apps, and interacting with web services.
+
+The table for keys and values are reverse hash lookup versions that bind a 256-bit hash digest to a key or a value encrypted using deterministic encryption. The hash is protected from known plaintext and known ciphertext attacks with obfuscation. The table of correspondence binds the hash of the key to the hash of the value and is implemented using a cryptographic authenticated dictionary with a modified Merkle Patricia Trie. Both the key hashes and the value hashes in the authenticated dictionaries are obfuscated to prevent any form of inference. 
+
+Klave ledgers are NoSQL in nature, and there are no impositions on how they should be structured. Each table is composed of a table for keys, a table for values, and a table of correspondence. Ledgers in Klave are organised in a hierarchical way, with lower levels corresponding to tables and higher levels using the table of correspondence to provide an overarching integrity structure. This allows the state of the entire data in a cluster to be boiled down to a single 256-bit hash, which can be used for proofs and cryptographic commitments, and can be used to control and demonstrate transactional integrity in hindsight.
+
+### Klave
+
+A cluster is a network of nodes connected together and supporting an App or a group of applications that are transitionally synchronised through BFT-RAFT. Nodes on a cluster can communicate with nodes of other clusters by positively identifying them and authenticating themselves. This is done through a version of the SCP client that sits inside the Klave enclaves and called ICP (for Inter-Cluster Protocol). Future developments will also allow to transitionally bind several clusters together but assumes some degree of transactional sharding. The network of all Klave clusters, public and private, is collectively called the ”Klave”.
+
+

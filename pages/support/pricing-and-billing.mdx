@@ -1,0 +1,56 @@
+---
+title: Pricing and Billing
+---
+
+import { Callout } from 'nextra-theme-docs';
+import { Tab, Tabs } from 'nextra-theme-docs';
+import Image from 'next/image';
+
+## Klave Pricing
+
+Klave offers a Pay-As-You-Go (PAYG) pricing model based on your platform usage or a License-based model for Klave Enterprise. This page explains how the platform resource usage is computed and the associated costs.
+
+The Klave pricing page describes two different plans to fit your workload requirements: Klave and Klave Enterprise. The Klave usage-based model gives you access to all Klave services and should cater for most use cases. However, if you have more specific requirements or the Klave PAYG model does not cover all your needs, reach out to the Klave team, and we will tailor a solution with you as per the Klave Enterprise model.
+
+<Callout emoji="💡">
+    Don't hesitate to [contact us](mailto:contact@klave.com) to get Free credits to kickstart your Klave journey.
+</Callout>
+
+### Usage-based PAYG model
+
+Klave PAYG is a pre-paid usage-based model. To use the Klave platform, you will have to buy Klave credits beforehand; you can do so easily on the Klave platform. As Klave is blind to any workloads running, it needs a deterministic way of computing the resource usage of these workloads. To achieve that, we use a concept of credit (similar to the Gas or Fuel concept seen on other platforms) that will enable a deterministic computation of resources used by the workloads.
+
+As a base, each instruction effectively needed by your workload will cost a single credit. On top of that, certain features or resources will have additional fixed costs and/or variable costs related to the size of the payload, as detailed in the table below.
+
+| Resources | Cost Type | Costs in credits | Based on |
+|-----------|-----------|------------------|----------|
+| Instructions | Variable | 1 | Code complexity |
+| Deployment | Fixed | 1,000,000 | Fixed cost |
+| Deployment | Variable | 200 | Size of the Deployment artifact per byte |
+| Transaction | Fixed | 500,000 | Fixed cost |
+| Transaction | Variable | 500 | Size of the transaction payload per byte |
+| Write Ledger | Fixed | 20,000 | Fixed cost |
+| Write Ledger | Variable | 500 | Size of the payload to write in ledger per byte |
+| Read Ledger | Fixed | 10,000 | Fixed cost |
+| Read Ledger | Variable | 100 | Size of the Ledger entry to read per byte |
+| Notification | Variable | 500 | Size of the payload to notify per byte |
+
+1GBP corresponds to 100,000,000 credits and therefore 1 credit =  0.00000001 GBP.
+
+<Callout emoji="🎉">
+  Currently, all queries are free on Klave. Enjoy it while it lasts. [See here](../concepts/ledger-query-transaction.md) to learn more about Query and Transaction.
+</Callout>
+
+### Payment
+
+We accept all payment options supported by our payment processor, Stripe.
+
+You can see all payment options available [here](https://stripe.com/gb/payments/features#payment-options).
+
+### Refund
+
+If you want to dispute a charge or experience issues with the service provided, please contact [contact@klave.com](mailto:contact@klave.com)
+
+### Support
+
+If you need support or experience issues with the service, reach out to us on [Discord](https://discord.gg/MkUxsVeqDW), or contact [contact@klave.com](mailto:contact@klave.com)
