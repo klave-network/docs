@@ -1,8 +1,4 @@
 {
-	"docs": {
-		"type": "page",
-		"title": "Documentation"
-	},
 	"whitepaper": {
 		"type": "page",
 		"title": "Whitepaper",
