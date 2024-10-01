@@ -4,21 +4,8 @@ import type { AppProps } from 'next/app';
 import { useNProgress } from '~/hooks/use-nprogress';
 import { Open_Sans, Fira_Code } from 'next/font/google';
 
-const openSans = Open_Sans({
+const regularFont = Open_Sans({
 	weight: '400',
-	variable: '--font-openSans',
-	display: 'swap',
-	subsets: ['latin']
-});
-const openSansMedium = Open_Sans({
-	weight: '500',
-	variable: '--font-openSansMedium',
-	display: 'swap',
-	subsets: ['latin']
-});
-const openSansBold = Open_Sans({
-	weight: '700',
-	variable: '--font-openSansBold',
 	display: 'swap',
 	subsets: ['latin']
 });
@@ -30,5 +17,19 @@ export const monospaceFont = Fira_Code({
 
 export default function App({ Component, pageProps }: AppProps) {
 	useNProgress();
-	return <Component {...pageProps} />;
+	return (
+		<>
+			<Global
+				styles={css({
+					'html, body, kbd, button, input, select': {
+						fontFamily: regularFont.style.fontFamily
+					},
+					'code, pre, table.diff': {
+						fontFamily: monospaceFont.style.fontFamily
+					}
+				})}
+			/>
+			<Component {...pageProps} />
+		</>
+	);
 }
