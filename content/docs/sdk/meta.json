@@ -1,0 +1,30 @@
+{
+	"title": "SDK title",
+	"description": "SDK description",
+	"root": true,
+	"pages": [
+		"../vision",
+		"---Guide---",
+		"index",
+        "---Get Started---",
+        "klave-introduction",
+        "quickstart",
+		"---Concepts---",
+		"what-is-klave",
+        "trustless-pass",
+        "trustless-app",
+        "secure-enclave",
+        "state-management",
+        "---Enclave SDK---",
+        "create-query-transaction",
+        "ledger",
+        "notify",
+        "http-request",
+		"---Learn---",
+        "architecture",
+        "confidential-computing",
+		"ledger-and-integrity",
+		"--- <LifeBuoy/> Support---",
+		"../support/pricing-and-billing"
+	]
+}
