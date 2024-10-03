@@ -1,4 +1,4 @@
-import { source } from '~/app/source';
+import { source } from '~/utils/source';
 import { createSearchAPI } from 'fumadocs-core/search/server';
 
 export const { GET } = createSearchAPI('advanced', {

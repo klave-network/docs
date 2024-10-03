@@ -3,7 +3,6 @@
 	"description": "SDK description",
 	"root": true,
 	"pages": [
-		"../vision",
 		"---Guide---",
 		"index",
         "---Get Started---",
@@ -24,7 +23,7 @@
         "architecture",
         "confidential-computing",
 		"ledger-and-integrity",
-		"--- <LifeBuoy/> Support---",
+		"---Support---",
 		"../support/pricing-and-billing"
 	]
 }
