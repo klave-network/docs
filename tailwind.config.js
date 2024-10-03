@@ -20,6 +20,12 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			colors: {
+				'klave-blue': '#00BFFF',
+                'klave-strong-blue': '#007fff',
+				'klave-teal': '#00FFD5',
+                'klave-strong-teal': '#00b395',
+				'klave-peach': '#FCA870',
+				'klave-purple': '#B291ED',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
