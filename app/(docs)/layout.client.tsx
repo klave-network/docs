@@ -8,6 +8,8 @@ import { ChevronLeft, Home, Library, type LucideIcon, PlugZap, Sparkles } from '
 import { cn } from '~/lib/utils';
 import { modes } from '~/utils/modes';
 import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
+import { Label } from '~/components/ui/label';
 
 type Mode = 'sdk' | 'connector' | null | undefined;
 
@@ -84,9 +86,7 @@ export function NavChildren(): JSX.Element {
 						})
 					)}
 				>
-					<div className="inline-flex items-center gap-2">
-						{m.name}
-					</div>
+					<div className="inline-flex items-center gap-2">{m.name}</div>
 				</Link>
 			))}
 		</div>
@@ -101,8 +101,18 @@ export function useMode(): string | undefined {
 export function SidebarBanner() {
 	const pathname = usePathname();
 
-	return (
+    return (
 		<>
+			<RootToggle
+				options={toggleOptions.map((option) => {
+					return {
+						title: option.title,
+						description: option.description,
+						url: option.url,
+						icon: <option.icon className={cn('size-9 shrink-0 rounded-md p-1.5', option.color)} />
+					};
+				})}
+			/>
 			<Link
 				href="/"
 				className={cn(
@@ -127,24 +137,21 @@ export function SidebarBanner() {
 				<Sparkles />
 				Vision
 			</Link>
-			<RootToggle
-				options={toggleOptions.map((option) => {
-					return {
-						title: option.title,
-						description: option.description,
-						url: option.url,
-						icon: (
-							<option.icon
-								className={cn('size-9 shrink-0 rounded-md p-1.5', option.color)}
-								// style={{
-								// 	backgroundColor: `hsl(${option.color}/.3)`,
-								// 	color: `hsl(${option.color})`
-								// }}
-							/>
-						)
-					};
-				})}
-			/>
+			{pathname.includes('sdk') ? (
+				<div className="bg-fd-card py-4 border-y transition-colors border-fd-foreground/10 bg-fd-background/60 mb-5 -mx-4 md:-mx-3 px-4 md:px-3 flex flex-col gap-2">
+					<Label className="text-xs">Version</Label>
+					<Select>
+						<SelectTrigger className="">
+							<SelectValue placeholder="Theme" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="light">Light</SelectItem>
+							<SelectItem value="dark">Dark</SelectItem>
+							<SelectItem value="system">System</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			) : null}
 		</>
 	);
 }
