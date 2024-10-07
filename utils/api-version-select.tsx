@@ -3,14 +3,41 @@
 import versions from '~/public/constants/versions.json';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 import { Label } from '~/components/ui/label';
+import { usePathname, useRouter } from 'next/navigation';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 export function ApiVersionSelect() {
+	const router = useRouter();
+	const pathname = usePathname();
+	const version = getVersionFromPath(pathname);
+
+	if (!version) return router.push(`/versions/sdk/${LATEST_VERSION}`);
+
+    const handleVersionChange = (newVersion: string) => {
+		const pathSegments = pathname.split('/');
+
+		// Replace the current version with the new version
+		// assuming version is the next segment after 'sdk'
+		const versionIndex = pathSegments.indexOf('sdk') + 1;
+		// Replace the current version in the path
+        // if the new version is the latest, we replace with 'latest'
+		pathSegments[versionIndex] = newVersion === LATEST_VERSION ? 'latest' : newVersion;
+
+		// Join the path segments back into a valid URL
+		const newPath = pathSegments.join('/');
+
+		// Navigate to the updated version's path
+		router.push(newPath);
+	};
+
 	return (
 		<div className="bg-fd-card py-3 border-y transition-colors border-fd-foreground/10 bg-fd-background/60 mb-2 -mx-4 md:-mx-3 px-4 md:px-3 flex flex-col gap-2">
 			<Label className="text-xs">Version</Label>
-			<Select defaultValue={LATEST_VERSION}>
+			<Select
+				defaultValue={version === 'latest' ? LATEST_VERSION : version}
+				onValueChange={handleVersionChange}
+			>
 				<SelectTrigger className="">
 					<SelectValue />
 				</SelectTrigger>
@@ -44,4 +71,12 @@ export function versionToText(version: string): string {
 
 function formatSdkVersion(version: string): string {
 	return `SDK ${version.substring(1, 2)}`;
+}
+
+function isVersionedPath(path: string): boolean {
+	return path.startsWith('/versions');
+}
+
+function getVersionFromPath(path: string): string | null {
+	return isVersionedPath(path) ? path.split('/', 4).pop()! : null;
 }

@@ -24,14 +24,14 @@ const toggleOptions: ToggleOption[] = [
 	{
 		title: 'SDK',
 		description: 'Klave SDK',
-		url: '/versions/sdk',
+		url: '/versions/sdk/latest',
 		icon: Library,
 		color: 'bg-gradient-to-b from-muted/50 to-primary/60 text-klave-strong-blue dark:to-secondary/60 dark:text-klave-blue'
 	},
 	{
 		title: 'Connector',
 		description: 'Secretarium Connector',
-		url: '/versions/connector',
+		url: '/versions/connector/latest',
 		icon: PlugZap,
 		color: 'bg-gradient-to-b from-muted/50 to-secondary/60 text-klave-strong-teal dark:to-primary/60 dark:text-klave-teal'
 	}
@@ -133,7 +133,7 @@ export function SidebarBanner() {
 					Learn
 				</Link>
 				<Link
-					href="/versions/sdk"
+					href="/versions/sdk/latest"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
 						pathname.includes('/versions')

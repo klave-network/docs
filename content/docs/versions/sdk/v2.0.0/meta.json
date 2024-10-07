@@ -1,0 +1,25 @@
+{
+	"title": "SDK title",
+	"description": "SDK description",
+	"root": true,
+	"pages": [
+		"---Guide---",
+		"index",
+        "---Get Started---",
+        "klave-introduction",
+        "quickstart",
+		"---Concepts---",
+		"what-is-klave",
+        "trustless-pass",
+        "trustless-app",
+        "secure-enclave",
+        "state-management",
+        "---Enclave SDK---",
+        "create-query-transaction",
+        "ledger",
+        "notify",
+        "http-request",
+		"---Support---",
+		"../support/pricing-and-billing"
+	]
+}

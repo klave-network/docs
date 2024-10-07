@@ -1,0 +1,11 @@
+{
+    "title": "Connector title",
+    "description": "Connector description",
+    "root": true,
+    "pages": [
+        "---Guide---",
+        "index",
+        "---Get Started---",
+        "get-started"
+    ]
+}
