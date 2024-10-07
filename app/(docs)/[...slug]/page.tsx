@@ -10,8 +10,22 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 
 	const MDX = page.data.body;
 
+    const path = `content/docs/${page.file.path}`;
+
 	return (
-		<DocsPage toc={page.data.toc} full={page.data.full}>
+		<DocsPage
+			toc={page.data.toc}
+			full={page.data.full}
+			tableOfContent={{
+				style: 'clerk',
+				single: false
+			}}
+			editOnGithub={{
+				repo: 'docs',
+				owner: 'klave-network',
+				path
+			}}
+		>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>
 			<DocsBody>
