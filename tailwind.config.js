@@ -8,7 +8,8 @@ export default {
 		'./app/**/*.{ts,tsx}',
 		'./content/**/*.{md,mdx}',
 		'./mdx-components.{ts,tsx}',
-		'./node_modules/fumadocs-ui/dist/**/*.js'
+		'./node_modules/fumadocs-ui/dist/**/*.js',
+		'./utils/**/*.{ts,tsx}'
 	],
 	presets: [createPreset()],
 	plugins: [require('tailwindcss-animate')],
@@ -21,9 +22,9 @@ export default {
 			},
 			colors: {
 				'klave-blue': '#00BFFF',
-                'klave-strong-blue': '#007fff',
+				'klave-strong-blue': '#007fff',
 				'klave-teal': '#00FFD5',
-                'klave-strong-teal': '#00b395',
+				'klave-strong-teal': '#00b395',
 				'klave-peach': '#FCA870',
 				'klave-purple': '#B291ED',
 				background: 'hsl(var(--background))',
