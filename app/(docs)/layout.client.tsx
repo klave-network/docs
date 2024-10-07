@@ -4,12 +4,11 @@ import { cva } from 'class-variance-authority';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { ChevronLeft, Home, Library, type LucideIcon, PlugZap, Sparkles } from 'lucide-react';
+import { ChevronLeft, Home, Library, type LucideIcon, PlugZap, Sparkles, GraduationCap, BookOpen } from 'lucide-react';
 import { cn } from '~/lib/utils';
 import { modes } from '~/utils/modes';
 import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
-import { Label } from '~/components/ui/label';
+import { ApiVersionSelect } from '~/utils/api-version-select';
 
 type Mode = 'sdk' | 'connector' | null | undefined;
 
@@ -25,14 +24,14 @@ const toggleOptions: ToggleOption[] = [
 	{
 		title: 'SDK',
 		description: 'Klave SDK',
-		url: '/sdk',
+		url: '/versions/sdk',
 		icon: Library,
 		color: 'bg-gradient-to-b from-muted/50 to-primary/60 text-klave-strong-blue dark:to-secondary/60 dark:text-klave-blue'
 	},
 	{
 		title: 'Connector',
 		description: 'Secretarium Connector',
-		url: '/connector',
+		url: '/versions/connector',
 		icon: PlugZap,
 		color: 'bg-gradient-to-b from-muted/50 to-secondary/60 text-klave-strong-teal dark:to-primary/60 dark:text-klave-teal'
 	}
@@ -101,57 +100,71 @@ export function useMode(): string | undefined {
 export function SidebarBanner() {
 	const pathname = usePathname();
 
-    return (
+	return (
 		<>
-			<RootToggle
-				options={toggleOptions.map((option) => {
-					return {
-						title: option.title,
-						description: option.description,
-						url: option.url,
-						icon: <option.icon className={cn('size-9 shrink-0 rounded-md p-1.5', option.color)} />
-					};
-				})}
-			/>
-			<Link
-				href="/"
-				className={cn(
-					'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-					pathname === '/'
-						? 'bg-fd-primary/10 text-fd-primary'
-						: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
-				)}
-			>
-				<Home />
-				Home
-			</Link>
-			<Link
-				href="/vision"
-				className={cn(
-					'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-					pathname === '/vision'
-						? 'bg-fd-primary/10 text-fd-primary'
-						: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
-				)}
-			>
-				<Sparkles />
-				Vision
-			</Link>
-			{pathname.includes('sdk') ? (
-				<div className="bg-fd-card py-4 border-y transition-colors border-fd-foreground/10 bg-fd-background/60 mb-5 -mx-4 md:-mx-3 px-4 md:px-3 flex flex-col gap-2">
-					<Label className="text-xs">Version</Label>
-					<Select>
-						<SelectTrigger className="">
-							<SelectValue placeholder="Theme" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="light">Light</SelectItem>
-							<SelectItem value="dark">Dark</SelectItem>
-							<SelectItem value="system">System</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
+			<div className={cn('border-b border-fd-foreground/10 -mx-4 md:-mx-3 px-4 md:px-3 pb-3', pathname.includes('/learn') ? 'mb-2' : '')}>
+				<Link
+					href="/"
+					className={cn(
+						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
+						pathname === '/'
+							? 'bg-fd-primary/10 text-fd-primary'
+							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
+					)}
+				>
+					<Home />
+					Home
+				</Link>
+				<Link
+					href="/learn"
+					className={cn(
+						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
+						pathname.includes('/learn')
+							? 'bg-fd-primary/10 text-fd-primary'
+							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
+					)}
+				>
+					<GraduationCap />
+					Learn
+				</Link>
+				<Link
+					href="/versions/sdk"
+					className={cn(
+						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
+						pathname.includes('/versions')
+							? 'bg-fd-primary/10 text-fd-primary'
+							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
+					)}
+				>
+					<BookOpen />
+					Reference
+				</Link>
+				{/* <Link
+					href="/vision"
+					className={cn(
+						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
+						pathname === '/vision'
+							? 'bg-fd-primary/10 text-fd-primary'
+							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
+					)}
+				>
+					<Sparkles />
+					Vision
+				</Link> */}
+			</div>
+			{pathname.includes('versions') ? (
+				<RootToggle
+					options={toggleOptions.map((option) => {
+						return {
+							title: option.title,
+							description: option.description,
+							url: option.url,
+							icon: <option.icon className={cn('size-9 shrink-0 rounded-md p-1.5', option.color)} />
+						};
+					})}
+				/>
 			) : null}
+			{pathname.includes('sdk') ? <ApiVersionSelect /> : null}
 		</>
 	);
 }
