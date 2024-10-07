@@ -1,0 +1,6 @@
+{
+	"title": "Learn title",
+	"description": "Learn description",
+	"root": true,
+	"pages": ["---Overview---", "index", "architecture", "confidential-computing", "ledger-and-integrity"]
+}
