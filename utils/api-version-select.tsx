@@ -14,14 +14,14 @@ export function ApiVersionSelect() {
 
 	if (!version) return router.push(`/versions/sdk/${LATEST_VERSION}`);
 
-    const handleVersionChange = (newVersion: string) => {
+	const handleVersionChange = (newVersion: string) => {
 		const pathSegments = pathname.split('/');
 
 		// Replace the current version with the new version
 		// assuming version is the next segment after 'sdk'
 		const versionIndex = pathSegments.indexOf('sdk') + 1;
 		// Replace the current version in the path
-        // if the new version is the latest, we replace with 'latest'
+		// if the new version is the latest, we replace with 'latest'
 		pathSegments[versionIndex] = newVersion === LATEST_VERSION ? 'latest' : newVersion;
 
 		// Join the path segments back into a valid URL
@@ -31,13 +31,11 @@ export function ApiVersionSelect() {
 		router.push(newPath);
 	};
 
+	// Add -mx-4 md:-mx-3 px-4 md:px-3 to styles if topbar from <HomeLayout/> is present
 	return (
-		<div className="bg-fd-card py-3 border-y transition-colors border-fd-foreground/10 bg-fd-background/60 mb-2 -mx-4 md:-mx-3 px-4 md:px-3 flex flex-col gap-2">
+		<div className="bg-fd-card py-3 border-y transition-colors border-border bg-fd-background/60 mb-2 flex flex-col gap-2">
 			<Label className="text-xs">Version</Label>
-			<Select
-				defaultValue={version === 'latest' ? LATEST_VERSION : version}
-				onValueChange={handleVersionChange}
-			>
+			<Select defaultValue={version === 'latest' ? LATEST_VERSION : version} onValueChange={handleVersionChange}>
 				<SelectTrigger className="">
 					<SelectValue />
 				</SelectTrigger>

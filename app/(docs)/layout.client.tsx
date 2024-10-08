@@ -100,11 +100,12 @@ export function useMode(): string | undefined {
 export function SidebarBanner() {
 	const pathname = usePathname();
 
+	// Add -mx-4 md:-mx-3 px-4 md:px-3 to styles if topbar from <HomeLayout/> is present
 	return (
 		<>
 			<div
 				className={cn(
-					'border-b border-fd-foreground/10 -mx-4 md:-mx-3 px-4 md:px-3 pb-3',
+					'border-b border-border pb-3',
 					pathname.includes('/learn') ? 'mb-2' : ''
 				)}
 			>

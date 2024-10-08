@@ -1,6 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+Uncomment only if topbar from <HomeLayout/> is present
+*/
+/* [data-toc] {
+	top: 55px;
+}
+
+#nd-sidebar {
+    top: 55px;
+    height: calc(100vh - 55px);
+} */
+
 @layer base {
 	:root {
 		--background: 0 0% 100%;
