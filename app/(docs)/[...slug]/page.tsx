@@ -25,6 +25,7 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 				owner: 'klave-network',
 				path
 			}}
+            lastUpdate={page.data.lastModified}
 		>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>
