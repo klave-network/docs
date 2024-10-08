@@ -12,7 +12,7 @@ export function ApiVersionSelect() {
 	const pathname = usePathname();
 	const version = getVersionFromPath(pathname);
 
-	if (!version) return router.push(`/versions/sdk/${LATEST_VERSION}`);
+	if (!version) return null;
 
 	const handleVersionChange = (newVersion: string) => {
 		const pathSegments = pathname.split('/');
