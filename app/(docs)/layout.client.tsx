@@ -33,7 +33,7 @@ const toggleOptions: ToggleOption[] = [
 		description: 'Secretarium Connector',
 		url: '/versions/connector/latest',
 		icon: PlugZap,
-		color: 'bg-gradient-to-b from-muted/50 to-secondary/60 text-klave-strong-teal dark:to-primary/60 dark:text-klave-teal'
+		color: 'bg-gradient-to-b from-muted/50 to-accent/60 text-klave-strong-teal dark:to-primary/60 dark:text-klave-teal'
 	}
 ];
 
@@ -103,12 +103,7 @@ export function SidebarBanner() {
 	// Add -mx-4 md:-mx-3 px-4 md:px-3 to styles if topbar from <HomeLayout/> is present
 	return (
 		<>
-			<div
-				className={cn(
-					'border-b border-border pb-3',
-					pathname.includes('/learn') ? 'mb-2' : ''
-				)}
-			>
+			<div className={cn('border-b border-border pb-3 pt-2', pathname.includes('/versions') ? '' : 'mb-2')}>
 				<Link
 					href="/"
 					className={cn(
