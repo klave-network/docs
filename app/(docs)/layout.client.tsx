@@ -63,8 +63,8 @@ const itemVariants = cva('rounded-md px-2 py-1 transition-colors hover:text-acce
 
 export function Body({ children }: { children: ReactNode }): JSX.Element {
 	const mode = useMode();
-	// might need to remove width styles
-	return <div className={cn(mode, 'max-w-container mx-auto size-full')}>{children}</div>;
+	// might need to remove width styles max-w-container mx-auto
+	return <div className={cn(mode, 'size-full')}>{children}</div>;
 }
 
 export function NavChildren(): JSX.Element {
@@ -120,7 +120,7 @@ export function SidebarBanner() {
 					href="/learn"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname.includes('/learn')
+						pathname === ('/learn')
 							? 'bg-fd-primary/10 text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
@@ -132,7 +132,7 @@ export function SidebarBanner() {
 					href="/versions/sdk/latest"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname.includes('/versions')
+						pathname === ('/versions')
 							? 'bg-fd-primary/10 text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}

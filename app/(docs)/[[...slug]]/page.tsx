@@ -10,9 +10,9 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 
 	const MDX = page.data.body;
 
-    const path = `content/docs/${page.file.path}`;
+	const path = `content/docs/${page.file.path}`;
 
-    return (
+	return (
 		<DocsPage
 			toc={page.data.toc}
 			full={page.data.full}
@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 				owner: 'klave-network',
 				path
 			}}
-            lastUpdate={page.data.lastModified}
+			lastUpdate={page.data.lastModified}
 		>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>

@@ -5,14 +5,18 @@
 /*
 Uncomment only if topbar from <HomeLayout/> is present
 */
-/* [data-toc] {
+[data-toc] {
 	top: 55px;
 }
 
 #nd-sidebar {
     top: 55px;
     height: calc(100vh - 55px);
-} */
+}
+
+#nd-nav nav {
+    max-width: 100%
+}
 
 @layer base {
 	:root {
