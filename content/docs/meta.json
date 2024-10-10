@@ -1,3 +1,16 @@
 {
-	"pages": ["versions", "learn"]
+	"pages": [
+		"---Guide---",
+		"index",
+		"learn",
+        "---Klave SDK---",
+        "versions",
+        "---Connector---",
+        "connector",
+		"---Support---",
+        "pricing-and-billing",
+		"---Others---",
+        "[Klave](https://klave.com)",
+		"[Secretarium](https://secretarium.com)"
+	]
 }

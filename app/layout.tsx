@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 			<body className="flex min-h-screen flex-col">
 				<RootProvider>
 					{/* <HomeLayout {...baseLayoutOptions}>{children}</HomeLayout> */}
-                    {children}
+					{children}
 					<Footer />
 				</RootProvider>
 			</body>

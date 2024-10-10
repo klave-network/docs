@@ -12,7 +12,7 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 
     const path = `content/docs/${page.file.path}`;
 
-	return (
+    return (
 		<DocsPage
 			toc={page.data.toc}
 			full={page.data.full}
