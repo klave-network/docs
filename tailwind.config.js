@@ -15,6 +15,9 @@ export default {
 	plugins: [require('tailwindcss-animate')],
 	theme: {
 		extend: {
+            fontFamily: {
+                owners: ['owners']
+            },
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
