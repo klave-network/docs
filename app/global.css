@@ -18,6 +18,14 @@ Uncomment only if topbar from <HomeLayout/> is present
     max-width: 100%
 }
 
+h1 {
+  font-family: owners, sans-serif;
+}
+
+/* a, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, option {
+  font-family: owners, sans-serif;
+} */
+
 @layer base {
 	:root {
 		--background: 0 0% 100%;
