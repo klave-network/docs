@@ -108,7 +108,7 @@ export function SidebarBanner() {
 					href="/"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname === '/' || pathname === '/vision' || pathname === '/pricing-and-billing'
+						pathname === '/'
 							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}

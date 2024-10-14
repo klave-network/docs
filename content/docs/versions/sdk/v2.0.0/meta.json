@@ -3,10 +3,8 @@
 	"description": "SDK description",
 	"root": true,
 	"pages": [
-		"---Guide---",
-		"index",
         "---Get Started---",
-        "klave-introduction",
+        "index",
         "quickstart",
 		"---Concepts---",
 		"what-is-klave",

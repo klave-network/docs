@@ -3,9 +3,8 @@
     "description": "Connector description",
     "root": true,
     "pages": [
-        "---Guide---",
-        "index",
         "---Get Started---",
+        "index",
         "get-started"
     ]
 }

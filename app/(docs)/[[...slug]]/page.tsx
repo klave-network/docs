@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { DocsPage, DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Pre, CodeBlock } from 'fumadocs-ui/components/codeblock';
 
 export default async function Page({ params }: { params: { slug?: string[] } }) {
 	const page = source.getPage(params.slug);
@@ -30,7 +33,20 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>
 			<DocsBody>
-				<MDX components={{ ...defaultMdxComponents }} />
+				<MDX
+					components={{
+						Step,
+						Steps,
+						Tab,
+						Tabs,
+						...defaultMdxComponents,
+						pre: ({ ref: _ref, ...props }) => (
+							<CodeBlock {...props}>
+								<Pre>{props.children}</Pre>
+							</CodeBlock>
+						)
+					}}
+				/>
 			</DocsBody>
 		</DocsPage>
 	);
