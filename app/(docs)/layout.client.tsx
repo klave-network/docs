@@ -108,8 +108,8 @@ export function SidebarBanner() {
 					href="/"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname === '/'
-							? 'bg-fd-primary/10 text-fd-primary'
+						pathname === '/' || pathname === '/vision' || pathname === '/pricing-and-billing'
+							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
 				>
@@ -120,8 +120,8 @@ export function SidebarBanner() {
 					href="/learn"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname === ('/learn')
-							? 'bg-fd-primary/10 text-fd-primary'
+						pathname.includes('/learn')
+							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
 				>
@@ -132,8 +132,8 @@ export function SidebarBanner() {
 					href="/versions/sdk/latest"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname === ('/versions')
-							? 'bg-fd-primary/10 text-fd-primary'
+						pathname.includes('/versions')
+							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
 				>

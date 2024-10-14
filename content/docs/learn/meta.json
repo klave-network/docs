@@ -1,6 +1,6 @@
 {
-	"title": "Learn title",
-	"description": "Learn description",
+	"title": "Learn",
+	"description": "Learn about Klave",
 	"root": true,
 	"pages": ["---Overview---", "index", "architecture", "confidential-computing", "ledger-and-integrity"]
 }

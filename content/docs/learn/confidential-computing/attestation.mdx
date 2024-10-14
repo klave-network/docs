@@ -1,5 +1,288 @@
 ---
 title: Attestation
 ---
+import Image from 'next/image';
 
-Hello there
+The remote attestation process for hardware-based [TEEs](./tee) provides evidence of the loaded logic and the state of the platform.
+
+The process involves the **challenger**, the **application**, the **application enclave**, the **quoting enclave** and the **attestation verification service**.
+
+<Image src="/resources/sgx-attestation-flow.svg" alt="SGX Attestation Flow" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 1 - *SGX Attestation Flow*
+
+The **challenger** sends a nonce to the **application**, which requests the **application enclave** to generate a report which includes a response to the challenge.
+Besides the nonce, the challenge response may include a random ephemeral key the **challenger** and **application enclave** can use to establish a secure channel between them.
+The report also includes the [enclave](./tee#enclave) identity fields and information regarding security of the platform.
+The report is passed to the **quoting enclave** which will verify the report and sign it using an attestation key derived from the root provisioning key.
+The signed report, referred to as a *quote*, is then passed back to the **challenger** which contacts the **attestation verification service** to verify the quote.
+
+The quote verification provided by the **attestation verification service** will confirm the authenticity of the quote, and the report contained in it, and also provide a summary of the security of the platform, including the [Security Advisories](https://www.intel.com/content/www/us/en/security-center/default.html) affecting the platform.
+The *attestation verification report*, together with the recommendations from the security advisories affecting the platform, help the **challenger** assess whether to trust the platform and **application enclave** or not.
+
+<Image src="/resources/sgx-infrastructure-services.svg" alt="SGX Infrastructure Services" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 2 - *SGX Infrastructure Services.*
+
+## Data Center Attestation Primitives (DCAP)
+
+The Data Center Attestation Primitives (DCAP) attestation model allows any party, such as data centers, to deploy their own attestation infrastructure and cache all the necessary information to validate quotes, often referred to as *verification collateral*.
+
+Intel provides the **Intel SGX Provisioning Certification Service (PCS)** which makes the verification collateral available and, as vulnerabilities are discovered and addressed, keeps it up-to-date.
+
+Parties can deploy the **Provisioning Certification Caching Service (PCCS)**, which regularly updates its collateral cache by communicating with Intel's PCS.
+This removes the need to contact Intel services when verifying quotes, useful in case of service disruption or when operating on networks without internet access.
+
+The PCCS should be regularly updated with the latest information from Intel's PCS.
+However, Intel may have grace periods before reflecting new security advisories on the collateral and, therefore, on the attestation verification reports.
+Grace periods may have different durations depending on the security advisories, giving parties with DCAP infrastructure and software vendors some time to patch their systems, potentially avoiding downtime due to a failed attestation report result verification.
+There is a trade-off between having access to the most accurate and up-to-date information regarding the security of a platform and allowing business cases to continue to operate unaffected by attestation report results.
+
+A **challenger** should take into consideration security advisories reported in the attestation report results but also those which aren't being reported via the attestation infrastructure yet, as is the case during the grace period or when relying on an out-of-date PCCS.
+Not all vulnerabilities affect all platforms or enclaves and a **challenger** may conclude it can trust the platform even when security advisories are reported.
+
+To verify quotes, the **challenger** can use a quote verification library which fetches the necessary collateral from a PCCS and verifies it using the **Quote Verification Enclave (QVE)**.
+
+<Image src="/resources/dcap-architecture.svg" alt="DCAP architecture" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 3 - *DCAP architecture*
+
+## Establishing Trust
+
+Before submitting data to the platform, data owners should verify the state of the platform and enclave identity by following the remote attestation process.
+
+The enclave source code should be inspected to conclude what will happen to the data once sent to an enclave.
+It's important to understand the algorithms processing the data, how the data or processing results are shared with other enclaves and whether data or processing results are shared outside the TEE, for example, by being sent over the network to other participants or stored into persistent media.
+It's also important to understand which logic relies on the enclave properties, such as enclave security options and attributes, configuration parameters or any other runtime data passed into the enclave which could influence the execution flow.
+
+Once the source code is inspected, it needs to be compiled and signed before it can be loaded onto the platform.
+The **MRENCLAVE**, or enclave measurement, and the **MRSIGNER** are obtained during this process.
+
+Considering the enclave measurement is a hash of the enclave logic, it can be used as a unique identifier of the source code and some of the options used to generate the enclave.
+However, the enclave measurement does not reflect all security options, attributes and configuration parameters and, therefore, verifying just the enclave measurement during the remote attestation process isn't enough.
+Ideally, the enclave should have a deterministic build process, meaning, every time the source code is built, the same enclave measurement should be obtained, allowing any participant to independently verify the source code and enclave measurement.
+
+The **MRSIGNER** is a hash measurement which identifies the key used to sign the enclave.
+This signing key can have an important role in the protection of data and depending on the use case or on the role of the participant, it may be necessary to verify this measurement during the remote attestation process.
+
+The product ID, security version number and other configuration or runtime parameters which are not part of the enclave measurement can also play a role in the protection of data and may need to be verified as part of the remote attestation process.
+
+One of the essential security options to attest, and one that isn't part of the enclave measurement, is whether the enclave has been loaded in **debug mode** or not, meaning, whether the enclave's memory protections provided by the TEE have been disabled or not.
+**Debug mode** effectively **disables the protections** provided the by the TEE and is normally used during development or testing to help with the development process.
+As such, a participant interacting with an enclave in debug mode should be careful with which data to send, as it can be inspected, as well as the results obtained, as they may have been tampered with.
+
+It may also be important to uniquely identify an enclave instance.
+Multiple instances of the same enclave can be running on the same platform and ensuring communication with a particular one can be relevant, for example, when different sets of participants are being served by different instances or in case an instance needs to be restarted and replaced by another.
+
+Enclaves may communicate with other enclaves, which are either running on the same platform or on a remote one.
+
+When running on the same platform, enclaves can use the **local attestation process** to establish a secure channel between them.
+It is similar to a Diffie-Hellman key exchange with the added benefit of attesting the correspondent enclave is running on the same platform.
+It does not inform neither the enclaves nor participants of the state of the platform, only that the enclaves are running on the same platform.
+A participant needs to verify how data and computation results are shared among enclaves and how each enclave verifies each other's identity, as well as verifying the state of the platform by following the **remote attestation process**.
+
+Enclaves communicating with other enclaves running on separate platforms need to attest each others platforms as well.
+The participant should verify how the enclaves communicate with each other and how they verify each other's identity and platform state and may need to attest all the platforms involved before allowing data to be exchanged among enclaves.
+
+Enclaves which run dynamic code, as in, capable of executing logic that is loaded at runtime, need extra steps on the attestation process.
+Logic loaded at runtime isn't reflected on the enclave measurement, therefore, after a participant attests the platform state and enclave identity, it then needs to verify the loaded logic before trusting it.
+The enclave should provide evidence of the loaded logic, for example, by reporting a cryptographic hash of the loaded logic, functioning as the enclave measurement but for the dynamically loaded modules.
+In the same way a participant should verify the enclave source code, dynamically loaded modules should be similarly verified.
+Modules loaded dynamically that can themselves load further logic dynamically should all follow a similar process, providing evidence at each level.
+
+It is important to understand the state of the platform reported in the quote verification results and how it can affect the security of the enclave.
+
+### Attestation scenario examples
+
+The following examples cover different scenarios to highlight relevant protocols and attestation checks a client should do.
+
+#### Pure computation
+
+This example covers a simple scenario of an enclave which runs a pure computation, on data from a single client.
+
+The enclave is thread-safe and only serves one client at a time, eliminating any possibility for race conditions.
+
+The client challenges the enclave and, as part of the challenge exchange, do a Diffie-Hellman key exchange to obtain a session key it can use to establish a secure communication channel with the enclave instance.
+
+No state is persisted between computations by the enclave and the session key is discarded once a computation is performed, forcing the client to re-challenge the enclave every time a new computation is to be performed.
+The enclave does not perform any authentication of clients, for simplicity's sake, and  clients can be redirected to any instance of the same enclave, regardless of the platform, since clients attest the platform every time they request a computation to be performed.
+
+The host is responsible for forwarding messages between the clients and the enclave.
+A load balancer could be easily introduced to redirect client requests to different platforms, since the platform would always be attested by the client between computation requests.
+
+<Image src="/resources/pure-computation-host.svg" alt="Flow diagram of the host logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 4 - *Flow diagram of the host logic.*
+
+The first step in the attestation process is to understand the enclave logic, build the source code and obtain the enclave measurement (MRENCLAVE).
+A simplified flow diagram illustrates the enclave logic:
+
+<Image src="/resources/pure-computation-enclave.svg" alt="Flow diagram of the enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 5 - *Flow diagram of the enclave logic.*
+
+The client should understand the impact of enclave configuration options when inspecting the enclave logic.
+In this example, there are no runtime configuration options being passed, therefore the client should focus on the enclave configuration file.
+When a configuration element is not present, the default value is used.
+Assuming a default configuration and that memory related errors do not compromise privacy not integrity guarantees, the client concludes none of the configuration options influence the enclave logic.
+
+The second step is to challenge the platform with a nonce.
+The client **generates a random key pair** and submits its public key together with the nonce.
+The enclave receives the challenge and **generates a random key pair** to use as part of a Diffie-Hellman key exchange with the client.
+It then **computes the session key** using the client's public key.
+The **report data** should identify the client's nonce as well as the enclave's public key, therefore, it can be populated with a cryptographic hash of both combined.
+The **report** containing the enclave's identity can then be created and passed to the **Quoting Enclave** to generate the **Quote**.
+The enclave then responds with the **Quote** and its public key back to the client.
+
+<Image src="/resources/pure-computation-client.svg" alt="Flow diagram of the client logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 6 - *Flow diagram of the client logic.*
+
+On receiving the challenge response, the client should **verify the report**, which should contain:
+
+- Expected **MRENCLAVE**, obtained from building the enclave source code.
+- In the attributes fields, the debug mode should be set to 0.
+- The report data must match the cryptographic hash of the client's nonce and the enclave's public key.
+
+If the report values are not the expected ones, the client cannot be sure to be communicating with the intended enclave and shouldn't proceed.
+If the values are the expected ones, the client should then **verify the quote**.
+This process will ensure the **quote** and the **report** are valid and come from a genuine Intel SGX CPU.
+It also provides information about the state of the platform, such as which vulnerabilities is it currently affected by.
+
+At this stage, the client needs to understand the potential impact of any vulnerabilities and mitigation deployment and conclude whether the enclave is affected or not.
+
+If the **state of the platform is acceptable** the client can proceed to compute the session key to communicate with the enclave.
+
+#### Dynamic code loading
+
+In this example the enclave receives code at runtime before using it to compute on private data.
+Since the dynamically loaded code isn't part of the enclave measurement, the attestation process needs to include an extra step so the client can verify which code was loaded, before submitting its private data.
+
+Once the client performs the regular attestation process, ensuring the enclave is the expected one and establishing a secure connection with it, the client requests evidence of the loaded code.
+The client should have inspected the source code and compiled it into a binary, which can then be cryptographically hashed.
+The enclave performs the cryptographic hash and submits it as evidence to the client, who should verify the expect hashes match.
+
+<Image src="/resources/dynamic-enclave.svg" alt="Dynamic code loading enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 7 - *Dynamic code loading enclave logic.*
+
+#### Aggregate computation
+
+In this example, the enclave will be aggregating data in-memory in an isolated way, where each client has its own aggregate, until the client requests for the computation to be done.
+The instance generates a random key pair on initialisation which will be the instance's unique identifier.
+The client follows the attestation protocol and establishes a secure channel with the enclave instance, keeping the session alive for as long as it needs to.
+If the enclave instance is destroyed, the data aggregate will be lost and the client needs to establish a new session with a another instance, after following the attestation process once again.
+
+The attestation protocol steps are the same as on the pure computation example.
+
+<Image src="/resources/aggregate-computation-enclave.svg" alt="Aggregate computation enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 8 - *Aggregate computation enclave logic.*
+
+#### Persistence
+
+This example is a variation of the aggregate example on which the enclave aggregates data by writing it to persistent storage, so that in the case of the enclave instance being destroyed, a new one could be initialised and access the data.
+The enclave will be using MRENCLAVE [Sealing](sealing.md) to encrypt the data before requesting the host to persist it and unsealing it when requested to perform the computation.
+
+The client should pay attention to the sealing policy and to the fact the host may attempt to tamper with the persisted data.
+In this case, the sealing policy is MRENCLAVE, meaning that only instances of the same enclave will be able to unseal the data.
+However, even though the host cannot see the data being persisted, it can still keep copies of old data and serve it to the enclave when it requests the data to perform the computation.
+The enclave can keep a hash of the data in-memory to verify against the hash of the data provided by the host, but, if the enclave instance is restarted, the new instance won't know the hash and will need to receive it from the client to ensure it's computing with the expected inputs.
+
+If the sealing policy were MRSIGNER, the client's data could be unsealed by another enclave signed by the same key, meaning the signing entity could inspect the inputs before they were computed.
+
+<Image src="/resources/persistence-computation-enclave.svg" alt="Persistence enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 9 - *Persistence enclave logic.*
+
+#### Sealing Attributes
+
+This example is a variation of the persistence example, on which the enclave contains conditional logic controlling the sealing of data, before persisting it.
+
+If the product ID is `1`, the enclave uses MRENCLAVE sealing, however, if the product ID is `0`, the enclave uses MRSIGNER sealing policy with the product ID value as part of the key derivation.
+The product ID is not reflected on the MRENCLAVE value of the enclave report, meaning the client attesting the platform must verify that the loaded enclave has been signed with the appropriate product ID, by verifying the product ID value in the enclave's report.
+Failing to do so would put client's data at risk since the signing entity could write and sign an enclave with product ID `0` and access the client's data.
+
+The challenger must verify all runtime attributes and configurations which may impact the data privacy or computation results.
+
+<Image src="/resources/sealing-attributes-enclave.svg" alt="Sealing attributes enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+
+Fig. 10 - *Sealing attributes enclave logic.*
+
+#### Enclave-to-enclave
+
+In this example the computation on private data is split across two different enclaves.
+When challenged by the client, enclave A **challenges enclave B**, establishing a secure channel between the two instances by following the **local attestation process** and also confirming both are running on the same platform.
+
+Enclave B produces a report containing the client's challenge and responds to enclave A via the secure channel.
+Enclave A populates its report's user data with the cryptographic hash of the client's challenge and enclave B's report.
+The challenge response will include the quote, which includes enclave A's report, and enclave B's report.
+
+The client needs to verify both enclave's identities, such as each MRENCLAVE and debug attribute, as well as computing the cryptographic hash of the nonce and enclave B's report, which must match the user data on enclave A's report.
+After verifying the quote and assessing the state of the platform, the client can then submit its private data to be computed.
+
+Enclave A will perform the first step of the computation and pass the necessary data to enclave B via their secure channel, to conclude with the second step of the computation.
+Enclave B returns the computation results to enclave A which re-encrypts them to send back to the client.
+
+<Image src="/resources/enclave-to-enclave-computation-enclave.svg" alt="Enclave-to-enclave communication logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={800} width={800} />
+
+Fig. 11 - *Enclave-to-enclave communication logic.*
+
+#### Remote-enclave-to-enclave
+
+This example is similar to the enclave-to-enclave communication with the difference that each enclave is running on a different platform.
+
+This scenario requires quotes from both platforms to be produced and attested by the client to ensure both enclave identities and platforms are in an acceptable state.
+
+<Image src="/resources/remote-enclave-to-enclave-computation-enclave.svg" alt="Remote-enclave-to-enclave communication logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={800} width={800} />
+
+Fig. 12 - *Remote-enclave-to-enclave communication logic.*
+
+#### Multi-Party Computation
+
+In this example, multiple entities would like to perform a computation on a shared data set while keeping their inputs private.
+The enclave aggregates data sets from each client until having enough data to compute on.
+
+The clients should verify the computation acceptance criteria of the enclave, since the host may attempt to prevent certain clients from contributing to the aggregate data set and only perform computations on a single client's data set, potentially revealing relevant information about the isolated client to other clients.
+
+The clients should also ensure they are all communicating with the same enclave instance, since the host could group different sets of clients to different enclave instances.
+
+<Image src="/resources/mpc-enclave.svg" alt="Multi-party computation enclave logic" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+
+Fig. 13 - *Multi-party computation enclave logic.*
+
+### Assessing Platform State
+
+When assessing the platform state the client should inspect any [Security Advisories](https://www.intel.com/content/www/us/en/security-center/default.html) which come with the quote verification results, in order to understand how it can affect the platform or application enclave.
+The possible quote verification results and meanings are:
+
+- `SGX_QL_QV_RESULT_OK` - The Quote verification passed and is at the latest TCB level.
+- `SGX_QL_QV_RESULT_CONFIG_NEEDED` - The Quote verification passed and the platform is patched to the latest TCB level but additional configuration of the SGX platform may be needed.
+- `SGX_QL_QV_RESULT_OUT_OF_DATE` - The Quote is good but TCB level of the platform is out of date. The platform needs patching to be at the latest TCB level.
+- `SGX_QL_QV_RESULT_OUT_OF_DATE_CONFIG_NEEDED` - The Quote is good but the TCB level of the platform is out of date and additional configuration of the SGX Platform at its current patching level may be needed. The platform needs patching to be at the latest TCB level.
+- `SGX_QL_QV_RESULT_INVALID_SIGNATURE` - The signature over the application report is invalid.
+- `SGX_QL_QV_RESULT_REVOKED` - The attestation key or platform has been revoked.
+- `SGX_QL_QV_RESULT_UNSPECIFIED` - The Quote verification failed due to an error in one of the inputs.
+- `SGX_QL_QV_RESULT_SW_HARDENING_NEEDED` - The TCB level of the platform is up to date, but SGX SW Hardening is needed.
+- `SGX_QL_QV_RESULT_CONFIG_AND_SW_HARDENING_NEEDED` - The TCB level of the platform is up to date, but additional configuration of the platform at its current patching level may be needed. Moreover, SGX SW Hardening is also needed.
+
+`SGX_QL_QV_RESULT_OK` is the ideal result, with the platform being up-to-date and no security advisories.
+
+`SGX_QL_QV_RESULT_CONFIG_NEEDED` means that despite being at the latest version, the platform needs additional configuration in order to mitigate some know vulnerability.
+The client obtaining this result should inspect the security advisories to understand how it can affect its use case before trusting the platform.
+
+`SGX_QL_QV_RESULT_OUT_OF_DATE` means the platform needs to be updated.
+The client obtaining this result should inspect the security advisories to understand how it can affect its use case before trusting the platform.
+
+`SGX_QL_QV_RESULT_OUT_OF_DATE_CONFIG_NEEDED` is the combination of `SGX_QL_QV_RESULT_OUT_OF_DATE` and `SGX_QL_QV_RESULT_CONFIG_NEEDED`, meaning the platform needs updating and further platform configuration is needed.
+As before, the client obtaining this result should inspect the security advisories to understand how it can affect its use case before trusting the platform.
+
+`SGX_QL_QV_RESULT_INVALID_SIGNATURE` and `SGX_QL_QV_RESULT_UNSPECIFIED` may be the result of tampering by the host, by attempting to forge a quote/report or modify parameters being passed between enclaves.
+`SGX_QL_QV_RESULT_REVOKED` may be the result of a platform having been irreversibly compromised, for example, by security researchers having disclosed discovered vulnerabilities to Intel.
+As such, said platform should no longer be trusted and Intel reflects it on the attestation results.
+In all of these cases, it is very risky to trust the platform as the guarantees provided by the TEE cannot be verified.
+The client should assume the platform has been compromised and that their further communication with the enclave may result in data leaks and computation results being tampered with.
+
+`SGX_QL_QV_RESULT_SW_HARDENING_NEEDED` means the platform is up-to-date but the software needs hardening, meaning, there mitigations which need to be applied at the software level.
+It is the responsibility of the client to verify whether the software mitigations have been applied to the application enclave, as the platform is unable to check whether they've been applied or not.
+As such, the platform will keep reporting software hardening needed even after the mitigations have been applied.
+The client will verify it by inspecting the enclave report, including the MRENCLAVE and other relevant attributes, as suggested by the security advisories.
+`SGX_QL_QV_RESULT_CONFIG_AND_SW_HARDENING_NEEDED` is similar to `SGX_QL_QV_RESULT_SW_HARDENING_NEEDED` but the platform also needs configuration changes.
+Once the platform configuration has been modified accordingly, the attestation results should only report `SGX_QL_QV_RESULT_SW_HARDENING_NEEDED`.
