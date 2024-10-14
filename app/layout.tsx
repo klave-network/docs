@@ -2,7 +2,7 @@ import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
 import { Open_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { Footer } from '~/components/footer';
+// import { Footer } from '~/components/footer';
 import { HomeLayout } from 'fumadocs-ui/home-layout';
 import { baseLayoutOptions } from '~/utils/layout-options';
 import { baseUrl, createMetadata } from '~/utils/metadata';
@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 						<HomeLayout {...baseLayoutOptions}>{children}</HomeLayout>
 					</div>
 					<div className="md:hidden">{children}</div>
-					<Footer />
+					{/* <Footer /> */}
 				</RootProvider>
 			</body>
 		</html>
