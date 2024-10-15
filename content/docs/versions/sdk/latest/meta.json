@@ -1,6 +1,6 @@
 {
-	"title": "SDK v3.0.0 (latest)",
-	"description": "SDK description",
+	"title": "SDK v1.0.0 (latest)",
+	"description": "Documentation for the Klave SDK",
 	"root": true,
 	"pages": [
         "---Get Started---",
