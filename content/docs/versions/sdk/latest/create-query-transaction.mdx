@@ -15,22 +15,7 @@ Your application deployed on Klave is a collections of query and transaction fun
 The transaction template function in Klave can take up to one parameters and the return type is always `void`.
 To declare a transaction function in your app with the SDK you just have to decorate the method signature as follow:
 
-```js
-    /**
-     * @transaction
-     */
-    export function myTransaction(): void {
-        //develop your transactional logic here
-    }
-
-    /**
-     * @transaction
-     */
-    export function myTransactionWithInput(input: InputType): void {
-        //develop your transactional logic here
-    }
-    ```
-<Tabs items={["AssemblyScipt"]}>
+<Tabs items={["AssemblyScript"]}>
   <Tab value="AssemblyScript">
     ```js copy
     /**
@@ -55,23 +40,26 @@ To declare a transaction function in your app with the SDK you just have to deco
 In a similar fashion the query template function in Klave can take up to one parameters and the return type is always `void`.
 To declare a query function in your app with the SDK you just have to decorate the method signature as follow:
 
-<Tabs items={["AssemblyScipt"]}>
+<Tabs items={["AssemblyScript"]}>
   <Tab value="AssemblyScript">
-```js copy
-/**
-* @query
-*/
-export function myQuery(): void {
-    //develop your query logic here
-}
+    ```js copy
+    /**
+    * @query
+    */
+    export function myQuery(): void {
+        //develop your query logic here
+    }
 
-/**
-* @query
-*/
-export function myQueryWithInput(input: InputType): void {
-    //develop your query logic here
-}
-```
+    /**
+    * @query
+    */
+    export function myQueryWithInput(input: InputType): void {
+        //develop your query logic here
+    }
+    ```
+  </Tab>
+  <Tab value="test">
+  hello
   </Tab>
 </Tabs>
 
@@ -79,15 +67,15 @@ export function myQueryWithInput(input: InputType): void {
 
 if your unique input parameter is not a native type then you have to declare and decorate it accordingly.
 
-<Tabs items={["AssemblyScipt"]}>
+<Tabs items={["AssemblyScript"]}>
   <Tab value="AssemblyScript">
-```js
-@serializable
-export class InputType {
-    success!: boolean;
-    message!: string;
-}
-```
+    ```js
+    @serializable
+    export class InputType {
+        success!: boolean;
+        message!: string;
+    }
+    ```
   </Tab>
 </Tabs>
 

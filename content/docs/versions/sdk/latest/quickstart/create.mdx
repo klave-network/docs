@@ -15,7 +15,12 @@ to detect and automatically deploy changes brought to your applications.
 We will first start by using the Klave NPM package to scaffold a small app automagically.
 
 <Steps>
-	<Step>### Prerequisites: Check you have Node installed (node >=v20) ```bash copy node -v v20.9.0 ```</Step>
+	<Step>
+        ### Prerequisites: Check you have Node installed (node >=v20) 
+        ```bash copy 
+        node -v v20.9.0 
+        ```
+    </Step>
 	<Step>
 		### Scaffold your Klave application
 		<Tabs items={['npm', 'npx', 'yarn']}>
@@ -24,17 +29,33 @@ We will first start by using the Klave NPM package to scaffold a small app autom
             npm create on-klave 
             ```
             </Tab>
-			<Tab value="npx">```bash copy npx create on-klave ```</Tab>
-			<Tab value="yarn">```bash copy yarn create on-klave ```</Tab>
+			<Tab value="npx">
+            ```bash copy 
+            npx create on-klave
+            ```
+            </Tab>
+			<Tab value="yarn">
+            ```bash copy 
+            yarn create on-klave 
+            ```
+            </Tab>
 		</Tabs>
 	</Step>
 	<Step>
-		### Follow-up instructions ```ansi [0m [0;32m✓[42;1;39;0m What is the npm package name? [0;32m... [0m [0;32m✓[42;1;39;0m What is the name of your trustless
-		application? [0;32m... [0m [0;32m✓[42;1;39;0m How would you describe the trustless application? [0;32m... [0m [0;32m✓[42;1;39;0m What is the name of the author? [0;32m...
-		[0m [0;32m✓[42;1;39;0m What is the email address of the author? [0;32m... [0m [0;32m✓[42;1;39;0m What is the URL to the author's GitHub profile? [0;32m... [0m [0;32m✓[42;1;39;0m What
-		is the URL for the repository? [0;32m... ```
+		### Follow-up instructions 
+        ```ansi
+        ✅ What is the npm package name? ...
+        ✅ What is the name of your trustless application? ...
+        ✅ How would you describe the trustless application? ...
+        ✅ What is the name of the author? ...
+        ✅ What is the email address of the author? ...
+        ✅ What is the URL to the author's GitHub profile? ...
+        ✅ What is the URL for the repository? ...
+        ```
 	</Step>
-	<Step>### Move to the application directory and get your code ready</Step>
+	<Step>
+        ### Move to the application directory and get your code ready
+    </Step>
 </Steps>
 
 ## Develop your app
@@ -74,79 +95,86 @@ Once you've made the changes you wanted you're ready to deploy. This can be done
 
     <Tabs items={['Github CLI', 'Git']}>
         <Tab value="Github CLI">
-            ```bash copy gh repo create git add . git commit -m "your commit message" git push --set-upstream origin master
+            ```bash copy 
+            gh repo create git add . git commit -m "your commit message" git push --set-upstream origin master
             ```
         </Tab>
         <Tab value="Git">
-            First create a new repo on your GitHub. ```bash copy git remote add origin git@github.com:username/your-repo.git
-            git branch -m main git branch --set-upstream-to=origin/main main git add . git commit -m "your commit message"
-            git push ```
+            First create a new repo on your GitHub. 
+            ```bash copy 
+            git remote add origin git@github.com:username/your-repo.git
+            git branch -m main 
+            git branch --set-upstream-to=origin/main main 
+            git add . 
+            git commit -m "your commit message"
+            git push 
+            ```
         </Tab>
     </Tabs>
     </Step>
     <Step>
-    ### Install the Klave GitHub application
+        ### Install the Klave GitHub application
 
-    For Klave to react to your repository's commits and pushes you will need to install [Klave's GitHub App](https://github.com/apps/klave-network) from the marketplace.
+        For Klave to react to your repository's commits and pushes you will need to install [Klave's GitHub App](https://github.com/apps/klave-network) from the marketplace.
 
-    Don't worry, if you forget this step Klave will invite you to do so later.
+        Don't worry, if you forget this step Klave will invite you to do so later.
 
-    <Image
-        src="/resources/install-github-app.png"
-        alt="Install the Klave GitHub app"
-        style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-        height={700}
-        width={700}
-    />
+        <Image
+            src="/resources/install-github-app.png"
+            alt="Install the Klave GitHub app"
+            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
+            height={700}
+            width={700}
+        />
     </Step>
     <Step>
-    ### Connect your GitHub repository
+        ### Connect your GitHub repository
 
-    Make sure you are logged-in to [Klave](https://app.klave.com/login), the navigate to [Deploy now](https://app.klave.com/deploy)
+        Make sure you are logged-in to [Klave](https://app.klave.com/login), the navigate to [Deploy now](https://app.klave.com/deploy)
 
-    <Image
-        src="/resources/connect-to-github.png"
-        alt="Connect to GitHub"
-        style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-        height={700}
-        width={700}
-    />
+        <Image
+            src="/resources/connect-to-github.png"
+            alt="Connect to GitHub"
+            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
+            height={700}
+            width={700}
+        />
 
-    After selecting your organisation, Klave will scan to find your repo.
+        After selecting your organisation, Klave will scan to find your repo.
 
-    <Image
-        src="/resources/select-your-project.png"
-        alt="Scan to find your repo"
-        style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-        height={700}
-        width={700}
-    />
+        <Image
+            src="/resources/select-your-project.png"
+            alt="Scan to find your repo"
+            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
+            height={700}
+            width={700}
+        />
     </Step>
     <Step>
-    ### Select you app and click on enable
+        ### Select you app and click on enable
 
-    You may need to select the application you want to deploy in case you have more than one in you repo.
+        You may need to select the application you want to deploy in case you have more than one in you repo.
 
-    <Image
-        src="/resources/select-your-app.png"
-        alt="Select the app you want to deploy"
-        style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-        height={700}
-        width={700}
-    />
+        <Image
+            src="/resources/select-your-app.png"
+            alt="Select the app you want to deploy"
+            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
+            height={700}
+            width={700}
+        />
     </Step>
     <Step>
-    ### App will deploy
+        ### App will deploy
 
-    Congratulations ! You app is now queued for compilation and deployment. In a few seconds your application will be ready to use !
+        Congratulations! You app is now queued for compilation and deployment. In a few seconds your application will be ready to use!
 
-    <Image
-        src="/resources/automatic-deployment.png"
-        alt="Select the app you want to deploy"
-        style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-        height={700}
-        width={700}
-    />
+        <Image
+            src="/resources/automatic-deployment.png"
+            alt="Select the app you want to deploy"
+            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
+            height={700}
+            width={700}
+        />
     </Step>
 
 </Steps>
