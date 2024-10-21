@@ -10,16 +10,16 @@ Uncomment only if topbar from <HomeLayout/> is present
 }
 
 #nd-sidebar {
-    top: 55px;
-    height: calc(100vh - 55px);
+	top: 55px;
+	height: calc(100vh - 55px);
 }
 
 #nd-nav nav {
-    max-width: 100%
+	max-width: 100%;
 }
 
 h1 {
-  font-family: owners, sans-serif;
+	font-family: owners, sans-serif;
 }
 
 /* a, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, option {
@@ -101,7 +101,7 @@ h1 {
 		--radius: 0.5rem; */
 	}
 	.dark {
-		--background: 216 26.32% 7.45%;
+		--background: 0 0% 0%;
 		--foreground: 195.79 100% 92.55%;
 
 		--primary: 195.06 100% 50%;
@@ -110,14 +110,14 @@ h1 {
 		--card: 198 33.33% 5.88%;
 		--card-foreground: 195.79 100% 92.55%;
 
-		--popover: 216 26.32% 7.45%;
+		--popover: 0 0% 0%;
 		--popover-foreground: 195.79 100% 92.55%;
 
 		--secondary: 194.83 100% 17.45%;
 		--secondary-foreground: 0 0% 100%;
 
-		--muted: 212 13.76% 21.37%;
-		--muted-foreground: 0 0% 89.8%;
+		--muted: 0 0% 9.8%;
+		--muted-foreground: 214.5 23.53% 66.67%;
 
 		--accent: 194.83 100% 17.45%;
 		--accent-foreground: 195.79 100% 92.55%;
@@ -137,22 +137,22 @@ h1 {
 
 		--radius: 0.5rem;
 
-		/* --background: 0 0% 0%;
+		/* --background: 216 26.32% 7.45%;
 		--foreground: 195.79 100% 92.55%;
 
-		--primary: 170.12 100% 50%;
+		--primary: 195.06 100% 50%;
 		--primary-foreground: 194.4 100% 4.9%;
 
 		--card: 198 33.33% 5.88%;
 		--card-foreground: 195.79 100% 92.55%;
 
-		--popover: 0 0% 0%;
+		--popover: 216 26.32% 7.45%;
 		--popover-foreground: 195.79 100% 92.55%;
 
-		--secondary: 195.06 100% 50%;
+		--secondary: 194.83 100% 17.45%;
 		--secondary-foreground: 0 0% 100%;
 
-		--muted: 0 0% 9.8%;
+		--muted: 212 13.76% 21.37%;
 		--muted-foreground: 0 0% 89.8%;
 
 		--accent: 194.83 100% 17.45%;
