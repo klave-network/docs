@@ -26,14 +26,14 @@ const toggleOptions: ToggleOption[] = [
 		description: 'Klave SDK',
 		url: '/versions/sdk/latest',
 		icon: Library,
-		color: 'bg-gradient-to-b from-muted/50 to-primary/60 text-klave-strong-blue dark:to-secondary/60 dark:text-klave-blue'
+		color: 'bg-gradient-to-b from-muted/50 to-primary/60 text-klave-strong-blue dark:to-klave-blue/60 dark:text-klave-blue'
 	},
 	{
 		title: 'Connector',
 		description: 'Secretarium Connector',
 		url: '/versions/connector/latest',
 		icon: PlugZap,
-		color: 'bg-gradient-to-b from-muted/50 to-accent/60 text-klave-strong-teal dark:to-primary/60 dark:text-klave-teal'
+		color: 'bg-gradient-to-b from-muted/50 to-accent/60 text-klave-strong-teal dark:to-klave-teal/60 dark:text-klave-teal'
 	}
 ];
 
