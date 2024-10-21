@@ -7,10 +7,6 @@ import { HomeLayout } from 'fumadocs-ui/home-layout';
 import { baseLayoutOptions } from '~/utils/layout-options';
 import { baseUrl, createMetadata } from '~/utils/metadata';
 
-// const inter = Inter({
-// 	subsets: ['latin']
-// });
-
 const openSans = Open_Sans({
 	subsets: ['latin']
 });

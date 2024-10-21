@@ -4,7 +4,7 @@ import { cva } from 'class-variance-authority';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { ChevronLeft, Home, Library, type LucideIcon, PlugZap, Sparkles, GraduationCap, BookOpen } from 'lucide-react';
+import { ChevronLeft, Home, Library, type LucideIcon, PlugZap, GraduationCap, BookOpen, BookText } from 'lucide-react';
 import { cn } from '~/lib/utils';
 import { modes } from '~/utils/modes';
 import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
@@ -120,7 +120,7 @@ export function SidebarBanner() {
 					href="/learn"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname.includes('/learn')
+						pathname.includes('/learn') && !pathname.includes('/whitepaper')
 							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
@@ -140,18 +140,18 @@ export function SidebarBanner() {
 					<BookOpen />
 					Reference
 				</Link>
-				{/* <Link
-					href="/vision"
+				<Link
+					href="/learn/whitepaper"
 					className={cn(
 						'flex w-full flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-100 [overflow-wrap:anywhere] [&_svg]:size-4 font-medium',
-						pathname === '/vision'
-							? 'bg-fd-primary/10 text-fd-primary'
+						pathname.includes('/whitepaper')
+							? 'text-fd-primary'
 							: 'hover:bg-fd-accent/50 hover:text-fd-accent-foreground/80 hover:transition-none'
 					)}
 				>
-					<Sparkles />
-					Vision
-				</Link> */}
+					<BookText />
+					Whitepaper
+				</Link>
 			</div>
 			{pathname.includes('versions') ? (
 				<RootToggle
@@ -169,36 +169,3 @@ export function SidebarBanner() {
 		</>
 	);
 }
-
-// export function SidebarBanner(): JSX.Element {
-// 	const pathname = usePathname();
-// 	const mode = useMode();
-// 	const currentMode = modes.find((item) => item.param === mode) ?? modes[0];
-
-// 	if (
-// 		pathname === '/stacks' ||
-// 		pathname === '/stacks/get-started' ||
-// 		pathname === '/bitcoin' ||
-// 		pathname === '/bitcoin/get-started' ||
-// 		pathname.startsWith('/guides') ||
-// 		pathname === '/stacks/api-keys' ||
-// 		pathname === '/stacks/rate-limiting' ||
-// 		pathname === '/stacks/contributors-guide' ||
-// 		pathname === '/bitcoin/rate-limiting' ||
-// 		pathname === '/bitcoin/api-keys' ||
-// 		pathname === '/bitcoin/contributors-guide'
-// 	) {
-// 		return <></>;
-// 	}
-
-// 	return (
-// 		<Link key={currentMode.param} href={`/${currentMode.param}`}>
-// 			<div className="group flex flex-row items-center gap-2 rounded-lg px-2 transition-colors">
-// 				<ChevronLeft className="text-muted-foreground size-4 shrink-0 rounded-md group-hover:text-primary" />
-// 				<div>
-// 					<p className="text-muted-foreground group-hover:text-primary">Back</p>
-// 				</div>
-// 			</div>
-// 		</Link>
-// 	);
-// }
