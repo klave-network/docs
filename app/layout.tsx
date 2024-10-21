@@ -12,8 +12,8 @@ import { baseUrl, createMetadata } from '~/utils/metadata';
 // });
 
 const openSans = Open_Sans({
-    subsets: ['latin']
-})
+	subsets: ['latin']
+});
 
 export default function Layout({ children }: { children: ReactNode }) {
 	return (
@@ -45,6 +45,7 @@ export const metadata = createMetadata({
 		template: '%s | Klave Docs',
 		default: 'Klave Documentation'
 	},
-	description: 'Klave Documentation',
+	description:
+		'Access Klave\'s comprehensive documentation to streamline your development process. Find resources to streamline your development process and maximise your use of our privacy-enhancing technology.',
 	metadataBase: baseUrl
 });
