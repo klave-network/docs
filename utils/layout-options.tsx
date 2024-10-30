@@ -1,7 +1,7 @@
 import { source } from '~/utils/source';
-import { type HomeLayoutProps } from 'fumadocs-ui/home-layout';
+import { type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import { Logo } from '~/components/logo';
-import { DocsLayoutProps } from 'fumadocs-ui/layout';
+import { DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
 import { NavChildren, SidebarBanner } from '~/app/(docs)/layout.client';
 import { Globe, AppWindowMac } from 'lucide-react';
 

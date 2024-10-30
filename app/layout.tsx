@@ -3,7 +3,7 @@ import { RootProvider } from 'fumadocs-ui/provider';
 import { Open_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 // import { Footer } from '~/components/footer';
-import { HomeLayout } from 'fumadocs-ui/home-layout';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { baseLayoutOptions } from '~/utils/layout-options';
 import { baseUrl, createMetadata } from '~/utils/metadata';
 

@@ -1,4 +1,4 @@
-import { DocsLayout } from 'fumadocs-ui/layout';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import type { ReactNode } from 'react';
 import { Body } from './layout.client';
 import { docsLayoutOptionsWithoutTopbar, docsLayoutOptions } from '~/utils/layout-options';

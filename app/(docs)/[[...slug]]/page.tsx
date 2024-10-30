@@ -8,8 +8,11 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Pre, CodeBlock } from 'fumadocs-ui/components/codeblock';
 import { UnderConstructionCallout } from '~/components/under-construction';
 
-export default async function Page({ params }: { params: { slug?: string[] } }) {
-	const page = source.getPage(params.slug);
+export default async function Page(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+    const params = await props.params;
+    const page = source.getPage(params.slug);
 	if (!page) notFound();
 
 	const MDX = page.data.body;
@@ -58,8 +61,11 @@ export async function generateStaticParams() {
 	return source.generateParams();
 }
 
-export function generateMetadata({ params }: { params: { slug?: string[] } }) {
-	const page = source.getPage(params.slug);
+export async function generateMetadata(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+    const params = await props.params;
+    const page = source.getPage(params.slug);
 	if (!page) notFound();
 
 	return {
