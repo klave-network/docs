@@ -4,13 +4,28 @@ import { Logo } from '~/components/logo';
 import { DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
 import { NavChildren, SidebarBanner } from '~/app/(docs)/layout.client';
 import { Globe, AppWindowMac } from 'lucide-react';
+import { VersionToggle } from '~/app/layout.client';
 
 export const baseLayoutOptions: HomeLayoutProps = {
 	githubUrl: 'https://github.com/klave-network',
 	nav: {
 		title: <Logo />,
-		// children: <NavChildren />,
-		enableSearch: false
+		children: <div className='ml-auto'>tutu</div>,
+		enableSearch: false,
+		// links: [
+		// 	{
+		// 		text: 'Platform',
+		// 		url: 'https://app.klave.com',
+		// 		external: true,
+		// 		icon: <AppWindowMac />
+		// 	},
+		// 	{
+		// 		text: 'Website',
+		// 		url: 'https://klave.com',
+		// 		external: true,
+		// 		icon: <Globe />
+		// 	}
+		// ]
 	},
 	links: [
 		{
@@ -50,10 +65,31 @@ export const docsLayoutOptions: DocsLayoutProps = {
 		enabled: false
 	},
 	sidebar: {
-		banner: <SidebarBanner />
-	},
+        tabs: {
+            transform(option, node) {
+                const meta = source.getNodeMeta(node);
+                if (!meta) return option;
+                const dirname = meta.file.dirname.split('/')[0];
+                return {
+                    ...option,
+                    icon: (
+                        <div
+                            className="rounded-md border mb-auto bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
+                            style={{
+                                color: `hsl(var(--${dirname}-color))`,
+                                backgroundColor: `hsl(var(--${dirname}-color)/.3)`,
+                            }}
+                        >
+                            {node.icon}
+                        </div>
+                    ),
+                };
+            },
+        },
+        banner: <VersionToggle />
+    },
 	containerProps: {
-		className: ''
+		className: 'md:pt-[48px]'
 	}
 };
 
@@ -64,7 +100,28 @@ export const docsLayoutOptionsWithoutTopbar: DocsLayoutProps = {
 		title: <Logo />
 	},
 	sidebar: {
-		banner: <SidebarBanner />
+	   tabs: {
+            transform(option, node) {
+                const meta = source.getNodeMeta(node);
+                if (!meta) return option;
+                const dirname = meta.file.dirname.split('/')[0];
+                return {
+                    ...option,
+                    icon: (
+                        <div
+                            className="rounded-md border mb-auto bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
+                            style={{
+                                color: `hsl(var(--${dirname}-color))`,
+                                backgroundColor: `hsl(var(--${dirname}-color)/.3)`,
+                            }}
+                        >
+                            {node.icon}
+                        </div>
+                    ),
+                };
+            },
+        },
+        banner: <VersionToggle />
 	},
 	containerProps: {
 		className: ''

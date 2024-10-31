@@ -33,8 +33,8 @@ export function ApiVersionSelect() {
 
 	// Add -mx-4 md:-mx-3 px-4 md:px-3 to styles if topbar from <HomeLayout/> is present
 	return (
-		<div className="bg-fd-card py-3 border-y transition-colors border-border bg-fd-background/60 mb-2 flex flex-col gap-2">
-			<Label className="text-xs">Version</Label>
+		<div className="bg-transparent py-3 border-y transition-colors border-border mb-2 flex flex-col gap-2 ">
+		    <Label className="text-xs">Version</Label>
 			<Select defaultValue={version === 'latest' ? LATEST_VERSION : version} onValueChange={handleVersionChange}>
 				<SelectTrigger className="">
 					<SelectValue />
@@ -72,9 +72,9 @@ function formatSdkVersion(version: string): string {
 }
 
 function isVersionedPath(path: string): boolean {
-	return path.startsWith('/versions');
+	return path.startsWith('/sdk');
 }
 
 function getVersionFromPath(path: string): string | null {
-	return isVersionedPath(path) ? path.split('/', 4).pop()! : null;
+	return isVersionedPath(path) ? path.split('/', 3).pop()! : null;
 }
