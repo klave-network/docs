@@ -2,13 +2,13 @@ import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider';
 import { Open_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
-// import { Footer } from '~/components/footer';
-import { HomeLayout } from 'fumadocs-ui/home-layout';
-import { baseLayoutOptions } from '~/utils/layout-options';
 import { baseUrl, createMetadata } from '~/utils/metadata';
+import { Body } from '~/app/layout.client';
+import { NavMenu } from '~/components/nav-menu';
 
 const openSans = Open_Sans({
-	subsets: ['latin']
+	subsets: ['latin'],
+	weight: 'variable'
 });
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -23,13 +23,12 @@ export default function Layout({ children }: { children: ReactNode }) {
 				<link rel="manifest" href="/site.webmanifest" />
 				<link rel="stylesheet" href="https://use.typekit.net/tcp0xtf.css" />
 			</head>
-			<body className="flex min-h-screen flex-col">
+			<body>
 				<RootProvider>
-					<div className="hidden md:block">
-						<HomeLayout {...baseLayoutOptions}>{children}</HomeLayout>
-					</div>
-					<div className="md:hidden">{children}</div>
-					{/* <Footer /> */}
+					<Body>
+						<NavMenu />
+						{children}
+					</Body>
 				</RootProvider>
 			</body>
 		</html>

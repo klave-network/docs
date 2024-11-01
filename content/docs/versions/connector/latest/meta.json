@@ -1,9 +1,0 @@
-{
-    "title": "Connector v1.0.0 (latest)",
-    "description": "Documentation for the Secretarium Connector",
-    "root": true,
-    "pages": [
-        "---Get Started---",
-        "index"
-    ]
-}

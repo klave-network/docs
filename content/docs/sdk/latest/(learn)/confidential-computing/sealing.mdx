@@ -1,0 +1,36 @@
+---
+title: Sealing
+---
+
+Intel SGX provides sealing functions which can be used to encrypt data, for example, to be stored on the platform's persistent media.
+
+The sealing functions derive keys from the **Root Sealing Key (RSK)** and other enclave properties.
+Since the RSK is unique per platform, it is not possible to unseal data across different platforms.
+
+There are two main sealing policies:
+
+- **Enclave Identity** sealing, often referred to as **MRENCLAVE** sealing.
+- **Enclave Signer** sealing, often referred to as **MRSIGNER** sealing.
+
+These policies, together with all the enclave properties involved in the key derivation, help control how sealed data can be accessed, for example, how it can be shared between enclaves or across platform updates.
+
+When using **Enclave Identity** sealing, the enclave produces a key that is only accessible to instances of that exact same enclave.
+Any changes to the enclave that would impact its MRENCLAVE measurement, would result in a different sealing key.
+Therefore, this policy doesn't allow sealed data to be migrated across enclaves using just the SGX sealing mechanisms and instead would need to rely on a runtime protocol to transfer data between enclaves.
+This policy is useful for caching data or to persist data that can be discarded or revoked when a new version of the enclave is deployed.
+
+When using **Enclave Signer** sealing, the enclave produces a key that is derived from the MRSIGNER measurement, meaning that it's tied to the key used to sign the enclave.
+This policy allows data be shared across enclaves signed with the same key, without the need for a separate protocol at runtime.
+It facilitates data migration across enclaves, for example, due to an enclave upgrade or to share data across a pipeline of enclaves responsible for different computations.
+An **Independent Software Vendor (ISV)** can further tailor this policy to include other enclave properties.
+The **product ID** can be used to segregate data across different enclaves belonging to different products, preventing them from accessing each other's data.
+The **ISVSVN** (ISV security version number), can be used to distinguish between enclave versions that have been upgraded due to a security fix.
+By setting the ISVSVN in the sealing policy, the developer is setting a minimum version which can access the sealed data.
+The key derivation will allow enclaves with an ISVSVN bigger than or equal to the minimum ISVSVN to obtain the key needed to unseal the data, while an enclave with a lower ISVSVN will be unable to unseal data from a more recent enclave, therefore preventing potentially exploitable enclaves from accessing data sealed by more recent enclaves, while allowing old data to be migrated even after the vulnerable enclaves have been shutdown.
+
+On important attribute that is always included in the sealing key derivation, regardless of the policy, is whether the enclave has been loaded in **debug** mode or not.
+The inclusion of this attribute means that data sealed by enclaves running in debug mode cannot be unsealed by enclaves running in production mode and vice-versa.
+
+While enclaves have an ISVSVN, the hardware has a **CPUSVN**.
+This value is also included in the sealing key derivation, but, unlike the ISVSVN, the CPUSVN is an opaque 128 bit value, not a numerical value that can be compared mathematically.
+Enclaves can still obtain keys that have been derived using a previous or current CPUSVN, ensuring enclaves can continue to unseal data even after platform updates.

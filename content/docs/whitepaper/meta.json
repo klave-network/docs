@@ -1,0 +1,13 @@
+{
+    "title": "Whitepaper",
+    "description": "Introductory paper on Klave",
+    "root": true,
+    "icon": "Building2",
+    "pages": [
+        "index",
+        "---Others---",
+        "[Klave](https://klave.com)",
+        "[Secretarium](https://secretarium.com)",
+        "[Newsletter](https://secretarium.com/newsletter)"
+    ]
+}

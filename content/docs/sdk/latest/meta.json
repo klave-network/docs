@@ -1,0 +1,25 @@
+{
+  "title": "SDK v1.0.0 (latest)",
+  "description": "Documentation for the Klave SDK",
+  "root": true,
+  "icon": "Library",
+  "pages": [
+    "---Guide---",
+    "index",
+    "intro",
+    "vision",
+    "quickstart",
+    "---Concepts---",
+    "...(concepts)",
+    "---Enclave SDK---",
+    "...(enclave-sdk)",
+    "---Learn---",
+    "...(learn)",
+    "---Support---",
+    "...(support)",
+    "---Others---",
+    "[Klave](https://klave.com)",
+    "[Secretarium](https://secretarium.com)",
+    "[Newsletter](https://secretarium.com/newsletter)"
+  ]
+}

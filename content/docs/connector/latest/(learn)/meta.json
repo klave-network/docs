@@ -1,0 +1,9 @@
+{
+    "title": "Learn",
+    "description": "Learn about Klave",
+    "pages": [
+        "architecture",
+        "confidential-computing",
+        "ledger-and-integrity"
+    ]
+}

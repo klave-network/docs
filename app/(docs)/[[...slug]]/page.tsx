@@ -8,8 +8,11 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Pre, CodeBlock } from 'fumadocs-ui/components/codeblock';
 import { UnderConstructionCallout } from '~/components/under-construction';
 
-export default async function Page({ params }: { params: { slug?: string[] } }) {
-	const page = source.getPage(params.slug);
+export default async function Page(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+    const params = await props.params;
+    const page = source.getPage(params.slug);
 	if (!page) notFound();
 
 	const MDX = page.data.body;
@@ -18,18 +21,21 @@ export default async function Page({ params }: { params: { slug?: string[] } }) 
 
 	return (
 		<DocsPage
-			toc={page.data.toc}
-			full={page.data.full}
-			tableOfContent={{
-				style: 'clerk',
-				single: false
-			}}
-			editOnGithub={{
-				repo: 'docs',
-				owner: 'klave-network',
-				path
-			}}
-			lastUpdate={page.data.lastModified}
+      toc={page.data.toc}
+      full={page.data.full}
+      tableOfContent={{
+        style: 'clerk',
+        single: false
+      }}
+      editOnGithub={{
+        repo: 'docs',
+        owner: 'klave-network',
+        path
+      }}
+      lastUpdate={page.data.lastModified}
+      breadcrumb={{
+        enabled: false
+      }}
 		>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>
@@ -58,8 +64,11 @@ export async function generateStaticParams() {
 	return source.generateParams();
 }
 
-export function generateMetadata({ params }: { params: { slug?: string[] } }) {
-	const page = source.getPage(params.slug);
+export async function generateMetadata(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+    const params = await props.params;
+    const page = source.getPage(params.slug);
 	if (!page) notFound();
 
 	return {
