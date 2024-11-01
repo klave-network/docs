@@ -21,18 +21,21 @@ export default async function Page(props: {
 
 	return (
 		<DocsPage
-			toc={page.data.toc}
-			full={page.data.full}
-			tableOfContent={{
-				style: 'clerk',
-				single: false
-			}}
-			editOnGithub={{
-				repo: 'docs',
-				owner: 'klave-network',
-				path
-			}}
-			lastUpdate={page.data.lastModified}
+      toc={page.data.toc}
+      full={page.data.full}
+      tableOfContent={{
+        style: 'clerk',
+        single: false
+      }}
+      editOnGithub={{
+        repo: 'docs',
+        owner: 'klave-network',
+        path
+      }}
+      lastUpdate={page.data.lastModified}
+      breadcrumb={{
+        enabled: false
+      }}
 		>
 			<DocsTitle>{page.data.title}</DocsTitle>
 			<DocsDescription>{page.data.description}</DocsDescription>
