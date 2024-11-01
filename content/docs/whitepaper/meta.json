@@ -4,6 +4,10 @@
     "root": true,
     "icon": "Building2",
     "pages": [
-        "index"
+        "index",
+        "---Others---",
+        "[Klave](https://klave.com)",
+        "[Secretarium](https://secretarium.com)",
+        "[Newsletter](https://secretarium.com/newsletter)"
     ]
 }

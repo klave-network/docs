@@ -1,3 +1,8 @@
 {
-	"pages": ["overview", "create", "connect"]
+  "pages": [
+    "overview",
+    "create",
+    "connect"
+  ],
+  "icon": "CirclePlay"
 }

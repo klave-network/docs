@@ -1,0 +1,96 @@
+---
+title: Ledger and Integrity
+---
+import Image from 'next/image';
+
+## Klave Ledger Database
+
+The Klave ledger database is a NoSQL database with ACID-based properties that provides an immutable, transparent and cryptographically verifiable transaction log. It provides persistence within the Klave ecosystem and can only be accessed from within Trusted Execution Environments provided by Klave.
+
+### Trustless Application Ledger
+
+In Klave each application is coupled with a unique and private Ledger accessible only by itself. It consists of a key-value store (NoSQL) containing a collection of individual and persisted tables.
+
+### Ledger Tables
+
+Tables hosted within Application Ledger are non-relational and have simplicity at the heart of their design, ensuring that their flexibility and user friendliness. They support insertion, retrieval and removal. Arbitrary byte arrays act as keys and values enabling a wide range of use cases. Tables are composed of two layers: Integrity and Persistence.
+
+<Callout type="warn">
+  What is generally considered an update (i.e. replacing old content with the new content), is not applicable when working with a ledger database. Instead, an update adds a new version of the record. All previous versions still exist, so your update never overwrites existing data.
+</Callout>
+
+#### Integrity
+
+Maintaining data integrity throughout the Distributed ledger Database is a core element of its construction. This is achieved through Modified Merkle Patricia Tries (MMPT), a proprietary data structure that provides verifiability for all the records stored in the Ledger database.
+
+##### MMPT
+
+Trees data structure leveraged by Klave's Ledgers are Merkle Trees that use characteristics of [P.A.T.R.I.C.I.A](https://dl.acm.org/doi/10.1145/321479.321481) Trees and other modifications in their design and implementation to optimize for lookup while still maintaining integrity.
+
+<Callout>
+  A tree is a stratified data structure of interconnected nodes that, when populated, often resembles the shape of an inverted tree, hence its name and associated nomenclature (e.g., branches, leaves etc.). Each node in a tree can have multiple children but must have only one parent, except for the root node which cannot have any parents. While Tries(prefix tree) are a subset of search trees (data structures used for storing and locating keys from within a collection). They’re distinguished by the fact that the nodes within a Trie do not always represent a complete key, instead keys are distributed throughout the data structure; meaning each node represents a piece of a key. Within this framework, terminal nodes (or Leaves) indicate a complete key and can store a value.
+</Callout>
+
+- **Patricia Tries** - The space and time complexity of Trees in Klave are further optimized by implementing several of the features introduced by Patricia Tries. Such as identifying at what point a divergence takes place in a node that shares multiple keys. This minimizes the number of comparisons that need to be made at a particular level as well as the amount of information that will need to be stored on or about a given node.
+
+- **Merkle Tree** - A Merkle Tree provides mechanisms to maintain and verify its integrity. This is achieved using recursive hashing, where each node in a Merkle Tree is the hash of its children.
+
+<Image src="/resources/merkle-tree.svg" alt="Merkle tree" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 1 - *Merkle tree*
+
+- **Cryptographic proof of integrity** - Combining hashing with the hierarchical structure of trees, creates a cryptographic fingerprint or commitment point for a collection of data. The root node represents a combined hash of all the elements stored within the tree. As a result, any attempt to modify the structure becomes apparent because the resulting root hash would not be the same.Forged entry will fail to be verified because the resulting hash of the tampered record cannot be combined with its peer to generate the same hash that the parent node expects.
+
+<Image src="/resources/tamper-proof.svg" alt="Tampering attempt within a Merkle tree" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 2 - *Tampering attempt within a Merkle tree*
+
+- **Klave's MMPT** - Trees leveraged by Klave can be considered MMPT because they use a combination of the aforementioned tree types to create a persistent data structure that can easily map key–value pairs while maintaining the integrity and unforgeability of the information stored within. The most critical characteristic of such tree is their Merkle properties, which are used to ensure that every record that has been inserted into a table, has a fingerprint (or commitment point) representing the presence of the new value. For this purpose, the SHA–256 algorithm (according to FIPS PUB 180 - 4) is used to generate the hashes required. The verification occurs inherently whenever data are accessed, providing data owners with complete confidence that data integrity is maintained. Another primary concern of such data structure are efficient lookup and insertion. The properties of Patricia Tries significantly enhance the efficiency of search and insertion while moderating the spatial footprint. It also guarantees logarithmic time complexity and linear structural growth.
+
+#### Persistence
+
+Klave leverages on LevelDB to persist tables on disk. LevelDB is an efficient key-value storage library developed by Google providing an ordered mapping of keys to values that it stores on the local machines hard disk. Key–value pairs that stored are encrypted then persisted on hard disk within a correlated LevelDB table.
+
+#### Architecture
+
+Tables are composed of two components, An Integrity Layer (MMPT) and a LevelDB table for the persistence layer.
+
+<Image src="/resources/klave-table.svg" alt="Table architecture" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={500} width={500} />
+Fig. 3 - *Table architecture*
+
+When a record is stored in a Table, it is first inserted into the integrity layer (MMPT). While navigating the MMPT, prior to insertion, integrity checks are performed by using its Merkle properties to verify that it has not been tampered with. The key–value pair is then inserted updating the root.
+
+<Image src="/resources/MMPT-update.svg" alt="Integrity layer update" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 4 - *Integrity layer update*
+
+The entirety of the updated MMPT is then persisted in a corresponding LevelDB Table by storing each node as an individual key–value record.
+
+<Image src="/resources/leveldb-table.svg" alt="Persistence layer update" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={400} width={400} />
+Fig. 5 - *Persistence layer update*
+
+As a result, every record entered is imprinted in the integrity layer, evolving the commitment point of the table. This commitment point is distinguishable from its previous state and can be used to represent the insertion of the latest record and act as a marker of the Tables state at any given time. Commitment points are used to maintain a history of the Tables states and a versioning mechanism that aids in implementing ACID properties.
+
+#### Tables and Trustless Applications
+
+Tables are only accessible within the scope of the trustless application that created them. When an application is executed in either Query or Transaction Mode, contents of tables can freely be queried at their most recently applied state. However, it is only within the scope of a transaction that a Table’s contents can be modified. During the execution of a Transaction, tables modifications are performed within a cached view of the store. It is only at the point in which the entire transaction has completed successfully that all modifications of the ledger accumulated over the course of the transaction's execution is persisted. This is achieved using LevelDB 'WriteBatche' which guarantee atomic updates to the underlying persistence layer.
+
+#### Tables and Ledgers
+
+Ledgers are logical collections of tables and are privately owned by individual trustless applications. Ledgers are responsible for maintaining transactional consistency, managing the versioning and security of their collections. They manage a tamperproof catalogue containing the commitment points of their individual tables. This results in an additional integrity layer, within which Table states are verified against each other. Meaning that if a transaction modifies several Tables, a single commitment point can be used to represent all the modifications.
+
+### Klave Administrative Ledger
+
+The Klave Administrative Ledger (KAL) acts as the upper most layer of of all legers. It stores the commitment points of all the Ledgers contained within Klave, adding another layer of integrity. This verification layer attests to the state of the entire ecosystem and reducing it to a single 256-bit hash. This final hash is referred to as the State Hash.
+
+<Image src="/resources/KAL.svg" alt="Klave Administrative Ledger" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 6 - *KAL*
+
+### Security 
+
+Ensuring the privacy of the information stored in Klave Tables is vital. This is achieved by encrypting every record stored within the Ledgers using AES–128-bit encryption in Counter Mode (according to NIST SP 800-38A) by default. Each Ledger generates its own AES key that are tied to the trustless application identity and uses that to perform encryption and decryption of incoming records. These keys are [sealed](./confidential-computing/sealing.md) before being persisted. This ensures that only the [enclave](./confidential-computing/tee.md#enclave) that created the Ledger can access the keys to decrypt it.
+
+### Distributed Ledger technology
+
+Every node of a Klave Cluster contains a copy of the Ledgers. This ensures that the system remains resilient to attacks and unforeseen local outages. The Klave Consensus mechanism ensures that all nodes have appropriately applied the relevant Transactions.
+
+<Callout type="warn">
+    Modifications to Ledgers are only permitted during the execution of a Transaction. Each Transaction that modifies a Ledger triggers an automatic verification check of the entire Database. If any malicious changes are detected the Transaction will not be applied. This results in Ledger states that are tied to the index of the most recently applied Transaction.
+</Callout>
