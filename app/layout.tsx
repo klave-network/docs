@@ -7,7 +7,8 @@ import { Body } from '~/app/layout.client';
 import { NavMenu } from '~/components/nav-menu';
 
 const openSans = Open_Sans({
-	subsets: ['latin']
+	subsets: ['latin'],
+	weight: 'variable'
 });
 
 export default function Layout({ children }: { children: ReactNode }) {
