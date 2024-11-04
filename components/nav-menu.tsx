@@ -9,9 +9,9 @@ export const NavMenu = () => {
         <div className="hidden md:block">
             <header
                 id="nd-nav"
-                className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-[calc(100%-1rem)] max-w-fd-container -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
+                className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
             >
-                <nav className="flex h-12 w-full flex-row items-center gap-6 px-2">
+                <nav className="mx-auto flex h-12 flex-row items-center gap-6 px-2 max-w-fd-container">
                     <Logo />
                     {/* <span>klave.com</span> */}
                     <div className="flex flex-1 items-center justify-end gap-4">

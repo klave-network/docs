@@ -37,9 +37,9 @@ Uncomment only if topbar from <HomeLayout/> is present
   top: 48px;
 }
 
-#nd-nav nav {
+/* #nd-nav nav {
   max-width: 100%;
-}
+} */
 
 h1 {
   font-family: owners, sans-serif;
