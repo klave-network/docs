@@ -37,12 +37,6 @@ Uncomment only if topbar from <HomeLayout/> is present
   top: 48px;
 }
 
-#nd-sidebar {
-  top: 48px;
-  height: calc(100vh - 48px);
-  background-color: transparent;
-}
-
 #nd-nav nav {
   max-width: 100%;
 }
@@ -54,6 +48,18 @@ h1 {
 /* a, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, option {
   font-family: owners, sans-serif;
 } */
+
+@media screen(md) {
+  #nd-sidebar {
+    top: 48px;
+    height: calc(100vh - 48px);
+    background-color: transparent;
+  }
+
+  #nd-sidebar>div>div>div:first-child {
+    display: none;
+  }
+}
 
 @layer base {
 

@@ -6,8 +6,9 @@ import { VersionToggle } from '~/app/layout.client';
 
 export const docsLayoutOptions: DocsLayoutProps = {
 	tree: source.pageTree,
+	githubUrl: 'https://github.com/klave-network',
 	nav: {
-		enabled: false
+		title: <Logo />
 	},
 	sidebar: {
         tabs: {
@@ -35,41 +36,6 @@ export const docsLayoutOptions: DocsLayoutProps = {
     },
 	containerProps: {
 		className: 'md:pt-[48px]'
-	}
-};
-
-export const docsLayoutOptionsWithoutTopbar: DocsLayoutProps = {
-	tree: source.pageTree,
-	githubUrl: 'https://github.com/klave-network',
-	nav: {
-		title: <Logo />
-	},
-	sidebar: {
-	   tabs: {
-            transform(option, node) {
-                const meta = source.getNodeMeta(node);
-                if (!meta) return option;
-                const dirname = meta.file.dirname.split('/')[0];
-                return {
-                    ...option,
-                    icon: (
-                        <div
-                            className="rounded-md border mb-auto bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
-                            style={{
-                                color: `hsl(var(--${dirname}-color))`,
-                                backgroundColor: `hsl(var(--${dirname}-color)/.3)`,
-                            }}
-                        >
-                            {node.icon}
-                        </div>
-                    ),
-                };
-            },
-        },
-        banner: <VersionToggle />
-	},
-	containerProps: {
-		className: ''
 	},
 	links: [
 		{
