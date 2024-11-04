@@ -9,9 +9,9 @@ export function Body({ children }: { children: ReactNode }): JSX.Element {
 	const mode = useMode();
 	// might need to remove width styles max-w-container mx-auto
 	return (
-    	<div className="flex flex-col max-w-fd-container mx-auto antialiased">
-    	   <div className={cn(mode)}>{children}</div>
-    	</div>
+    <body className={cn(mode, 'relative flex flex-col max-w-fd-container mx-auto min-h-screen antialiased')}>
+      {children}
+    </body>
 	);
 }
 
