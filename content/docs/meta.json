@@ -1,8 +1,5 @@
 {
-    "pages": [
-        "index",
-        "sdk",
-        "connector",
-        "whitepaper"
-    ]
+  "pages": [
+    "sdk"
+  ]
 }
