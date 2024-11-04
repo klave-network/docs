@@ -1,12 +1,11 @@
 {
-  "title": "SDK v1.0.0 (latest)",
-  "description": "Documentation for the Klave SDK",
+  "title": "Latest version",
+  "description": "SDK v1.0.0 (latest)",
   "root": true,
-  "icon": "Library",
+  "icon": "Tag",
   "pages": [
     "---Guide---",
     "index",
-    "intro",
     "vision",
     "quickstart",
     "---Concepts---",

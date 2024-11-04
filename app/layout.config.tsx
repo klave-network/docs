@@ -2,7 +2,6 @@ import { source } from '~/utils/source';
 import { Logo } from '~/components/logo';
 import { DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
 import { Globe, AppWindowMac } from 'lucide-react';
-import { VersionToggle } from '~/app/layout.client';
 
 export const docsLayoutOptions: DocsLayoutProps = {
 	tree: source.pageTree,
@@ -31,8 +30,7 @@ export const docsLayoutOptions: DocsLayoutProps = {
                     ),
                 };
             },
-        },
-        banner: <VersionToggle />
+        }
     },
 	containerProps: {
 		className: 'md:pt-[48px]'
