@@ -203,6 +203,6 @@ h1 {
   }
 
   #nd-nav nav {
-    @apply max-w-fd-container mx-auto font-semibold
+    @apply max-w-fd-container mx-auto font-medium
   }
 }

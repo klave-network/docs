@@ -22,7 +22,7 @@ export const NavMenu = () => {
                     <div className="flex items-center gap-2">
                       <Button
                         variant="link"
-                        className={cn(pathname.includes('sdk') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                        className={cn(pathname.includes('sdk') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
                       >
                         <Link href="/sdk/latest">
                           SDK
@@ -30,7 +30,7 @@ export const NavMenu = () => {
                       </Button>
                       {/* <Button
                         variant="link"
-                        className={cn(pathname === '/connector/latest' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                        className={cn(pathname === '/connector/latest' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
                       >
                         <Link href="/sdk/latest">
                           Connector
@@ -38,7 +38,7 @@ export const NavMenu = () => {
                       </Button> */}
                       <Button
                         variant="link"
-                        className={cn(pathname === '/whitepaper' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                        className={cn(pathname === '/whitepaper' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
                       >
                         <Link href="/whitepaper">
                           Whitepaper
@@ -46,7 +46,7 @@ export const NavMenu = () => {
                       </Button>
                       <Button
                         variant="link"
-                        className="text-fd-muted-foreground hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4"
+                        className="font-medium text-fd-muted-foreground hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4"
                       >
                         <a
                           href="https://klave.com/marketplace"
