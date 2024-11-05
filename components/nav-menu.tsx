@@ -3,17 +3,60 @@
 import React from 'react';
 import { Logo } from '~/components/logo';
 import { Button } from '~/components/ui/button';
+import Link from 'next/link';
+import { cn } from '~/lib/utils';
+import { usePathname } from 'next/navigation';
 
 export const NavMenu = () => {
+
+ 	const pathname = usePathname();
+
     return (
         <div className="hidden md:block">
             <header
                 id="nd-nav"
-                className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
+                // className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
             >
-                <nav className="mx-auto flex h-12 flex-row items-center gap-6 px-2 max-w-fd-container">
+                <nav className="mx-auto flex h-12 flex-row items-center gap-6 px-4">
                     <Logo />
-                    {/* <span>klave.com</span> */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="link"
+                        className={cn(pathname.includes('sdk') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                      >
+                        <Link href="/sdk/latest">
+                          SDK
+                        </Link>
+                      </Button>
+                      {/* <Button
+                        variant="link"
+                        className={cn(pathname === '/connector/latest' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                      >
+                        <Link href="/sdk/latest">
+                          Connector
+                        </Link>
+                      </Button> */}
+                      <Button
+                        variant="link"
+                        className={cn(pathname === '/whitepaper' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                      >
+                        <Link href="/whitepaper">
+                          Whitepaper
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="link"
+                        className="text-fd-muted-foreground hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4"
+                      >
+                        <a
+                          href="https://klave.com/marketplace"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Templates
+                        </a>
+                      </Button>
+                    </div>
                     <div className="flex flex-1 items-center justify-end gap-4">
                         <a
                             href="https://discord.gg/MkUxsVeqDW"
