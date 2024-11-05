@@ -1,6 +1,7 @@
 import { cn } from '~/lib/utils';
 import { Rss, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '~/components/ui/button';
 
 export default function Page() {
   return (
@@ -16,38 +17,31 @@ export default function Page() {
         />
       </div>
       <div className="flex flex-col gap-8 items-center justify-center text-center pt-10">
-        <h1 className="text-4xl sm:text-7xl font-owners font-medium tracking-wide bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500">
+        <h1 className="text-4xl sm:text-7xl font-owners font-medium tracking-wide">
           Klave Documentation
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-3 gap-4 md:gap-8 max-w-[800px]">
-          <Link
-            href="/sdk/latest"
-            className="sm:col-span-2 sm:row-span-2 flex flex-col rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 gap-4 md:gap-8 max-w-[800px]">
+          <div
+            className="bg-cta-gradient sm:col-span-2 sm:row-span-2 flex flex-col gap-4 justify-between rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md"
           >
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">Get Started</h2>
-              <svg
-					role="img"
-					className="size-6 "
-					fill="currentColor"
-					viewBox="0 0 24 24"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-				</svg>
+              <h2 className="text-2xl sm:text-4xl font-owners font-medium tracking-wide">Quickstart Guide</h2>
             </div>
-            <p className="text-sm text-left">
+            <p className="text-sm sm:text-lg text-left sm:w-1/2">
               Learn how to get up and running with Klave through tutorials, API references and platform resources.
             </p>
-          </Link>
-          {blocks.map((block, index) => (
+            <div className="flex">
+              <Button size="lg" className="text-sm sm:text-lg">Get Started</Button>
+            </div>
+          </div>
+          {blocks.map((block) => (
             <a
               key={block.title}
               href={block.link}
-              className={cn(index === 0 ? 'sm:col-span-2 sm:row-span-2' : '', "flex flex-col rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20")}
+              className="flex flex-col rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-semibold">{block.title}</h2>
+                <h2 className="text-2xl font-owners font-medium tracking-wide">{block.title}</h2>
                 {block.icon}
               </div>
               <p className="text-sm text-left">{block.description}</p>
@@ -60,20 +54,6 @@ export default function Page() {
 }
 
 const blocks = [
-  {
-    title: 'Get Started',
-    description: 'Learn how to get up and running with Klave through tutorials, API references and platform resources.',
-    link: 'https://app.klave.com',
-    icon: <svg
-					role="img"
-					className="size-6 "
-					fill="currentColor"
-					viewBox="0 0 24 24"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-				</svg>
-  },
   {
     title: 'Why Klave?',
     description: 'Explore the Klave platform and discover the resources you need to get started.',
@@ -94,7 +74,7 @@ const blocks = [
   {
     title: 'GitHub',
     description: 'Explore the Klave codebase and contribute to the project.',
-    link: 'https://app.klave.com',
+    link: 'https://github.com/klave-network',
     icon: <svg
         role="img"
         className="size-6"
@@ -108,13 +88,13 @@ const blocks = [
   {
     title: 'Newsletter',
     description: 'Stay up to date with the latest news and updates from Klave.',
-    link: 'https://app.klave.com',
+    link: 'https://secretarium.com/newsletter',
     icon: <Rss />
   },
   {
     title: 'Join our Discord',
     description: 'Join the Klave community and connect with other developers.',
-    link: 'https://app.klave.com',
+    link: 'https://discord.gg/MkUxsVeqDW',
     icon: <svg
 					role="img"
 					className="size-6 "
@@ -128,7 +108,7 @@ const blocks = [
   {
     title: 'Follow on X',
     description: 'Explore the Klave platform and discover the resources you need to get started.',
-    link: 'https://app.klave.com',
+    link: 'https://x.com/KlaveNetwork',
     icon: <svg
           role="img"
 					className="size-6"
