@@ -37,10 +37,6 @@ Uncomment only if topbar from <HomeLayout/> is present
   top: 48px;
 }
 
-/* #nd-nav nav {
-  max-width: 100%;
-} */
-
 h1 {
   font-family: owners, sans-serif;
 }
@@ -198,5 +194,15 @@ h1 {
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  #nd-nav {
+    @apply fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg rounded-none max-w-full mt-0 shadow-none border-t-0 border-x-0;
+  }
+
+  #nd-nav nav {
+    @apply max-w-fd-container mx-auto font-semibold
   }
 }

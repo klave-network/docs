@@ -26,7 +26,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 			<body>
 				<RootProvider>
 					<Body>
-						<NavMenu />
 						{children}
 					</Body>
 				</RootProvider>
