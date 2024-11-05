@@ -1,8 +1,7 @@
-import { defineDocs, defineConfig, frontmatterSchema, metaSchema } from 'fumadocs-mdx/config';
+import { defineDocs, defineConfig, frontmatterSchema, metaSchema, defineCollections } from 'fumadocs-mdx/config';
 import { z } from 'zod';
 
 export const { docs, meta } = defineDocs({
-  dir: 'content/docs',
 	docs: {
 		schema: frontmatterSchema.extend({
 			underConstruction: z.boolean().default(false)
@@ -13,6 +12,11 @@ export const { docs, meta } = defineDocs({
 			description: z.string().optional()
 		})
 	}
+});
+
+export const whitepaper = defineCollections({
+  dir: 'content/whitepaper',
+  type: 'doc'
 });
 
 export default defineConfig({
