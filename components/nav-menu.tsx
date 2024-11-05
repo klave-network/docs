@@ -18,7 +18,9 @@ export const NavMenu = () => {
                 // className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
             >
                 <nav className="mx-auto flex h-12 flex-row items-center gap-6 px-4">
-                    <Logo />
+                    <Link href="/">
+                      <Logo />
+                    </Link>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="link"
