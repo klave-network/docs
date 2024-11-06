@@ -54,7 +54,7 @@ export const baseOptions: BaseLayoutProps = {
         {
             secondary: true,
             type: 'button',
-            url: 'https://discord.gg/MkUxsVeqDW',
+            url: 'https://app.klave.com/login',
             text: 'Login',
             icon: <ArrowRight/>,
             external: true,
