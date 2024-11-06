@@ -1,5 +1,20 @@
 {
   "pages": [
-    "latest"
+    "---Introduction---",
+    "index",
+    "intro",
+    "vision",
+    "---Concepts---",
+    "...(concepts)",
+    "---Development---",
+    "sdk",
+    "---Learn---",
+    "...(learn)",
+    "---Support---",
+    "...(support)",
+    "---Others---",
+    "[Klave](https://klave.com)",
+    "[Secretarium](https://secretarium.com)",
+    "[Newsletter](https://secretarium.com/newsletter)"
   ]
 }

@@ -2,33 +2,19 @@ import { Rss, GraduationCap, Store, BookOpenText } from 'lucide-react';
 import Link from 'fumadocs-core/link';
 import { Button } from '~/components/ui/button';
 
-export default function Page() {
+export default function WelcomePage() {
   return (
-    <main className="container flex flex-col items-center py-16 text-center">
-      <div className="absolute inset-0 z-[-1] overflow-hidden duration-1000 animate-in fade-in [perspective:2000px]">
-        <div
-            className="absolute bottom-[20%] left-1/2 size-[1200px] origin-bottom bg-fd-primary/30 opacity-30"
-            style={{
-              transform: 'rotateX(75deg) translate(-50%, 400px)',
-              backgroundImage:
-                'radial-gradient(50% 50% at center,transparent,hsl(var(--background))), repeating-linear-gradient(to right,hsl(var(--primary)),hsl(var(--primary)) 1px,transparent 2px,transparent 100px), repeating-linear-gradient(to bottom,hsl(var(--primary)),hsl(var(--primary)) 2px,transparent 3px,transparent 100px)',
-            }}
-        />
-      </div>
-      <div className="flex flex-col gap-8 items-center justify-center text-center pt-10">
-        <h1 className="text-4xl sm:text-7xl font-owners font-medium tracking-wide">
-          Klave Documentation
-        </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 gap-4 md:gap-8 max-w-[800px]">
+      <div className="flex flex-col gap-8 items-center justify-center text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 gap-4 md:gap-8">
           <div
-            className="bg-cta-gradient sm:col-span-2 sm:row-span-2 flex flex-col gap-4 justify-between rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md"
+            className="bg-cta-gradient sm:col-span-2 sm:row-span-2 flex flex-col gap-4 justify-center rounded-lg border border-fd-primary/30 bg-transparent p-4 md:px-6 shadow-md"
           >
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl sm:text-4xl font-owners font-medium tracking-wide">Quickstart Guide</h2>
+              <span className="text-2xl sm:text-4xl font-owners font-medium tracking-wide">Quickstart Guide</span>
             </div>
-            <p className="text-sm sm:text-lg text-left sm:w-1/2">
+            <span className="text-sm sm:text-lg text-left sm:w-1/2">
               Learn how to get up and running with Klave through tutorials, API references and platform resources.
-            </p>
+            </span>
             <div className="flex">
               <Link href="/sdk/latest/quickstart/overview">
                 <Button size="lg" className="text-sm sm:text-lg">Get Started</Button>
@@ -39,18 +25,17 @@ export default function Page() {
             <Link
               key={block.title}
               href={block.link}
-              className="flex flex-col rounded-lg border border-fd-primary/30 bg-transparent p-4 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
+              className="no-underline flex flex-col rounded-lg border border-fd-primary/30 bg-fd-card p-4 md:px-6 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-owners font-medium tracking-wide">{block.title}</h2>
+                <span className="text-2xl font-owners font-medium tracking-wide">{block.title}</span>
                 {block.icon}
               </div>
-              <p className="text-sm text-left">{block.description}</p>
+              <span className="text-sm text-left">{block.description}</span>
             </Link>
           ))}
         </div>
       </div>
-    </main>
   )
 }
 

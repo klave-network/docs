@@ -3,18 +3,18 @@ import { createMDXSource } from 'fumadocs-mdx';
 import { loader } from 'fumadocs-core/source';
 import { createElement } from 'react';
 import { icons } from 'lucide-react';
+import { IconContainer } from '~/components/ui/icon';
 
 export const source = loader({
-	baseUrl: '/sdk',
+	baseUrl: '/',
 	source: createMDXSource(docs, meta),
 	// render icons in the sidebar
 	icon(icon) {
-		if (!icon) {
-			// You may set a default icon
-			return;
+		if (icon && icon in icons) {
+      return createElement(IconContainer, {
+        icon: icons[icon as keyof typeof icons],
+      });
 		}
-
-		if (icon in icons) return createElement(icons[icon as keyof typeof icons]);
 	}
 });
 

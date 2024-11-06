@@ -1,0 +1,94 @@
+---
+title: Connect
+description: Connect to an app on Klave
+---
+ 
+Once your Klave app is ready and deployed, you will want to leverage it in your applications.
+Klave implements a Secure Connection Protocol ([SCP](/learn/architecture#secure-connection-protocol-scp)) which provides validatable direct access to your applications.
+
+You can read on the protocol above to implement your own custom connectors but Klave offer out of the box a TypeScript connector 
+you can use both on the server and the client (web browsers, IoT, ...).
+
+<Callout type="info" emoji="ℹ️">
+    On the server the **@secretarium/connector** package requires [Node.js](https://nodejs.org) version 20+.
+</Callout>
+
+## The basics
+
+To start using Klave's TypeScript connector you will first need to install it from NPM
+
+<Tabs items={['yarn', 'npm', 'pnpm']}>
+    <Tab value="yarn">
+    ```bash copy
+    yarn add @secretarium/connector
+    ```
+    </Tab>
+    <Tab value="npm">
+    ```bash copy
+    npm install @secretarium/connector
+    ```
+    </Tab>
+    <Tab value="pnpm">
+    ```bash copy
+    pnpm add @secretarium/connector
+    ```
+    </Tab>
+</Tabs>
+
+Once done, you will need to setup a few things to get running. You can see the example code right here:
+
+```js
+import { SCP } from '@secretarium/connector';
+
+async function main() {
+    
+    // We create the new connector context
+    const context = new SCP();
+    
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+
+From there calling your functions is very easy. Take a look at the example below:
+
+```js
+import { SCP, Key } from '@secretarium/connector';
+
+type MyValue = {
+    success: boolean;
+    value: string;
+}
+
+async function main() {
+
+    const context = new SCP();
+    const myKey = await Key.createKey()
+    const connection = await context.connect('wss://on.klave.network', myKey)
+
+    // We reference the name of our application deployment
+    const myAppId = 'your_app.on.klave.network';
+
+    // We load data in our application ledger with a transaction
+    await connection.newTx(myAppId, 'storeValue', { key: 'myKey', value: 'myValue' }).send()
+
+    // We retreive the data with a query
+    const result = await connection.newQuery<MyValue>(myAppId, 'fetchValue', { key: 'myKey' }).send()
+
+    // We display the data we retreive and see it matches
+    console.log(result); // { "success": true, "value": "myValue" }
+}
+
+main()
+```
+
+Where `your_app.on.klave.network` is the name of your application deployment as per seen in the Klave dashboard.
+
+<div style={{display: "none"}}>
+    For a details view of the connector API, check out the [Connector SDK]() section
+</div>

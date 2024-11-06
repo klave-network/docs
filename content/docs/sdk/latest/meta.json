@@ -7,13 +7,7 @@
     "---Guide---",
     "index",
     "quickstart",
-    "---Concepts---",
-    "...(concepts)",
     "---Enclave SDK---",
-    "...(enclave-sdk)",
-    "---Learn---",
-    "...(learn)",
-    "---Support---",
-    "...(support)"
+    "...(enclave-sdk)"
   ]
 }
