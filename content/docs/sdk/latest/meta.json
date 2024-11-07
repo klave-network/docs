@@ -6,7 +6,6 @@
   "pages": [
     "---Guide---",
     "index",
-    "quickstart",
     "---Enclave SDK---",
     "...(enclave-sdk)"
   ]

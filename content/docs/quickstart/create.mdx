@@ -16,9 +16,9 @@ We will first start by using the Klave NPM package to scaffold a small app autom
 
 <Steps>
 	<Step>
-        ### Prerequisites: Check you have Node installed (node >=v20) 
-        ```bash copy 
-        node -v v20.9.0 
+        ### Prerequisites: Check you have Node installed (node >=v20)
+        ```bash copy
+        node -v v20.9.0
         ```
     </Step>
 	<Step>
@@ -26,23 +26,23 @@ We will first start by using the Klave NPM package to scaffold a small app autom
 		<Tabs items={['npm', 'npx', 'yarn']}>
 			<Tab value="npm">
             ```bash copy
-            npm create on-klave 
+            npm create on-klave
             ```
             </Tab>
 			<Tab value="npx">
-            ```bash copy 
+            ```bash copy
             npx create on-klave
             ```
             </Tab>
 			<Tab value="yarn">
-            ```bash copy 
-            yarn create on-klave 
+            ```bash copy
+            yarn create on-klave
             ```
             </Tab>
 		</Tabs>
 	</Step>
 	<Step>
-		### Follow-up instructions 
+		### Follow-up instructions
         ```ansi
         ✅ What is the npm package name? ...
         ✅ What is the name of your trustless application? ...
@@ -91,23 +91,23 @@ Once you've made the changes you wanted you're ready to deploy. This can be done
 
 <Steps>
     <Step>
-    ### Push your folder on a [GitHub](https://github.com/home) repository
+    ### Push your folder on a GitHub repository
 
     <Tabs items={['Github CLI', 'Git']}>
         <Tab value="Github CLI">
-            ```bash copy 
+            ```bash copy
             gh repo create git add . git commit -m "your commit message" git push --set-upstream origin master
             ```
         </Tab>
         <Tab value="Git">
-            First create a new repo on your GitHub. 
-            ```bash copy 
+            First create a new repo on your GitHub.
+            ```bash copy
             git remote add origin git@github.com:username/your-repo.git
-            git branch -m main 
-            git branch --set-upstream-to=origin/main main 
-            git add . 
+            git branch -m main
+            git branch --set-upstream-to=origin/main main
+            git add .
             git commit -m "your commit message"
-            git push 
+            git push
             ```
         </Tab>
     </Tabs>
