@@ -179,7 +179,7 @@ Fig. 8 - *Aggregate computation enclave logic.*
 #### Persistence
 
 This example is a variation of the aggregate example on which the enclave aggregates data by writing it to persistent storage, so that in the case of the enclave instance being destroyed, a new one could be initialised and access the data.
-The enclave will be using MRENCLAVE [Sealing](sealing.md) to encrypt the data before requesting the host to persist it and unsealing it when requested to perform the computation.
+The enclave will be using MRENCLAVE [Sealing](/confidential-computing/sealing) to encrypt the data before requesting the host to persist it and unsealing it when requested to perform the computation.
 
 The client should pay attention to the sealing policy and to the fact the host may attempt to tamper with the persisted data.
 In this case, the sealing policy is MRENCLAVE, meaning that only instances of the same enclave will be able to unseal the data.

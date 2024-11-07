@@ -83,9 +83,9 @@ The Klave Administrative Ledger (KAL) acts as the upper most layer of of all leg
 <Image src="/resources/KAL.svg" alt="Klave Administrative Ledger" style={{ margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
 Fig. 6 - *KAL*
 
-### Security 
+### Security
 
-Ensuring the privacy of the information stored in Klave Tables is vital. This is achieved by encrypting every record stored within the Ledgers using AES–128-bit encryption in Counter Mode (according to NIST SP 800-38A) by default. Each Ledger generates its own AES key that are tied to the trustless application identity and uses that to perform encryption and decryption of incoming records. These keys are [sealed](./confidential-computing/sealing.md) before being persisted. This ensures that only the [enclave](./confidential-computing/tee.md#enclave) that created the Ledger can access the keys to decrypt it.
+Ensuring the privacy of the information stored in Klave Tables is vital. This is achieved by encrypting every record stored within the Ledgers using AES–128-bit encryption in Counter Mode (according to NIST SP 800-38A) by default. Each Ledger generates its own AES key that are tied to the trustless application identity and uses that to perform encryption and decryption of incoming records. These keys are [sealed](/confidential-computing/sealing) before being persisted. This ensures that only the [enclave](/confidential-computing/tee#enclave) that created the Ledger can access the keys to decrypt it.
 
 ### Distributed Ledger technology
 

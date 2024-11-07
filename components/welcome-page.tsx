@@ -16,7 +16,7 @@ export default function WelcomePage() {
               Learn how to get up and running with Klave through tutorials, API references and platform resources.
             </span>
             <div className="flex">
-              <Link href="/sdk/latest/quickstart/overview">
+              <Link href="/quickstart/overview">
                 <Button size="lg" className="text-sm sm:text-lg">Get Started</Button>
               </Link>
             </div>
@@ -66,7 +66,7 @@ const blocks = [
   {
     title: 'Learn',
     description: 'Learn more about Klave and its architecture.',
-    link: '/sdk/latest/architecture',
+    link: '/architecture',
     icon: <GraduationCap />
   },
   {
