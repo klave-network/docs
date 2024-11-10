@@ -3,6 +3,7 @@
     "create-query-transaction",
     "ledger",
     "notify",
-    "http-request"
+    "http-request",
+    "cryptography"
   ]
 }

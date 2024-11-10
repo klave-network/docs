@@ -1,10 +1,8 @@
 ---
-title: HTTP Request
+title: Making HTTP Requests
 ---
 
 import Image from 'next/image';
-
-## Making HTTP Requests
 
 Klave SDK provides an interface for you to make HTTP requests from within your application in the secure hardware enclave.
 
@@ -13,7 +11,7 @@ Klave SDK provides an interface for you to make HTTP requests from within your a
 Klave SDK provides a simple interface to create and send HTTP request from your application.
 
 <Callout type="warn">
-    As querying an HTTP endpoint is not a deterministic operation, HTTP request can only be used in the context of a Query.
+    As querying an HTTP endpoint is not a deterministic operation, it can only be used in the context of a Query. The Query calling the `HTTP` interface will not be callable from a Transaction.
 </Callout>
 
 The set of operations is the following one:
