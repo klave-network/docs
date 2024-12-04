@@ -31,14 +31,14 @@ export const NavMenu = () => {
                           SDK
                         </Link>
                       </Button>
-                      {/* <Button
+                      <Button
                         variant="link"
-                        className={cn(pathname === '/connector/latest' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                        className={cn(pathname.includes('connector') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
                       >
-                        <Link href="/sdk/latest">
+                        <Link href="/connector/latest">
                           Connector
                         </Link>
-                      </Button> */}
+                      </Button>
                       <Button
                         variant="link"
                         className={cn(pathname === '/whitepaper' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}

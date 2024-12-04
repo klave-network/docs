@@ -13,14 +13,16 @@ import { Slot } from '@radix-ui/react-slot';
 const SidebarBanner = () => {
   const pathname = usePathname();
 
-  if (!pathname.startsWith('/sdk')) {
+  if (!pathname.startsWith('/sdk') && !pathname.startsWith('/connector')) {
     return <></>;
   }
 
   return (
-    <Link href="/" className="flex items-center gap-1 order-first pb-2 text-fd-muted-foreground font-medium hover:no-underline transition-colors hover:text-fd-accent-foreground \[&_svg\]:size-4">
-      <ChevronLeft className='w-4' /> Back to main
-    </Link>
+    <>
+      <Link href="/" className="flex items-center gap-1 order-first pb-2 text-fd-muted-foreground font-medium hover:no-underline transition-colors hover:text-fd-accent-foreground \[&_svg\]:size-4">
+        <ChevronLeft className='w-4' /> Back to main
+      </Link>
+    </>
   )
 };
 
@@ -37,27 +39,32 @@ export default function Layout({ children }: { children: ReactNode }): JSX.Eleme
       }}
       sidebar={{
 	      banner: <SidebarBanner/>,
-        tabs: !pathname.startsWith('/sdk')
+        tabs: !pathname.startsWith('/sdk') && !pathname.startsWith('/connector')
           ? false
           : {
             transform(option, node) {
               const meta = source.getNodeMeta(node);
               if (!meta) return option;
+
               const dirname = meta.file.dirname.split('/')[0];
-              return {
-                ...option,
-                icon: (
-                  <Slot
-                    className="bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
-                    style={{
-                      color: `hsl(var(--sdk-color))`,
-                      backgroundColor: `hsl(var(--sdk-color)/.3)`,
-                    }}
-                  >
-                    {node.icon}
-                  </Slot>
-                ),
-              };
+
+              // Display only current folder
+              if (pathname.startsWith(`/${dirname}`)) {
+                return {
+                  ...option,
+                  icon: (
+                    <Slot
+                      className="bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
+                      style={{
+                        color: `hsl(var(--sdk-color))`,
+                        backgroundColor: `hsl(var(--sdk-color)/.3)`,
+                      }}
+                    >
+                      {node.icon}
+                    </Slot>
+                  ),
+                };
+              } else return null;
             },
           }
       }}

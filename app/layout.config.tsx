@@ -14,6 +14,10 @@ export const baseOptions: BaseLayoutProps = {
       url: '/sdk/latest',
     },
     {
+      text: 'Connector',
+      url: '/connector/latest',
+    },
+    {
       text: 'Whitepaper',
       url: '/whitepaper',
       active: 'url'
