@@ -1,0 +1,73 @@
+---
+title: Queries and Transactions
+---
+
+import Image from 'next/image';
+
+This section describes how to call queries and apply transactions that you have defined in your Klave application.
+For more information about State Management on Klave, as the definition of a Query and a Transaction, please refer to the [State Management](/concepts/state-management) section.
+
+
+## Query
+
+After having established the connection to Klave, you create a Query object using the api `newQuery` of the `SCP` class.
+This method sets up the necessary handlers and promise structure to manage the query's lifecycle, including handling results and errors.
+
+
+The `newQuery` method takes as arguments the application name, the command name, an optional request id and arguments of the command name if applicable.
+
+| Class  | Operation  | Parameters | Generic Parameters | Returns |
+|--------|------------|------------|---------|----------|
+|`SCP`| `newQuery`  | `app:string, command: string, requestId?: string, args?: Record<string, unknown> \| string` | `<ResultType, ErrorType>` | `Query<ResultType, ErrorType>`|
+
+As an example, we will use the template `hello-world` application provided when scaffolding your first Klave application as described in [create section](/quickstart/create), particularly we will use the query `fetchValue`.
+
+<Tabs items={['TypeScript']}>
+<Tab value="TypeScript">
+```js
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    // We create the new connector context
+    const context = new SCP();
+
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    The default `createKey` method uses the SubtleCrypto library to generate a cryptographic key with ECDSA algorithm and P-256 curve,
+    extractable and whose usages allow to sign and verify.
+</Callout>
+</Tab>
+</Tabs>
+
+<Tabs items={['TypeScript']}>
+<Tab value="TypeScript">
+```js
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    // We create the new connector context
+    const context = new SCP();
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    The default `createKey` method uses the SubtleCrypto library to generate a cryptographic key with ECDSA algorithm and P-256 curve,
+    extractable and whose usages allow to sign and verify.
+</Callout>
+</Tab>
+</Tabs>

@@ -1,0 +1,126 @@
+---
+title: APIs
+---
+
+import Image from 'next/image';
+
+Connecting to Klave is done through the `SCP` class of the connector.
+The `SCP` class is the main entry point to connect to Klave, provides a set of methods to connect to Klave,
+manage the connection and interact with your Klave applications.
+
+
+The connection api of the `SCP` is the `connect` method, which needs a Klave endpoint and
+a cryptographic key. You can either import an existing key or create a new one through our `Key` class.
+
+## Connecting to Klave with an ephemeral key
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```js
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+    
+    // We create the new connector context
+    const context = new SCP();
+    
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    The default `createKey` method uses the SubtleCrypto library to generate a cryptographic key with ECDSA algorithm and P-256 curve,
+    extractable and whose usages allow to sign and verify.
+</Callout>
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    #We create the new connector context
+    context = SCP()
+
+    #We create a new connection key or provide an existing one
+    myKey = await Key.createKey()
+
+    #We start the connection to Klave
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+asyncio.run(main())
+```
+<Callout type="info" emoji="ℹ️">
+    The default `createKey` method uses the python library `cryptography.hazmat` particularly the elliptic curve module
+    to generate a private key with ECDSA algorithm and "secp256r1" curve.
+</Callout>
+</Tab>
+</Tabs>
+
+
+
+
+## Connecting to Klave importing an existing key
+
+Using a pre-defined key or set of keys can be particularly useful as Klave provides through its context the connection key.
+This allows to whitelist in your Klave application a specific key for a specific usage.
+To this end, we provide methods to export/import keys in clear text, or export/import keys in encrypted format.
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```js
+import { SCP } from '@secretarium/connector';
+
+async function main() {
+    
+    // We create the new connector context
+    const context = new SCP();
+    
+    // We create a key and export/import it to/from clear text
+    const myKey1 = await Key.createKey();
+    const myExportedKey = await myKey1.exportKey();
+    const myImportedKey1 = await Key.importKey(myExportedKey);
+
+    // We create a key and export/import it to/from encrypted text
+    const myKey2 = await Key.createKey();
+    const myEncryptedKey = myKey2.seal('password');
+    const myExportedEncryptedKey = await myEncryptedKey.exportEncryptedKey();
+    const myImportedKey2 = await Key.importKey(myExportedEncryptedKey);
+
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myImportedKey2)
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    The `importKey` method assumes the public and private key to be provided in JWK format.
+</Callout>
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    #We create the new connector context
+    context = SCP()
+
+    #We create a new connection key or provide an existing one
+    myKey = await Key.createKey()
+
+    #We start the connection to Klave
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+asyncio.run(main())
+```
+</Tab>
+</Tabs>
+
