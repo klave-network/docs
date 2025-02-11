@@ -19,10 +19,10 @@ a cryptographic key. You can either import an existing key or create a new one t
 import { Key, SCP } from '@secretarium/connector';
 
 async function main() {
-    
+
     // We create the new connector context
     const context = new SCP();
-    
+
     // We create a new connection key or provide an existing one
     const myKey = await Key.createKey()
 
