@@ -1,0 +1,168 @@
+---
+title: Connect
+description: Connect to an app on Klave
+---
+ 
+Once your Klave app is ready and deployed, you will want to leverage it in your applications.
+Klave implements a Secure Connection Protocol ([SCP](/learn/architecture#secure-connection-protocol-scp)) which provides validatable direct access to your applications.
+
+You can refer to the protocol above to implement your own custom connectors.
+However, Klave provides ready-to-use TypeScript and Python connectors that can be utilized on both
+the server and client sides (including web browsers, IoT devices, etc...).
+
+## The basics
+
+To start using Klave's TypeScript connector you will first need to install it from NPM
+<Tabs items={['TypeScript', 'Python']}>
+    <Tab value="TypeScript">
+        <Tabs items={['yarn', 'npm', 'pnpm']}>
+            <Tab value="yarn">
+            ```bash copy
+            yarn add @secretarium/connector
+            ```
+            </Tab>
+            <Tab value="npm">
+            ```bash copy
+            npm install @secretarium/connector
+            ```
+            </Tab>
+            <Tab value="pnpm">
+            ```bash copy
+            pnpm add @secretarium/connector
+            ```
+            </Tab>
+        </Tabs>
+        <Callout type="info" emoji="ℹ️">
+            On the server the **@secretarium/connector** package requires [Node.js](https://nodejs.org) version 20+.
+        </Callout>
+    </Tab>
+    <Tab value="Python">
+        <Tabs items={['pip']}>
+            <Tab value="pip">
+            ```bash copy
+            pip install secretarium-connector
+            ```
+            </Tab>
+        </Tabs>
+        <Callout type="info" emoji="ℹ️">
+            On the server the **secretarium_connector** package requires Python version 3.11.0+.
+        </Callout>
+    </Tab>
+</Tabs>
+
+Once done, you will need to setup a few things to get running. You can see the example code right here:
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```js
+import { SCP } from '@secretarium/connector';
+
+async function main() {
+    
+    // We create the new connector context
+    const context = new SCP();
+    
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    #We create the new connector context
+    context = SCP()
+
+    #We create a new connection key or provide an existing one
+    myKey = await Key.createKey()
+
+    #We start the connection to Klave
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+asyncio.run(main())
+```
+</Tab>
+</Tabs>
+
+From there calling your functions is very easy. Take a look at the example below using the `storeValue`
+and `fetchValue` methods defined in the hello_world app in the Create section:
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```js
+import { SCP, Key } from '@secretarium/connector';
+
+type MyValue = {
+    success: boolean;
+    value: string;
+}
+
+async function main() {
+
+    const context = new SCP();
+    const myKey = await Key.createKey()
+    const connection = await context.connect('wss://on.klave.network', myKey)
+
+    // We reference the name of our application deployment
+    const myAppId = 'your_app.on.klave.network';
+
+    // We load data in our application ledger with a transaction
+    await connection.newTx(myAppId, 'storeValue', { key: 'myKey', value: 'myValue' }).send()
+
+    // We retrieve the data with a query
+    const result = await connection.newQuery<MyValue>(myAppId, 'fetchValue', { key: 'myKey' }).send()
+
+    // We display the data we retreive and see it matches
+    console.log(result); // { "success": true, "value": "myValue" }
+}
+
+main()
+```
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    context = SCP()
+    myKey = await Key.createKey()
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+    #We reference the name of our application deployment
+    myAppId = 'your_app.on.klave.network'
+
+    #Create object to store
+    keyValue1 = {'key':'key1', 'value':'myValue1'}
+
+    #We store the data in our application ledger with the transaction storeValue defined in the application
+    transactionResults = connection.newTx(myAppId, 'storeValue', 'requestId1', keyValue1)
+    await transactionResults.send()
+
+    #We retrieve the data with the query fetchValue defined in the application
+    queryResults = connection.newTx(myAppId, 'fetchValue', 'requestId2', {'key':'key1'})
+
+    #We define a callback function to print the result of the query
+    queryResults.onResult(lambda message: print(f"Query result: {message}"))
+    await queryResults.send()
+
+asyncio.run(main())
+```
+</Tab>
+</Tabs>
+
+Where `your_app.on.klave.network` is the name of your application deployment as per seen in the Klave dashboard.
+
+<div style={{display: "none"}}>
+    For a details view of the connector API, check out the [Connector SDK]() section
+</div>

@@ -1,0 +1,43 @@
+---
+title: Secure Enclaves
+---
+
+import Image from 'next/image';
+
+## Overview
+
+The cornerstorne of [Confidential Computing](/learn/confidential-computing/overview) and a key concept behind Klave are the secure hardware enclaves. Actually the name Klave comes from the word enclave (on-klave, enclave, get it?).
+Klave leverage [Trusted Execution Environments (TEEs)](/learn/confidential-computing/tee) to run your workloads, ensuring that your business logic and data stay confidential and tamper-proof at all times.
+
+### Why Secure Enclaves?
+
+Secure Enclaves are paramount for developers seeking unwavering security assurances for their critical workloads and sensitive data. With Secure Enclaves, developers can ensure that their code and data remain tamper-proof, through a robust [attestation mechanism](/learn/confidential-computing/attestation).
+
+Companies that often need to assure customers about their security measures or be transparent about data handling can rely on Secure Enclave architecture. This allows them to meet the demands of security-conscious customers, making it easier to secure deals and comply with regulations.
+
+Ultimately,
+Secure Enclaves provide the highest level of security for deploying sensitive workloads and managing sensitive data. They provide an execution environment for applications with the insurance that code is run as intended and guarantees that third parties (including the platform provider) cannot alter the code prior to execution and observe it during execution.
+
+### Hardware Based
+
+TEEs are hardware based and platform related. Klave leverage on [Intel SGX](/learn/confidential-computing/tee#intel-sgx) for the TEEs.
+Klave is powered by bare-metal machines located in different datacenters (only in Switzerland at the moment). We do not rely on virtual machines or hypervisor to keep the root of trust as close to the silicon as possible.
+
+### Security and Limitations
+
+TEEs ensure segregation from the host OS by utilizing encrypted memory specifically allocated. Physical access to the server won't allow access, spying, or tampering with this secured memory at all time.
+While enclaves create a secure ecosystem, they have limitations. Communication with enclaves is restricted to using enclave calls (ecall) from the host and obtaining feedback through out calls (ocall). Enclave security actively prevents network calls, resources access (disk, etc.), and OS local access but provides access to powerful cryptographic primitives and leverages CPU speed within a secure environment.
+The Klave platform, through the [Klave SDK](/sdk/latest/create-query-transaction), addresses these limitations by providing essential capabilities to enclaves, including network calls, ledger access, cryptographic primitives, etc.
+
+### A Network of TEEs
+
+TEEs operate at platform level (bare metal machine), to introduce resilience, redundancy and scalability Klave provides a network of TEEs to manage your workload. It means that behind the veil there is a network of TEEs organised and synchronised through a consensus algorithm.
+
+### Zero-Trust
+
+Klave is a zero-trust platform and therefore protect you from interferences of third-party and platform provider (us). All of the above, especially apply to us, we can't spy, access, or tamper with enclaves.
+Your apps deployed within enclave have their own identity from which derives the connection handshake and ledger encryption preventing preventing anybody from being able to decipher your data and payload in transit, in use and at rest.
+
+<Callout type="warn">
+    The zero-trust approach is a paradigm shift that, when not fully grasped, can complicate or entirely hinder standard cloud development practices like logging, debugging, and recovery.
+</Callout>

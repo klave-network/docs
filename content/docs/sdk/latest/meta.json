@@ -1,0 +1,12 @@
+{
+  "title": "Latest version",
+  "description": "SDK v1.0.0 (latest)",
+  "root": true,
+  "icon": "Tag",
+  "pages": [
+    "---Guide---",
+    "index",
+    "---Enclave SDK---",
+    "...(enclave-sdk)"
+  ]
+}

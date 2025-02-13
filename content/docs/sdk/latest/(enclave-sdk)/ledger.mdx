@@ -1,0 +1,50 @@
+---
+title: Storing Data in Ledger
+---
+import Image from 'next/image';
+
+Klave provide access to a Ledger database for your application. The Klave ledger database is tamper-proof NoSQL key-value data-store.
+This key value store allows Klave developers to persist non-relational data across application invocation in a secure and tamper-proof way.
+To learn more about the ledger charateristics, check out [Ledger and Integrity](/learn/ledger-and-integrity).
+
+### Using the Ledger from Applications
+
+The Klave SDK exposes an interface to interact with the ledger.
+
+The set of operations is the following one:
+
+| Class  | Operation  | Parameters | Returns | Behavior |
+|--------|------------|------------|---------|----------|
+|`Ledger`| `getTable`  | name | Table  |Return the ledger table with the specified `name`. If no table exists from the `name` provided, then a new table with this name will be automatically created and returned.|
+|`Table`| `get` | key | value | Get the string value associated with the specified `key` from the specified `Table` as string. |
+|`Table`| `set` | key, value | - | Set the `value` as string associated with the specified `key` in the specified `Table`, overwriting any existing value. |
+|`Table`| `unset` | key | - | Delete the tuple with the specified `key` from the specified `Table`. |
+
+<Callout type="warn">
+    Storing and deleting data are modifying the state of the App ledger. Therefore, operations like `set` and `unset` can be executed only from within a Transactional context.
+</Callout>
+
+In AssemblyScript, the ledger can be accessed through the `Ledger` keyword. For example:
+```js copy
+import { Ledger } from '@klave/sdk';
+
+@serializable
+export class StoreInput {
+    key!: string;
+    value!: string;
+}
+
+/**
+ * @transaction
+ */
+export function storeInLedger(input: StoreInput): void {
+    Ledger.getTable("MY_TABLE").set(input.key, input.value);
+}
+
+/**
+ * @query
+ */
+export function retrieveFromLedger(key: string): void {
+    let value = Ledger.getTable("MY_TABLE").get(key);
+}
+```

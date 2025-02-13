@@ -1,0 +1,8 @@
+{
+  "pages": [
+    "trustless-pass",
+    "trustless-app",
+    "secure-enclave",
+    "state-management"
+  ]
+}

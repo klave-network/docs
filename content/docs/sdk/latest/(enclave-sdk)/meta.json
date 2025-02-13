@@ -1,0 +1,9 @@
+{
+  "pages": [
+    "create-query-transaction",
+    "ledger",
+    "notify",
+    "http-request",
+    "cryptography"
+  ]
+}

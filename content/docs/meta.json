@@ -1,16 +1,21 @@
 {
-	"pages": [
-		"---Guide---",
-		"index",
-		"learn",
-        "---Klave SDK---",
-        "versions",
-        "---Connector---",
-        "connector",
-		"---Support---",
-        "pricing-and-billing",
-		"---Others---",
-        "[Klave](https://klave.com)",
-		"[Secretarium](https://secretarium.com)"
-	]
+  "pages": [
+    "---Introduction---",
+    "index",
+    "what-is-klave",
+    "quickstart",
+    "---Concepts---",
+    "...concepts",
+    "---Development---",
+    "sdk",
+    "connector",
+    "---Learn---",
+    "...learn",
+    "---Support---",
+    "...support",
+    "---Others---",
+    "[Klave](https://klave.com)",
+    "[Secretarium](https://secretarium.com)",
+    "[Newsletter](https://secretarium.com/newsletter)"
+  ]
 }

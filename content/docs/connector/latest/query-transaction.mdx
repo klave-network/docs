@@ -1,0 +1,217 @@
+---
+title: Queries and Transactions
+---
+
+import Image from 'next/image';
+
+This section describes how to call queries and apply transactions that you have defined in your Klave application.
+For more information about State Management on Klave, as the definition of a Query and a Transaction, please refer to the [State Management](/concepts/state-management) section.
+
+
+## Query
+
+<Callout type="info">
+    Query object only exists within the TypeScript connector. When using the Python connector, you can call `@query` methods using the method `newTx`.
+</Callout>
+
+After having established the connection to Klave, you can create a Query object using the api `newQuery` of the `SCP` class.
+This method sets up the necessary handlers and promise structure to manage the query's lifecycle, including handling results and errors. It is only dedicated to routes identified as `@query` in your Klave application.
+
+
+The `newQuery` method takes as arguments the application name, the command name, an optional request id and arguments of the command name if applicable. It return an object `Query<ResultType, ErrorType>`:
+
+### newQuery signature
+
+```ts
+newQuery<ResultType = any, ErrorType = any>(
+    app: string,
+    command: string,
+    requestId?: string,
+    args?: Record<string, unknown> | string
+): Query<ResultType, ErrorType>
+```
+
+### newQuery parameters
+
+- `app`: The address of the application deployed in Klave.
+- `command`: The name of the method to be executed. This method must be defined as `@query` in the Klave application.
+- `requestId`: (optional) Identifier of the request
+- `args`: (optional) Arguments of the query
+
+### Query object
+
+A `Query<ResultType, ErrorType>` object is created with methods to register error and result handlers, and to send the query to the application:
+- `onResult`: Registers a callback to handle the result of the query.
+- `onError`: Registers a callback to handle the error of the query.
+- `send`: Sends the query to the application and returns a promise with the result of the query.
+
+### Example
+We will use the template `hello-world` provided when scaffolding your first Klave application - as described in the [create section](/quickstart/create) - which contains two methods:
+-   A Transaction to store data in the ledger: `storeValue`
+-   A Query to fetch the data stored in the ledger: `fetchValue`
+
+When deploying the `hello-world` application, you will retrieve it in the Deployments section as shown in the image below:
+
+<Image
+	src="/resources/address-honest-app.png"
+	alt="Develop your app"
+	style={{ margin: 'auto', padding: '0rem 0 0rem 0' }}
+	height={300}
+	width={300}
+/>
+
+<Tabs items={['TypeScript']}>
+<Tab value="TypeScript">
+```js
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    const context = new SCP();
+    const myKey = await Key.createKey();
+    const connection = await context.connect('wss://on.klave.network', myKey);
+
+    const app = 'master.785e78ea.hello-world.nico.klave.network';
+    const command = 'fetchValue';
+    const requestId = 'myRequestId';
+    const args = { key: 'myKey' };
+
+    let myOutput : FetchOutput = { success: false, value: '' };
+    let myError: string = '';
+    const query = context.newQuery(app, command, requestId, args)
+        .onError((error: string, requestId: string) => myError = error)
+        .onResult((result: FetchOutput, requestId: string) => myOutput = result);
+
+    let myResults = await query.send();
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    `app` is defined within Klave as the address of the honest application as shown in the image above.
+</Callout>
+</Tab>
+</Tabs>
+
+
+## Transaction
+
+You can only call a `@transaction` method of your Klave application by creating a Transaction object using the api `newTx` of the `SCP` class.
+This method sets up the necessary handlers and promise structure to manage the transaction's lifecycle, including all the events associated with the Transaction management within the Ledger.
+
+<Callout type="info">
+    Methods defined as `@query` or `@transaction` of your Klave application can be both called through a Transaction object using the TypeScript connector, or through a Tx object using the Python connector.
+</Callout>
+
+The `newTx` method takes the same arguments as the method `newQuery`: application name, command name, an optional request id and arguments of the command name if applicable.
+It returns an object `Transaction<ResultType, ErrorType>` or `Tx` respectively in TypeScript and Python:
+
+### newTx signature
+
+<Tabs items={['TypeScript','Python']}>
+<Tab value="TypeScript">
+```ts
+newTx<ResultType = any, ErrorType = any>(
+    app: string,
+    command: string,
+    requestId?: string,
+    args?: Record<string, unknown> | string
+): Transaction<ResultType, ErrorType>
+```
+</Tab>
+<Tab value="Python">
+```py
+newTx(
+    app: str,
+    command: str,
+    requestId: Optional[str] = None,
+    args: Optional[Union[Dict[str, Any], str]] = None
+): Tx()
+```
+</Tab>
+</Tabs>
+
+### Transaction object and associated events
+- TypeScript: `Transaction<ResultType, ErrorType>`
+- Python: `Tx`
+
+Events:
+- `onResult`: Registers a callback to handle the result of the transaction.
+- `onError`: Registers a callback to handle the error of the transaction.
+- `onAcknowledged`: Registers a callback to handle the reception of the transaction by the ledger. Transaction isn't committed yet.
+- `onCommitted`: Registers a callback to handle the commitment of the transaction by the ledger. When received, Transaction is committed to be applied on the ledger in the future.
+- `onExecuted`: Registers a callback to handle the execution of the transaction. When received, the state of the ledger has been modified.
+- `send`: Sends the transaction and returns a promise with the result of the transaction.
+
+### Example
+
+We use again the template `hello-world` provided when scaffolding your first Klave application.
+Instead of querying the ledger, we will now store a new value in the ledger using the transaction `storeValue`.
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```js
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    const context = new SCP();
+    const myKey = await Key.createKey();
+    const connection = await context.connect('wss://on.klave.network', myKey);
+
+    const app = 'master.785e78ea.hello-world.nico.klave.network';
+    const command = 'storeValue';
+    const requestId = 'myTransactionId';
+    const args = { key: 'myKey2', value: 'myValue2' };
+
+    let transacResult : StoreOutput = {success: false};
+    let transacError : string = '';
+    const transac = context.newTx<StoreOutput, string>(app, transacCommand, transacRequestId, transacArgs)
+        .onAcknowledged((requestId: string) => {console.log("transaction acknowledged")})
+        .onCommitted((requestId: string) => {console.log("transaction committed")})
+        .onExecuted((requestId: string) => {console.log("transaction executed")})
+        .onError((error: string, requestId: string) => transacError = error)
+        .onResult((result: StoreOutput, requestId: string) => transacResult = result);
+
+    let myResults = await transac.send();
+}
+
+main()
+```
+<Callout type="info" emoji="ℹ️">
+    `app` is defined within Klave as the address of the honest application as shown in the image above.
+</Callout>
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    context = SCP()
+    myKey = await Key.createKey()
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+    app = 'master.785e78ea.hello-world.nico.klave.network'
+    command = 'storeValue'
+    requestId = 'myTransactionId'
+    args = { key: 'myKey2', value: 'myValue2' }
+
+    myTransaction = connection.newTx(myAppId, 'storeValue', 'requestId1', keyValue1)
+    #define all callbacks
+    myTransaction.onAcknowledged(lambda message: print(f"onAcknowledged: transaction: {message}"))
+    myTransaction.onCommitted(lambda message: print(f"onCommitted: transaction: {message}"))
+    myTransaction.onExecuted(lambda message: print(f"onExecuted: transaction: {message}"))
+    myTransaction.onResult(lambda message: print(f"onResult: transaction: {message}"))
+    myTransaction.onError(lambda message: print(f"onError: transaction: {message}"))
+
+    await myTransaction.send()
+
+asyncio.run(main())
+```
+<Callout type="info" emoji="ℹ️">
+    `app` is defined within Klave as the address of the honest application as shown in the image above.
+</Callout>
+</Tab>
+</Tabs>

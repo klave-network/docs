@@ -1,0 +1,29 @@
+---
+title: Cryptographic APIs
+---
+import Image from 'next/image';
+
+Klave provide access to a cryptographic primitives for your applications. All cryptographic primitives provided by the Klave SDK are hardware accelarated and are always executed from within the secure enclave.
+The SDK exposes two different interfaces that can be used depending on your use cases.
+
+## Simple Crypto Interface
+
+The Simple Crypto interface exposes basic crypto primitives and key management for :
+- Encryption leveraging AES-GCM 256 keys
+- ECDSA leveraging NIST P-256 keys
+- Digest leveraging SHA2
+
+All keys generated are stored in the application ledger and can be reused easily, for more information check here : 
+
+## Subtle Crypto Interface
+
+The Subtle Crypto interface is more advanced and follow loosely the WebCrypto API. With this you can :
+- Create and manage cryptographic key lifecycle (AES, RSA, ECC)
+- Manage encryption and decryption (AES-GCM, RSA-OAEP)
+- Manage signature and verification (ECDSA, RSA-PSS)
+- Manage key wrapping and unwrapping (AES-KW, AES-GCM)
+- Import and export keys with standard format (SPKI, PCKS1, PCKS8, SEC1, RAW)
+- Generate digest
+- Generate randomness
+
+The Subtle Crypto Interface can be use either in the context of queries or transactions as users control the key lifecycle. For more information check here : 

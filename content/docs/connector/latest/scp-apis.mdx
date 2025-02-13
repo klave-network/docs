@@ -1,0 +1,115 @@
+---
+title: SCP APIs
+---
+
+import Image from 'next/image';
+
+This section describes several useful APIs of the SCP class.
+
+## Create SCP with logger, connect, test, close and reset
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```ts
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    // We create the new connector context and provide the console as a logger
+    const context = new SCP({logger: console});
+    // We create a new connection key or provide an existing one
+    const myKey = await Key.createKey()
+    // We start the connection to Klave
+    const connection = await context.connect('wss://on.klave.network', myKey)
+    // Check the connection
+    const isConnected = context.isConnected()
+    // Check the endpoint
+    const endpoint = context.getEndPoint()
+    // Close the connection
+    context.close()
+    // Reset the connection
+    context.reset()
+}
+
+main()
+```
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+     # Create or retrieve a logger named 'typescript.connector'
+    logger = logging.getLogger("typescript.connector")
+    # Set the logging level for this logger
+    logger.setLevel(logging.DEBUG)
+    # Create a file handler
+    file_handler = logging.FileHandler('python_connector.log')
+    file_handler.setLevel(logging.DEBUG)
+    # Create a formatter and set it for the handler
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    # Add the handler to the logger
+    logger.addHandler(file_handler)
+
+    #We create the new connector context with the defined logger
+    context = SCP(SCPOptions(logger))
+    #We create a new connection key or provide an existing one
+    myKey = await Key.createKey()
+    #We start the connection to Klave
+    connection = await context.connect('wss://on.klave.network', myKey)
+    #Check the connection
+    isConnected = context.isConnected()
+    #Check the endpoint
+    endpoint = context.getEndPoint()
+    #Close the connection
+    context.close()
+    #Reset the connection
+    context.reset()
+
+
+asyncio.run(main())
+```
+</Tab>
+</Tabs>
+
+## Callbacks onError and onStateChange
+
+<Tabs items={['TypeScript', 'Python']}>
+<Tab value="TypeScript">
+```ts
+import { Key, SCP } from '@secretarium/connector';
+
+async function main() {
+
+    const context = new SCP();
+    context.onStateChange(state => console.log("SCP new state: " + state));
+    context.onError(err => console.log("SCP error: " + err))
+
+    const myKey = await Key.createKey()
+    const connection = await context.connect('wss://on.klave.network', myKey)
+}
+
+main()
+```
+</Tab>
+<Tab value="Python">
+```py
+import asyncio
+from secretarium_connector import SCP, Key
+
+async def main():
+
+    context = SCP()
+    context.onError(lambda error: print(f"SCP error: {error}"))
+    context.onStateChange(lambda state: print(f"SCP new state: {state}"))
+
+    myKey = await Key.createKey()
+    connection = await context.connect('wss://on.klave.network', myKey)
+
+asyncio.run(main())
+```
+</Tab>
+</Tabs>
