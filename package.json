@@ -15,10 +15,10 @@
         "prepare": "husky"
     },
     "lint-staged": {
-        "**/*.{ts,tsx,js,jsx,json}": [
+        "{app,components,lib,utils}/**/*.{ts,tsx,js,jsx,json}": [
             "next lint --fix"
         ],
-        "**/*.{ts,tsx,js,jsx,json,css,md,html}": [
+        "{app,components,lib,utils}/**/*.{ts,tsx,js,jsx,json,css,md,html}": [
             "prettier --write"
         ]
     },
