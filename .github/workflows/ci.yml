@@ -49,6 +49,3 @@ jobs:
     - name: Install dependencies
       run: |
         yarn install --network-timeout 1000000 --immutable
-
-    - name: Build
-      run: yarn build
