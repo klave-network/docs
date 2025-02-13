@@ -14,14 +14,6 @@
         "dockerize": "docker build --platform linux/amd64 -t secretarium/docs.klave.com:latest .",
         "prepare": "husky"
     },
-    "lint-staged": {
-        "{app,components,lib,utils}/**/*.{ts,tsx,js,jsx,json}": [
-            "next lint --fix"
-        ],
-        "{app,components,lib,utils}/**/*.{ts,tsx,js,jsx,json,css,md,html}": [
-            "prettier --write"
-        ]
-    },
     "dependencies": {
         "@radix-ui/react-icons": "^1.3.0",
         "@radix-ui/react-label": "^2.1.0",
