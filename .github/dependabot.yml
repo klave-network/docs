@@ -1,0 +1,65 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "develop"
+    labels:
+      - "dependencies"
+    groups:
+      lint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "@typescript-eslint/*"
+      dev:
+        patterns:
+          - "commitlint"
+          - "@commitlint/*"
+          - "@swc/*"
+          - "@svgr/webpack"
+          - "esbuild*"
+          - "postcss"
+          - "prettier"
+          - "webpack"
+          - "typscript"
+      test:
+        patterns:
+          - "jsdom"
+          - "sinon-chrome"
+          - "jest*"
+          - "babel-jest"
+          - "detox"
+          - "cypress"
+      sentry:
+        patterns:
+          - "@sentry/*"
+          - "sentry*"
+      babel:
+        patterns:
+          - "babel*"
+          - "@babel/*"
+      vite:
+        patterns:
+          - "@vitejs/"
+          - "@vitest/*"
+          - "vite"
+          - "vitest"
+      types:
+        patterns:
+          - "@types/*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "develop"
+    labels:
+      - "actions"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "develop"
+    labels:
+      - "docker"
