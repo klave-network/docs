@@ -9,413 +9,1060 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 ## Using Subtle Crypto APIs from Applications
 
 ### Generating Keys
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `generateKey` | `algorithm: T, extractable: boolean, usages: string[]` | `Result<CryptoKey, Error>`  | Generate a `CryptoKey` based on the `algorithm` object and usages provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `generateKey` | `algorithm: T, extractable: boolean, usages: string[]` | `Result<CryptoKey, Error>`  | Generate a `CryptoKey` based on the `algorithm` object and usages provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
+        A `CryptoKey` contains the key type and usages and is an handle on the key.
 
-A `CryptoKey` contains the key type and usages and is an handle on the key.
+        ```js copy
+        class CryptoKey extends Key 
+        {
+            algorithm!: string;
+            extractable!: boolean;
+            usages!: string[];
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `generate_key` | `algorithm: GenAlgorithm, extractable: bool, usages: &[&str]` | `Result<CryptoKey, Error>`  | Generate a `CryptoKey` based on the `algorithm` object and usages provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
 
-```js copy
-class CryptoKey extends Key 
-{
-    algorithm!: string;
-    extractable!: boolean;
-    usages!: string[];
-}
-```
+        A `CryptoKey` contains the key type, usages and is an handle on the key.
+
+        ```rust
+        pub struct CryptoKey {
+            id: String,
+            alias: Option<String>,   
+            key_type: String,
+            extractable: bool,
+            family: String,
+            usages: Vec<String>,
+            algorithm: String
+        }
+        ```
+        Depending on the type of key that needs to be generated a `GenAlgorithm` `Enum variants` is passed as parameters.
+
+        ```rust
+        pub enum GenAlgorithm {
+            RsaHashedKeyGenParams(RsaHashedKeyGenParams),
+            EcKeyGenParams(EcKeyGenParams),
+            AesKeyGenParams(AesKeyGenParams),
+        }
+        ```
+    </Tab>
+</Tabs>
+
 #### Generating RSA Key
 
-For generating RSA key, the algorithm object to use is `Crypto.RsaHashedKeyGenParams`.
-
-```js copy
-class RsaHashedKeyGenParams {
-    modulusLength: u32 = 2048; // 2048, 3072, 4096
-    publicExponent: u32 = 65537;
-    hash: string = 'SHA2-256'; // "SHA2-256", "SHA2-384", "SHA2-512"
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        For generating RSA key, the algorithm object to use is `Crypto.RsaHashedKeyGenParams`.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoRSA(): void
-    {
-        // Generate RSA key
-        let rsaKey = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["encrypt", "decrypt", "sign", "verify"]);
-    }
-    ```
+        ```js copy
+        class RsaHashedKeyGenParams {
+            modulusLength: u32 = 2048; // 2048, 3072, 4096
+            publicExponent: u32 = 65537;
+            hash: string = 'SHA2-256'; // "SHA2-256", "SHA2-384", "SHA2-512"
+        }
+        ```
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoRSA(): void
+        {
+            // Generate RSA key
+            let rsaKey = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["encrypt", "decrypt", "sign", "verify"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For generating RSA key, the algorithm object to use is `RsaHashedKeyGenParams`.
+
+        ```rust
+        pub struct RsaHashedKeyGenParams {
+            pub modulus_length: u32, // 2048, 3072, 4096
+            pub public_exponent: u32, // 65537
+            pub hash: String // "SHA2-256", "SHA2-384", "SHA2-512"
+        }
+        ```
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_rsa(input: String) {
+            let rsa_params = subtle::RsaHashedKeyGenParams { 
+                modulus_length: 2048, 
+                public_exponent: 65537,  
+                hash: "SHA2-256"
+            };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt", "sign", "verify"];
+            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 #### Generating EC Key
 
-For generating EC key, the algorithm object to use is `Crypto.EcKeyGenParams`.
-
-```js copy
-export class EcKeyGenParams {
-    namedCurve: string = 'P-256'; // "P-256", "P-384", "P-521"
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        For generating EC key, the algorithm object to use is `Crypto.EcKeyGenParams`.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoEC(): void
-    {
-        // Generate EC key
-        let eccKey = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign", "verify"]);
-    }
-    ```
+        ```js copy
+        export class EcKeyGenParams {
+            namedCurve: string = 'P-256'; // "P-256", "P-384", "P-521"
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoEC(): void
+        {
+            // Generate EC key
+            let eccKey = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign", "verify"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For generating EC key, the algorithm object to use is `EcKeyGenParams`.
+
+        ```rust
+        pub struct EcKeyGenParams {
+            pub named_curve: String // "P-256", "P-384", "P-521"
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_ec(input: String) {
+            let ec_params = subtle::EcKeyGenParams { named_curve: "P-256" };
+            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
+            let gen_algorithm: subtle::GenAlgorithm = ec_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 #### Generating AES Key
 
-For generating AES key, the algorithm object to use is `Crypto.AesKeyGenParams`.
-
-```js copy
-class AesKeyGenParams {
-    length: u32 = 256; // 128, 192, 256
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        For generating AES key, the algorithm object to use is `Crypto.AesKeyGenParams`.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoAES(): void
-    {
-        // Generate AES key
-        let aesKey = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-    }
-    ```
+        ```js copy
+        class AesKeyGenParams {
+            length: u32 = 256; // 128, 192, 256
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoAES(): void
+        {
+            // Generate AES key
+            let aesKey = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For generating AES key, the algorithm object to use is `AesKeyGenParams`.
+
+        ```rust
+        pub struct AesKeyGenParams {
+            pub length: u32 // 128, 192, 256
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_aes(input: String) {
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Data encryption and decryption
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `encrypt` | `algorithm: T, key: CryptoKey, clearText: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Encrypt the `clearText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the cipherText or an `Error`.|
-|`Crypto.Subtle`| `decrypt` | `algorithm: T, key: CryptoKey, cipherText: ArrayBuffer`| `Result<ArrayBuffer, Error>` | Decrypt the `cipherText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the clearText or an `Error`.|
-
-#### AES-GCM
-For encrypting with AES-GCM you need an AES key and to use the `Crypto.AesGcmParams` algorithm object.
-
-```js copy
-class AesGcmParams {
-    iv!: ArrayBuffer; // iv cannot be empty
-    additionalData: ArrayBuffer = new ArrayBuffer(0);
-    tagLength: u32 = 128;
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
 
-    /**
-    * @query
-    */
-    export function subtleCryptoAESGCM(): void
-    {
-        // Generate AES key
-        let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-        let aesKey = aesKeyResult.data as Crypto.CryptoKey;
-        // Generate iv
-        let iv = Crypto.getRandomValues(12);
-        let aesGcmParams = {iv : iv.buffer, additionalData : new ArrayBuffer(0),  tagLength : 128} as Crypto.AesGcmParams;
-        let cipher = Crypto.Subtle.encrypt(aesGcmParams, aesKey, String.UTF8.encode("Hello World"));
-        let clearText = Crypto.Subtle.decrypt(aesGcmParams, aesKey, cipher.data as ArrayBuffer);
+    | Class  | Operation  | Parameters: type | Returns | Behavior |
+    |--------|------------|------------------|---------|----------|
+    |`Crypto.Subtle`| `encrypt` | `algorithm: T, key: CryptoKey, clearText: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Encrypt the `clearText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the cipherText or an `Error`.|
+    |`Crypto.Subtle`| `decrypt` | `algorithm: T, key: CryptoKey, cipherText: ArrayBuffer`| `Result<ArrayBuffer, Error>` | Decrypt the `cipherText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the clearText or an `Error`.|
+
+    </Tab>
+    <Tab value="Rust">
+
+    | Class  | Operation  | Parameters: type | Returns | Behavior |
+    |--------|------------|------------------|---------|----------|
+    |`crypto::subtle`| `encrypt` | `algorithm: EncryptAlgorithm, key: CryptoKey, clearText: [u8]` | `Result<Vec<u8>, Error>`  | Encrypt the `clearText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the cipherText or an `Error`.|
+    |`crypto::subtle`| `decrypt` | `algorithm: EncryptAlgorithm, key: CryptoKey, cipherText: [u8]`| `Result<Vec<u8>, Error>` | Decrypt the `cipherText` with the `algorithm` object and `key`provided. Return an `ArrayBuffer` containing the clearText or an `Error`.|
+    
+    Depending on the type of encryption that needs to be done an `EncryptAlgorithm` `Enum variants` is passed as parameters.
+
+    ```rust
+    pub enum EncryptAlgorithm {
+        RsaOaepEncryptionMetadata(RsaOaepEncryptionMetadata),
+        AesGcmParams(AesGcmParams),
     }
     ```
     </Tab>
 </Tabs>
 
-#### RSA-OAEP
-For encrypting with RSA-OAEP you need an RSA key and to use the `Crypto.RsaOaepParams` algorithm object.
+#### AES-GCM
 
-```js copy
-export class RsaOaepParams {
-    label: ArrayBuffer = new ArrayBuffer(0);
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        For encrypting with AES-GCM you need an AES key and to use the `Crypto.AesGcmParams` algorithm object.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoRSAOAEP(): void
-    {
-        // Generate RSA key
-        let rsakeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["encrypt", "decrypt"]);
-        let rsaKey = rsakeyResult.data as Crypto.CryptoKey;
-        // Encrypt and Decrypt
-        let rsaOaepParams = {label : new ArrayBuffer(0)} as Crypto.RsaOaepParams;
-        let cipher = Crypto.Subtle.encrypt(rsaOaepParams, rsaKey, String.UTF8.encode("Hello World"));
-        let clearText = Crypto.Subtle.decrypt(rsaOaepParams, rsaKey, cipher.data as ArrayBuffer);
-    }
-    ```
+        ```js copy
+        class AesGcmParams {
+            iv!: ArrayBuffer; // iv cannot be empty
+            additionalData: ArrayBuffer = new ArrayBuffer(0);
+            tagLength: u32 = 128;
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoAESGCM(): void
+        {
+            // Generate AES key
+            let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+            let aesKey = aesKeyResult.data as Crypto.CryptoKey;
+            // Generate iv
+            let iv = Crypto.getRandomValues(12);
+            let aesGcmParams = {iv : iv.buffer, additionalData : new ArrayBuffer(0),  tagLength : 128} as Crypto.AesGcmParams;
+            let cipher = Crypto.Subtle.encrypt(aesGcmParams, aesKey, String.UTF8.encode("Hello World"));
+            let clearText = Crypto.Subtle.decrypt(aesGcmParams, aesKey, cipher.data as ArrayBuffer);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For encrypting with AES-GCM you need an AES key and to use the `Crypto.AesGcmParams` algorithm object.
+
+        ```rust
+        pub struct AesGcmParams {
+            pub iv: Vec<u8>, // iv cannot be empty
+            pub additional_data: Vec<u8>,
+            pub tag_length: u32
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_aes_gcm(input: String) {
+            // Generate AES key
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate IV
+            let random_bytes = match klave::crypto::random::get_random_bytes(12) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            //Generate GCM parameters
+            let aes_params = subtle::AesGcmParams { 
+                iv: &random_bytes,
+                additionalData: vec![],
+                tagLength: 128
+            };
+            let crypt_algorithm: subtle::EncryptAlgorithm = aes_params.into();
+
+            // Encrypt
+            let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            
+            // Decrypt
+            let decrypted_text = match subtle::decrypt(&crypt_algorithm, &crypto_key, &encrypted_text) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
+#### RSA-OAEP
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        For encrypting with RSA-OAEP you need an RSA key and to use the `Crypto.RsaOaepParams` algorithm object.
+
+        ```js copy
+        export class RsaOaepParams {
+            label: ArrayBuffer = new ArrayBuffer(0);
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoRSAOAEP(): void
+        {
+            // Generate RSA key
+            let rsakeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["encrypt", "decrypt"]);
+            let rsaKey = rsakeyResult.data as Crypto.CryptoKey;
+            // Encrypt and Decrypt
+            let rsaOaepParams = {label : new ArrayBuffer(0)} as Crypto.RsaOaepParams;
+            let cipher = Crypto.Subtle.encrypt(rsaOaepParams, rsaKey, String.UTF8.encode("Hello World"));
+            let clearText = Crypto.Subtle.decrypt(rsaOaepParams, rsaKey, cipher.data as ArrayBuffer);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For encrypting with RSA-OAEP you need an RSA key and to use the `RsaOaepParams` algorithm object.
+
+        ```rust
+        pub struct RsaOaepParams {
+            pub label: Vec<u8>
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_rsa_oaep(input: String) {
+            // Generate RSA key
+            let rsa_params = subtle::RsaHashedKeyGenParams { 
+                modulus_length: 2048, 
+                public_exponent: 65537,  
+                hash: "SHA2-256"
+            };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Encrypt
+            let rsa_oaep_params = subtle::RsaOaepParams { label: vec![] };
+            let crypt_algorithm: subtle::EncryptAlgorithm = rsa_oaep_params.into();
+            let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            
+            // Decrypt
+            let decrypted_text = match subtle::decrypt(&crypt_algorithm, &crypto_key, &encrypted_text) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Signing and Verifying
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `sign` | `algorithm: T, key: CryptoKey, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Sign the `data` with the `algorithm` object and `key` provided. Return an `ArrayBuffer` containing the signature or an `Error`.|
-|`Crypto.Subtle`| `verify` | `algorithm: T, key: CryptoKey, data: ArrayBuffer, signature: ArrayBuffer`| `Result<Crypto.SignatureVerification, Error>` | Verify the `signature` against the `data` with the `algorithm` object and `key` provided. Return an `Crypto.SignatureVerification` containing a boolean or an `Error`.|
-
-#### ECDSA
-For ECDSA signature you need an EC key pair and to use the `Crypto.EcdsaParams` algorithm object.
-
-```js copy
-export class EcdsaParams {
-    hash: string = 'SHA2-256'; // "SHA2-256", "SHA2-384", "SHA2-512"
-}
-```
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
 
-    /**
-    * @query
-    */
-    export function subtleCryptoECDSA(): void
-    {
-        // Generate EC key
-        let eccKeyResult = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign", "verify"]);
-        let eccKey = eccKeyResult.data as Crypto.CryptoKey;
-        // Sign and Verify
-        let ecdsaParams = {hash: "SHA2-256"} as Crypto.EcdsaParams;
-        let signEcc = Crypto.Subtle.sign(ecdsaParams, eccKey, String.UTF8.encode("Hello World"));
-        let verifyEcc = Crypto.Subtle.verify(ecdsaParams, eccKey, String.UTF8.encode("Hello World"), signEcc.data as ArrayBuffer);
-        let verification = verifyEcc.data as SignatureVerification;
-        // Validate signature : if(verification.isValid) ...
+    | Class  | Operation  | Parameters: type | Returns | Behavior |
+    |--------|------------|------------------|---------|----------|
+    |`Crypto.Subtle`| `sign` | `algorithm: T, key: CryptoKey, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Sign the `data` with the `algorithm` object and `key` provided. Return an `ArrayBuffer` containing the signature or an `Error`.|
+    |`Crypto.Subtle`| `verify` | `algorithm: T, key: CryptoKey, data: ArrayBuffer, signature: ArrayBuffer`| `Result<Crypto.SignatureVerification, Error>` | Verify the `signature` against the `data` with the `algorithm` object and `key` provided. Return an `Crypto.SignatureVerification` containing a boolean or an `Error`.|
+    
+    </Tab>
+    <Tab value="Rust">
+
+    | Class  | Operation  | Parameters: type | Returns | Behavior |
+    |--------|------------|------------------|---------|----------|
+    |`crypto::subtle`| `sign` | `algorithm: SignAlgorithm, key: CryptoKey, data: [u8]` | `Result<Vec<u8>, Error>`  | Sign the `data` with the `algorithm` object and `key` provided. Return an `Vec<u8>` containing the signature or an `Error`.|
+    |`crypto::subtle`| `verify` | `algorithm: SignAlgorithm, key: CryptoKey, data: [u8], signature: [u8]`| `Result<VerifySignResult, Error>` | Verify the `signature` against the `data` with the `algorithm` object and `key` provided. Return an `VerifySignResult` containing a bool or an `Error`.|
+    
+    Depending on the type of signature that needs to be done a `SignAlgorithm` `Enum variants` is passed as parameters.
+
+    ```rust
+    pub enum SignAlgorithm {
+        EcdsaParams(EcdsaParams),
+        RsaPssParams(RsaPssParams),
     }
     ```
+    </Tab>
+</Tabs>
+
+#### ECDSA
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        For ECDSA signature you need an EC key pair and to use the `Crypto.EcdsaParams` algorithm object.
+
+        ```js copy
+        export class EcdsaParams {
+            hash: string = 'SHA2-256'; // "SHA2-256", "SHA2-384", "SHA2-512"
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoECDSA(): void
+        {
+            // Generate EC key
+            let eccKeyResult = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign", "verify"]);
+            let eccKey = eccKeyResult.data as Crypto.CryptoKey;
+            // Sign and Verify
+            let ecdsaParams = {hash: "SHA2-256"} as Crypto.EcdsaParams;
+            let signEcc = Crypto.Subtle.sign(ecdsaParams, eccKey, String.UTF8.encode("Hello World"));
+            let verifyEcc = Crypto.Subtle.verify(ecdsaParams, eccKey, String.UTF8.encode("Hello World"), signEcc.data as ArrayBuffer);
+            let verification = verifyEcc.data as SignatureVerification;
+            // Validate signature : if(verification.isValid) ...
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For ECDSA signature you need an EC key pair and to use the `EcdsaParams` algorithm object.
+
+        ```rust
+        pub struct EcdsaParams {
+            pub hash: String // "SHA2-256", "SHA2-384", "SHA2-512"
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_ecdsa(input: String) {
+            // Generate Key
+            let ec_params = subtle::EcKeyGenParams { named_curve: "P-256" };
+            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
+            let gen_algorithm: subtle::GenAlgorithm = ec_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            // Sign
+            let sign_ec_params = subtle::EcdsaParams { hash: "SHA2-256" };
+            let sign_algorithm: subtle::SignAlgorithm = sign_ec_params.into();
+            let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            // Verify
+            let verify_result = match subtle::verify(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes(), &signature) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            if verify_result.is_valid() {
+                klave::notifier::notify("Verified");
+            }
+            else {
+                klave::notifier::notify("Not Verified");
+            }
+        }
+        ```
     </Tab>
 </Tabs>
 
 #### RSA-PSS
-For RSA-PSS signature you need an RSA key pair and to use the `Crypto.RsaPssParams` algorithm object.
-
-```js copy
-export class RsaPssParams {
-    saltLength: u32 = 0;
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        For RSA-PSS signature you need an RSA key pair and to use the `Crypto.RsaPssParams` algorithm object.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoRSAPSS(): void
-    {
-        // Generate RSA key
-        let rsaKeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["sign", "verify"]);
-        let rsaKey = rsaKeyResult.data as Crypto.CryptoKey;
-        // Sign and Verify
-        let rsaPssParams = {saltLength: 32} as Crypto.RsaPssParams;
-        let signRsa = Crypto.Subtle.sign(rsaPssParams, rsaKey, String.UTF8.encode("Hello World"));
-        let verifyRsa = Crypto.Subtle.verify(rsaPssParams, rsaKey, String.UTF8.encode("Hello World"), signRsa.data as ArrayBuffer);
-        let verification = verifyRsa.data as SignatureVerification;
-        // Validate signature : if(verification.isValid) ...
-    }
-    ```
+        ```js copy
+        export class RsaPssParams {
+            saltLength: u32 = 0;
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoRSAPSS(): void
+        {
+            // Generate RSA key
+            let rsaKeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["sign", "verify"]);
+            let rsaKey = rsaKeyResult.data as Crypto.CryptoKey;
+            // Sign and Verify
+            let rsaPssParams = {saltLength: 32} as Crypto.RsaPssParams;
+            let signRsa = Crypto.Subtle.sign(rsaPssParams, rsaKey, String.UTF8.encode("Hello World"));
+            let verifyRsa = Crypto.Subtle.verify(rsaPssParams, rsaKey, String.UTF8.encode("Hello World"), signRsa.data as ArrayBuffer);
+            let verification = verifyRsa.data as SignatureVerification;
+            // Validate signature : if(verification.isValid) ...
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For RSA-PSS signature you need an RSA key pair and to use the `RsaPssParams` algorithm object.
+
+        ```rust
+        pub struct RsaPssParams {
+            pub salt_length: u32
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_rsa_pss(input: String) {
+            // Generate RSA key
+            let rsa_params = subtle::RsaHashedKeyGenParams { 
+                modulus_length: 2048, 
+                public_exponent: 65537,  
+                hash: "SHA2-256"
+            };
+            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
+            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            // Sign
+            let sign_rsa_params = subtle::RsaPssParams { salt_length: 0 };
+            let sign_algorithm: subtle::SignAlgorithm = sign_rsa_params.into();
+            let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+            // Verify
+            let verify_result = match subtle::verify(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes(), &signature) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            if verify_result.is_valid() {
+                klave::notifier::notify("Verified");
+            }
+            else {
+                klave::notifier::notify("Not Verified");
+            }
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Key wrapping
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `wrapKey` | `format: string, key: CryptoKey, wrappingKey: CryptoKey, wrapAlgo: T` | `Result<ArrayBuffer, Error>`  | Wrap the `key`in the `format` specified with the `wrappingKey` using the wrapping `algorithm`. Return an `ArrayBuffer` containing the wrapped key or an `Error`.|
+        |`Crypto.Subtle`| `unwrapKey` | `format: string, wrappedKey: ArrayBuffer, unwrappingKey: CryptoKey, unwrapAlgo: T, unwrappedKeyAlgo: E, extractable: boolean, usages: string[]`| `Result<CryptoKey, Error>` | Unwrap the `wrappedKey` wrapped in the `format` with the `unwrappingKey` and `unwrapAlgo` and create a `Cryptokey` with the specified `unwrappedKeyAlgo` and parameters. Return a result set containing a `Crypto.CryptoKey` or an `Error`.|
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `wrapKey` | `format: string, key: CryptoKey, wrappingKey: CryptoKey, wrapAlgo: T` | `Result<ArrayBuffer, Error>`  | Wrap the `key`in the `format` specified with the `wrappingKey` using the wrapping `algorithm`. Return an `ArrayBuffer` containing the wrapped key or an `Error`.|
-|`Crypto.Subtle`| `unwrapKey` | `format: string, wrappedKey: ArrayBuffer, unwrappingKey: CryptoKey, unwrapAlgo: T, unwrappedKeyAlgo: E, extractable: boolean, usages: string[]`| `Result<CryptoKey, Error>` | Unwrap the `wrappedKey` wrapped in the `format` with the `unwrappingKey` and `unwrapAlgo` and create a `Cryptokey` with the specified `unwrappedKeyAlgo` and parameters. Return a result set containing a `Crypto.CryptoKey` or an `Error`.|
+        Format that can be used depending on the key you want to wrap/unwrap are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `wrap_key` | `format: string, key: CryptoKey, wrapping_key: CryptoKey, algorithm: WrapAlgorithm` | `Result<Vec<u8>, Error>`  | Wrap the `key`in the `format` specified with the `wrapping_key` using the wrapping `algorithm`. Return an `Vec<u8>` containing the wrapped key or an `Error`.|
+        |`crypto::subtle`| `unwrap_key` | `format: string, wrappedKey: [u8], unwrapping_key: CryptoKey, unwrap_algorithm: WrapAlgorithm, unwrapped_key_algorithm: GenAlgorithm, extractable: bool, usages: [&str]`| `Result<CryptoKey, Error>` | Unwrap the `wrapped_key` wrapped in the `format` with the `unwrapping_key` and `unwrap_algorithm` and create a `Cryptokey` with the specified `unwrapped_key_algorithm` and parameters. Return a result set containing a `CryptoKey` or an `Error`.|
 
-Format that can be used depending on the key you want to wrap/unwrap are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
+        Depending on the type of wrapping that needs to be done a `WrapAlgorithm` `Enum variants` is passed as parameters.
+
+        ```rust
+        pub enum WrapAlgorithm {
+            RsaOaepParams(RsaOaepParams),
+            AesGcmParams(AesGcmParams),
+            NamedAlgorithm(NamedAlgorithm),
+        }
+        ```
+        Format that can be used depending on the key you want to wrap/unwrap are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
+    </Tab>
+</Tabs>
 
 #### AES-KW
-To wrap and unwrap key with AES-KW you will need an AES key, a key to wrap and to use `NamedAlgorithm`.
-
-```js copy
-export class NamedAlgorithm {
-    name!: string;
-}
-```
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        To wrap and unwrap key with AES-KW you will need an AES key, a key to wrap and to use `NamedAlgorithm`.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoAESKW(): void
-    {
-        // Generate wrapping AES key
-        let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["wrap_key", "unwrap_key"]);
-        let aesKey = aesKeyResult.data as Crypto.CryptoKey;
+        ```js copy
+        export class NamedAlgorithm {
+            name!: string;
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
 
-        // Generate AES key to wrap
-        let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-        let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+        /**
+        * @query
+        */
+        export function subtleCryptoAESKW(): void
+        {
+            // Generate wrapping AES key
+            let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["wrap_key", "unwrap_key"]);
+            let aesKey = aesKeyResult.data as Crypto.CryptoKey;
 
-        // Wrap and Unwrap
-        let aesKwParams = {name: "AES-KW"} as Crypto.NamedAlgorithm;
-        let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, aesKey, aesKwParams);
-        let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, aesKey, aesKwParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-    }
-    ```
+            // Generate AES key to wrap
+            let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+            let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+
+            // Wrap and Unwrap
+            let aesKwParams = {name: "AES-KW"} as Crypto.NamedAlgorithm;
+            let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, aesKey, aesKwParams);
+            let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, aesKey, aesKwParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        To wrap and unwrap key with AES-KW you will need an AES key, a key to wrap and to use `NamedAlgorithm`.
+
+        ```rust
+        pub struct NamedAlgorithm {
+            pub name: String
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_aes_kw(input: String) {
+            // Generate wrapping AES key
+            let aes_params_wrap_key = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
+            let gen_algorithm_wrap_key: subtle::GenAlgorithm = aes_params_wrap_key.into();
+            let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate AES key to wrap
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Wrap
+            let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &subtle::NamedAlgorithm { name: "AES-KW".to_string() }.into()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Unwrap
+            let unwrapped_key = match subtle::unwrap_key(&"raw", &wrapped_key, &wrapping_key, 
+                &subtle::NamedAlgorithm { name: "AES-KW".to_string() }.into(), 
+                &gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 #### AES-GCM
-To wrap and unwrap key with AES-GCM you will need an AES key, a key to wrap and to use `Crypto.AesGcmParams` algorithm object.
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        To wrap and unwrap key with AES-GCM you will need an AES key, a key to wrap and to use `Crypto.AesGcmParams` algorithm object.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoAESGCM(): void
-    {
-        // Generate wrapping AES key
-        let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["wrap_key", "unwrap_key"]);
-        let aesKey = aesKeyResult.data as Crypto.CryptoKey;
+        ```js copy
+        import { Crypto } from '@klave/sdk';
 
-        // Generate AES key to wrap
-        let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-        let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+        /**
+        * @query
+        */
+        export function subtleCryptoAESGCM(): void
+        {
+            // Generate wrapping AES key
+            let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["wrap_key", "unwrap_key"]);
+            let aesKey = aesKeyResult.data as Crypto.CryptoKey;
 
-        // Wrap and Unwrap
-        let iv = Crypto.getRandomValues(12);
-        let aesGcmParams = {iv : iv.buffer, additionalData : new ArrayBuffer(0),  tagLength : 128} as Crypto.AesGcmParams;
-        let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, aesKey, aesGcmParams);
-        let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, aesKey, aesGcmParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-    }
-    ```
+            // Generate AES key to wrap
+            let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+            let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+
+            // Wrap and Unwrap
+            let iv = Crypto.getRandomValues(12);
+            let aesGcmParams = {iv : iv.buffer, additionalData : new ArrayBuffer(0),  tagLength : 128} as Crypto.AesGcmParams;
+            let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, aesKey, aesGcmParams);
+            let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, aesKey, aesGcmParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        To wrap and unwrap key with AES-GCM you will need an AES key, a key to wrap and to use `AesGcmParams` algorithm object.
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_aes_gcm_wrap(input: String) {
+            // Generate wrapping AES key
+            let aes_params_wrap_key = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
+            let gen_algorithm_wrap_key: subtle::GenAlgorithm = aes_params_wrap_key.into();
+            let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate AES key to wrap
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate IV
+            let random_bytes = match klave::crypto::random::get_random_bytes(12) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            //Generate GCM parameters
+            let aes_gcm_params = subtle::AesGcmParams { 
+                iv: &random_bytes,
+                additionalData: vec![],
+                tagLength: 128
+            };
+            let wrapping_algorithm: subtle::WrapAlgorithm = aes_params.into();
+
+            // Wrap
+            let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Unwrap
+            let unwrapped_key = match subtle::unwrap_key(&"raw", &wrapped_key, &wrapping_key, 
+                &wrapping_algorithm, 
+                &gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 #### RSA-OAEP
-To wrap and unwrap key with RSA-OAEP you will need an RSA key, a key to wrap and to use `Crypto.RsaOaepParams` algorithm object.
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        To wrap and unwrap key with RSA-OAEP you will need an RSA key, a key to wrap and to use `Crypto.RsaOaepParams` algorithm object.
 
-    /**
-    * @query
-    */
-    export function subtleCryptoRSAOAEP(): void
-    {
-        // Generate wrapping RSA key
-        let rsakeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["wrap_key", "unwrap_key"]);
-        let rsaKey = rsakeyResult.data as Crypto.CryptoKey;
+        ```js copy
+        import { Crypto } from '@klave/sdk';
 
-        // Generate AES key to wrap
-        let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-        let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+        /**
+        * @query
+        */
+        export function subtleCryptoRSAOAEP(): void
+        {
+            // Generate wrapping RSA key
+            let rsakeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["wrap_key", "unwrap_key"]);
+            let rsaKey = rsakeyResult.data as Crypto.CryptoKey;
 
-        // Wrap and Unwrap
-        let rsaOaepParams = {label : new ArrayBuffer(0)} as Crypto.RsaOaepParams;
-        let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, rsaKey, rsaOaepParams);
-        let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, rsaKey, rsaOaepParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-    }
-    ```
+            // Generate AES key to wrap
+            let aesKeyToWrapResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+            let aesKeyToWrap = aesKeyToWrapResult.data as Crypto.CryptoKey;
+
+            // Wrap and Unwrap
+            let rsaOaepParams = {label : new ArrayBuffer(0)} as Crypto.RsaOaepParams;
+            let wrappedKeyResult = Crypto.Subtle.wrapKey("raw", aesKeyToWrap, rsaKey, rsaOaepParams);
+            let unwrappedKeyResult = Crypto.Subtle.unwrapKey("raw", wrappedKeyResult.data, rsaKey, rsaOaepParams, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        To wrap and unwrap key with RSA-OAEP you will need an RSA key, a key to wrap and to use `RsaOaepParams` algorithm object.
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_rsa_oaep_wrap(input: String) {
+            // Generate wrapping RSA key
+            let rsa_params_wrap_key = subtle::RsaHashedKeyGenParams { 
+                modulus_length: 2048, 
+                public_exponent: 65537,  
+                hash: "SHA2-256"
+            };
+            let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
+            let gen_algorithm_wrap_key: subtle::GenAlgorithm = rsa_params_wrap_key.into();
+            let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate AES key to wrap
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            //Generate RSA-OAEP parameters
+            let rsa_oaep_params = subtle::RsaOaepParams { label: vec![] };
+            let wrapping_algorithm: subtle::WrapAlgorithm = rsa_oaep_params.into();
+
+            // Wrap
+            let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Unwrap
+            let unwrapped_key = match subtle::unwrap_key(&"raw", &wrapped_key, &wrapping_key, 
+                &wrapping_algorithm, 
+                &gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Importing and Exporting key
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `importKey` | `format: string, keyData: ArrayBuffer, algorithm: T, extractable: boolean, usages: string[]` | `Result<CryptoKey, Error>` | Import a key from the `keyData`in the `format` specified. Return a result set containing the `CryptoKey` or an `Error`.|
-|`Crypto.Subtle`| `exportKey` | `format: string, key: CryptoKey`| `Result<ArrayBuffer, Error>` | Export the `key` in the specified `format`. Return a result set containing a `ArrayBuffer` of the exported key or an `Error`.|
-
-Depending on the type of Key to export or import the format to use are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
-
-If the key is not `extractable` then export will fail.
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `importKey` | `format: string, keyData: ArrayBuffer, algorithm: T, extractable: boolean, usages: string[]` | `Result<CryptoKey, Error>` | Import a key from the `keyData`in the `format` specified. Return a result set containing the `CryptoKey` or an `Error`.|
+        |`Crypto.Subtle`| `exportKey` | `format: string, key: CryptoKey`| `Result<ArrayBuffer, Error>` | Export the `key` in the specified `format`. Return a result set containing a `ArrayBuffer` of the exported key or an `Error`.|
 
-    /**
-    * @query
-    */
-    export function subtleCryptoExportImportKey(): void
-    {
-        // Generate AES key to export
-        let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-        let aesKey = aesKeyResult.data as Crypto.CryptoKey;
+        Depending on the type of Key to export or import the format to use are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
 
-        // Export and Import
-        let aesKeyExport = Crypto.Subtle.exportKey("raw", aesKey);
-        let importedAesKey = Crypto.Subtle.importKey("raw", aesKeyExport.data, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
-    }
-    ```
+        If the key is not `extractable` then export will fail.
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoExportImportKey(): void
+        {
+            // Generate AES key to export
+            let aesKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+            let aesKey = aesKeyResult.data as Crypto.CryptoKey;
+
+            // Export and Import
+            let aesKeyExport = Crypto.Subtle.exportKey("raw", aesKey);
+            let importedAesKey = Crypto.Subtle.importKey("raw", aesKeyExport.data, {length: 256} as Crypto.AesKeyGenParams, true, ["encrypt", "decrypt"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `import_key` | `format: string, keyData: [u8], algorithm: GenAlgorithm, extractable: bool, usages: [&str]` | `Result<CryptoKey, Error>` | Import a key from the `keyData`in the `format` specified. Return a result set containing the `CryptoKey` or an `Error`.|
+        |`crypto::subtle`| `export_key` | `format: string, key: CryptoKey`| `Result<Vec<u8>, Error>` | Export the `key` in the specified `format`. Return a result set containing a `Vec<u8>` of the exported key or an `Error`.|
+
+        Depending on the type of Key to export or import the format to use are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
+
+        If the key is not `extractable` then export will fail.
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_export_import_key(input: String) {
+            // Generate AES key
+            let aes_params = subtle::AesKeyGenParams { length: 256 };
+            let key_usages: Vec<&str> = vec!["encrypt", "decrypt"];
+            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Export the Key
+            let exported_key = match subtle::export_key("raw", &crypto_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+
+            // Import the Key
+            let imported_key = match subtle::import_key("raw", &exported_key, &gen_algorithm, true, &key_usages) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            }
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Making data digest
-
-The interface can be accessed through the `Crypto.SHA` keyword and is compatible with SHA2 and SHA3 digest.
-
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.Subtle`| `digest` | `algorithm: string, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<ArrayBuffer, Error>` containing either the digest in an `ArrayBuffer` or an `Error`.|
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        The interface can be accessed through the `Crypto.SHA` keyword and is compatible with SHA2 and SHA3 digest.
 
-    /**
-    * @query
-    */
-    export function CryptoSHA_Test(): void
-    {
-        let data = String.UTF8.encode("Hello World");
-        let sha256 = Crypto.Subtle.digest("SHA2-256", data);
-        let sha384 = Crypto.Subtle.digest("SHA2-384", data);
-        let sha512 = Crypto.Subtle.digest("SHA2-512", data);
-        let sha3_256 = Crypto.Subtle.digest("SHA3-256", data);
-        let sha3_384 = Crypto.Subtle.digest("SHA3-384", data);
-        let sha3_512 = Crypto.Subtle.digest("SHA3-512", data);
-    }
-    ```
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `digest` | `algorithm: string, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<ArrayBuffer, Error>` containing either the digest in an `ArrayBuffer` or an `Error`.|
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function CryptoSHA_Test(): void
+        {
+            let data = String.UTF8.encode("Hello World");
+            let sha256 = Crypto.Subtle.digest("SHA2-256", data);
+            let sha384 = Crypto.Subtle.digest("SHA2-384", data);
+            let sha512 = Crypto.Subtle.digest("SHA2-512", data);
+            let sha3_256 = Crypto.Subtle.digest("SHA3-256", data);
+            let sha3_384 = Crypto.Subtle.digest("SHA3-384", data);
+            let sha3_512 = Crypto.Subtle.digest("SHA3-512", data);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `digest` | `algorithm: string, data: [u8]` | `Result<Vec<u8>, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<Vec<u8>, Error>` containing either the digest in an `Vec<u8>` or an `Error`.|
+
+        ```rust
+        use klave::{self, crypto::subtle}
+
+        fn digest(input: String) {
+            // Digest : SHA2-256, SHA2-384, SHA2-512, SHA3-256, SHA3-384, SHA3-512
+            let digest = match sha::digest("SHA2-256", &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {                
+                    klave::notifier::notify(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>

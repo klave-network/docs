@@ -12,46 +12,75 @@ This means that you can send real-time notifications from within your transactio
 Sending back notifications is the only way to return any payload from your transaction and query business logic.
 Klave SDK provides a simple interface to create and send notifications.
 
-The available set of operations is the following one:
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The available set of operations is the following one:
 
-| Class  | Operation  | Parameters | Returns | Behavior |
-|--------|------------|------------|---------|----------|
-|`Notifier`| `sendJson`  | message | -  | Notify the json object passed as parameter |
-|`Notifier`| `sendString` | message | - | Notify the `string` passed as parameter |
-|`Notifier`| `sendArrayBuffer` | message | - | Notify the `ArrayBuffer` passed as parameter |
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`Notifier`| `sendJson`  | message | -  | Notify the json object passed as parameter |
+        |`Notifier`| `sendString` | message | - | Notify the `string` passed as parameter |
+        |`Notifier`| `sendArrayBuffer` | message | - | Notify the `ArrayBuffer` passed as parameter |
 
 
-In AssemblyScipt, the notification manager can be accessed through the `Notifier` keyword. Notifications can be used within query or transaction context.
-For example:
-```js copy
-import { Notifier } from '@klave/sdk';
+        In AssemblyScipt, the notification manager can be accessed through the `Notifier` keyword. Notifications can be used within query or transaction context.
+        For example:
+        ```js copy
+        import { Notifier } from '@klave/sdk';
 
-@serializable
-export class StoreInput {
-    key!: string;
-    value!: string;
-}
+        @serializable
+        export class StoreInput {
+            key!: string;
+            value!: string;
+        }
 
-@serializable
-export class FetchOutput {
-    success!: boolean;
-    value!: string;
-}
+        @serializable
+        export class FetchOutput {
+            success!: boolean;
+            value!: string;
+        }
 
-/**
-* @query
-*/
-export function notifyExample(input: StoreInput): void {
-    //Returning the input back
-    Notifier.sendJson<StoreInput>(input); 
-            
-    //Returning a json back
-    Notifier.sendJson<FetchOutput>({
-        success: true,
-        input.value
-    });
+        /**
+        * @query
+        */
+        export function notifyExample(input: StoreInput): void {
+            //Returning the input back
+            Notifier.sendJson<StoreInput>(input); 
+                    
+            //Returning a json back
+            Notifier.sendJson<FetchOutput>({
+                success: true,
+                input.value
+            });
 
-    //Returning a string back
-    Notifier.sendString("Notify me!"); ;
-}
-```        
+            //Returning a string back
+            Notifier.sendString("Notify me!"); ;
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The available set of operations is the following one:
+
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`notifier`| `send_json`  | message | -  | Notify the json object passed as parameter |
+        |`notifier`| `notify`   | message | - | Notify the `string` passed as parameter |
+        |`notifier`| `notify_error` | message | - | Notify the error `string` passed as parameter |
+
+
+        In Rust, the notification manager can be accessed through the `notifier`. Notifications can be used within query or transaction context.
+        For example:
+        ```rust
+        use klave;
+
+        fn notify_example(cmd: String){
+            klave::notifier::notify("notifying");
+        }
+
+        fn notify_error_example(cmd: String){
+            klave::notifier::notify_error("error");
+        }
+
+        ```
+    </Tab>
+</Tabs>        
