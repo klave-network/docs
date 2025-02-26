@@ -74,18 +74,18 @@ Klave SDK provides a simple interface to create and send HTTP request from your 
                 .method("POST")
                 .uri(input)
                 .header("Content-Type", "application/json")
-                .body("")
+                .body(String::from(""))
                 .unwrap();
         
             let response = match klave::https::request(&https_request) {
                 Ok(r) => r,
                 Err(e) => {
-                    klave::notifier::notify_error(&format!("https_query {} failure: {}", https_request.body(), e));
+                    klave::notifier::send_string(&format!("https_query {} failure: {}", https_request.body(), e));
                     return
                 }
             };        
 
-            klave::notifier::notify(&response.body());    
+            klave::notifier::send_string(&response.body());    
         }
         ```
     </Tab>

@@ -61,24 +61,33 @@ Klave SDK provides a simple interface to create and send notifications.
     <Tab value="Rust">
         The available set of operations is the following one:
 
-        | Class  | Operation  | Parameters | Returns | Behavior |
-        |--------|------------|------------|---------|----------|
-        |`notifier`| `send_json`  | message | -  | Notify the json object passed as parameter |
-        |`notifier`| `notify`   | message | - | Notify the `string` passed as parameter |
-        |`notifier`| `notify_error` | message | - | Notify the error `string` passed as parameter |
+        | Class    | Operation    | Parameters    | Returns | Behavior |
+        |----------|--------------|---------------|---------|----------|
+        |`notifier`| `send_json`  | object: &T   | - | Serialise and Notify as a json string the object passed as parameter |
+        |`notifier`| `send_string`| message: &str | - | Notify the `string` passed as parameter |
 
 
         In Rust, the notification manager can be accessed through the `notifier`. Notifications can be used within query or transaction context.
         For example:
         ```rust
         use klave;
-
-        fn notify_example(cmd: String){
-            klave::notifier::notify("notifying");
+        
+        fn notify_string_example(cmd: String){
+            klave::notifier::send_string("notifying");
         }
 
-        fn notify_error_example(cmd: String){
-            klave::notifier::notify_error("error");
+        #[derive(Deserialize, Serialize)]
+        pub struct ObjectToSend {
+            id: String,
+            data: String
+        }
+
+        fn notify_json_example(cmd: String){
+            let object_to_notify = ObjectToSend { 
+                id: String::from("id"), 
+                data: String::from("data")
+            };
+            klave::notifier::send_json(&object_to_notify);
         }
 
         ```

@@ -57,9 +57,9 @@ The Klave SDK exposes an interface to interact with the ledger.
         | Class  | Operation  | Parameters | Returns | Behavior |
         |--------|------------|------------|---------|----------|
         |`ledger`| `get_table`  | name | Table  |Return the ledger table with the specified `name`. If no table exists from the `name` provided, then a new table with this name will be automatically created and returned.|
-        |`ledger`| `get` | key | value | Get the string value associated with the specified `key` from the specified `Table` as string. |
-        |`ledger`| `set` | key, value | - | Set the `value` as string associated with the specified `key` in the specified `Table`, overwriting any existing value. |
-        |`ledger`| `unset` | key | - | Delete the tuple with the specified `key` from the specified `Table`. |
+        |`table`| `get` | key | value | Get the string value associated with the specified `key` from the specified `Table` as string. |
+        |`table`| `set` | key, value | - | Set the `value` as string associated with the specified `key` in the specified `Table`, overwriting any existing value. |
+        |`table`| `unset` | key | - | Delete the tuple with the specified `key` from the specified `Table`. |
 
         <Callout type="warn">
             Storing and deleting data are modifying the state of the App ledger. Therefore, operations like `set` and `unset` can be executed only from within a Transactional context.
@@ -73,12 +73,12 @@ The Klave SDK exposes an interface to interact with the ledger.
 
         fn load_from_ledger(cmd: String){
             let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
-                klave::notifier::notify_error(&format!("failed to parse '{}' as json", cmd));
+                klave::notifier::send_string(&format!("failed to parse '{}' as json", cmd));
                 return
             };
             let key = v["key"].as_str().unwrap();
             let Ok(res) = klave::ledger::get_table("my_table").get(key) else {
-                klave::notifier::notify_error(&format!("failed to read from ledger: '{}'", cmd));
+                klave::notifier::send_string(&format!("failed to read from ledger: '{}'", cmd));
                 return
             };
             let msg = if res.is_empty() {
@@ -89,12 +89,12 @@ The Klave SDK exposes an interface to interact with the ledger.
                 });
                 format!("{}", result_as_json.to_string())
             };
-            klave::notifier::notify(&msg);
+            klave::notifier::send_string(&msg);
         }
 
         fn insert_in_ledger(cmd: String){
             let Ok(v) = serde_json::from_str::<Value>(&cmd) else {
-                klave::notifier::notify_error(&format!("failed to parse '{}' as json", cmd));
+                klave::notifier::send_string(&format!("failed to parse '{}' as json", cmd));
                 // klave:: cancel_transaction();
                 return
             };
@@ -102,7 +102,7 @@ The Klave SDK exposes an interface to interact with the ledger.
             let value = v["value"].as_str().unwrap();
             match klave::ledger::get_table("my_table").set(key, value) {
                 Err(e) => {
-                    klave::notifier::notify_error(&format!("failed to write to ledger: '{}'", e));
+                    klave::notifier::send_string(&format!("failed to write to ledger: '{}'", e));
                     // sdk::cancel_transaction();
                     return
                 }
@@ -114,7 +114,7 @@ The Klave SDK exposes an interface to interact with the ledger.
                 "key": key,
                 "value": value
                 });
-            klave::notifier::notify(&result_as_json.to_string());
+            klave::notifier::send_string(&result_as_json.to_string());
         }
         ```
     </Tab>

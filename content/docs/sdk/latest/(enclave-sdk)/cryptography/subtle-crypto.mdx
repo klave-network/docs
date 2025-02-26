@@ -108,7 +108,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -159,7 +159,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -210,7 +210,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -301,7 +301,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -310,7 +310,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let random_bytes = match klave::crypto::random::get_random_bytes(12) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -327,7 +327,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -336,7 +336,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let decrypted_text = match subtle::decrypt(&crypt_algorithm, &crypto_key, &encrypted_text) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -397,7 +397,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -408,7 +408,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -417,7 +417,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let decrypted_text = match subtle::decrypt(&crypt_algorithm, &crypto_key, &encrypted_text) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -504,7 +504,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -514,7 +514,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -522,15 +522,15 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let verify_result = match subtle::verify(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes(), &signature) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
             if verify_result.is_valid() {
-                klave::notifier::notify("Verified");
+                klave::notifier::send_string("Verified");
             }
             else {
-                klave::notifier::notify("Not Verified");
+                klave::notifier::send_string("Not Verified");
             }
         }
         ```
@@ -590,7 +590,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -600,7 +600,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -608,16 +608,16 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let verify_result = match subtle::verify(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes(), &signature) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
 
             if verify_result.is_valid() {
-                klave::notifier::notify("Verified");
+                klave::notifier::send_string("Verified");
             }
             else {
-                klave::notifier::notify("Not Verified");
+                klave::notifier::send_string("Not Verified");
             }
         }
         ```
@@ -705,7 +705,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -717,7 +717,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -726,7 +726,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &subtle::NamedAlgorithm { name: "AES-KW".to_string() }.into()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -737,7 +737,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 &gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -789,7 +789,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -801,7 +801,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -810,7 +810,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let random_bytes = match klave::crypto::random::get_random_bytes(12) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -827,7 +827,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -838,7 +838,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 &gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -893,7 +893,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -905,7 +905,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -918,7 +918,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -929,7 +929,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 &gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -990,7 +990,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -999,7 +999,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let exported_key = match subtle::export_key("raw", &crypto_key) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -1008,7 +1008,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let imported_key = match subtle::import_key("raw", &exported_key, &gen_algorithm, true, &key_usages) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             }
@@ -1058,7 +1058,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             let digest = match sha::digest("SHA2-256", &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {                
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };

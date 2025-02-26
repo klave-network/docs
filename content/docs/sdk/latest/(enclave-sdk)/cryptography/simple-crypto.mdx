@@ -61,7 +61,7 @@ Key generation and storage is managed automatically and leverage high standard c
             let key_aes = match aes::generate_key("key_name") {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -69,7 +69,7 @@ Key generation and storage is managed automatically and leverage high standard c
             let encrypted_text = match key_aes.encrypt(&String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -77,15 +77,15 @@ Key generation and storage is managed automatically and leverage high standard c
             let decrypted_text = match key_aes.decrypt(&encrypted_text) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
             if decrypted_text == String::from("Hello World").into_bytes() {
-                klave::notifier::notify("Verified");
+                klave::notifier::send_string("Verified");
             }
             else {
-                klave::notifier::notify("Not Verified");
+                klave::notifier::send_string("Not Verified");
             }
         }
         ```
@@ -147,7 +147,7 @@ Key generation and storage is managed automatically and leverage high standard c
             let key_ecc = match ecc::generate_key("key_name") {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -156,7 +156,7 @@ Key generation and storage is managed automatically and leverage high standard c
             let signature = match key_ecc.sign(&String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
@@ -165,15 +165,15 @@ Key generation and storage is managed automatically and leverage high standard c
             let verify_result = match key_ecc.verify(&String::from("Hello World").into_bytes(), &signature) {
                 Ok(result) => result,
                 Err(err) => {
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
             if verify_result.is_valid() {
-                klave::notifier::notify("Verified");
+                klave::notifier::send_string("Verified");
             }
             else {
-                klave::notifier::notify("Not Verified");
+                klave::notifier::send_string("Not Verified");
             }        
         }
         ```
@@ -222,7 +222,7 @@ Key generation and storage is managed automatically and leverage high standard c
             let digest = match sha::digest("SHA2-256", &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {                
-                    klave::notifier::notify(&err.to_string());
+                    klave::notifier::send_string(&err.to_string());
                     return;
                 }
             };
