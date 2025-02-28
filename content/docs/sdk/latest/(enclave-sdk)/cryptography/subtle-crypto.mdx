@@ -47,10 +47,10 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         Depending on the type of key that needs to be generated a `GenAlgorithm` `Enum variants` is passed as parameters.
 
         ```rust
-        pub enum GenAlgorithm {
-            RsaHashedKeyGenParams(RsaHashedKeyGenParams),
-            EcKeyGenParams(EcKeyGenParams),
-            AesKeyGenParams(AesKeyGenParams),
+        pub enum KeyGenAlgorithm {
+            Rsa(RsaHashedKeyGenParams),
+            Ecc(EcKeyGenParams),
+            Aes(AesKeyGenParams),
         }
         ```
     </Tab>
@@ -61,6 +61,11 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         For generating RSA key, the algorithm object to use is `Crypto.RsaHashedKeyGenParams`.
+
+        <Callout type="info">
+            When generating an RSA Key, only the private key is generated and not a key pair. 
+            Usages needs to be align with that, for instance an RSA private key can only be used for signing, decrypting or unwraping.
+        </Callout>
 
         ```js copy
         class RsaHashedKeyGenParams {
@@ -79,12 +84,39 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         export function subtleCryptoRSA(): void
         {
             // Generate RSA key
-            let rsaKey = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["encrypt", "decrypt", "sign", "verify"]);
+            let rsaKey = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["decrypt", "sign"]);
+        }
+        ```
+
+        Public key derivation can be done directly from the private key and will automatically get the usages aligned with the private one.
+        
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `getPublicKey` | `key: CryptoKey` | `Result<CryptoKey, Error>`  | Derive the public `CryptoKey` corresponding to the private `key` provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
+    
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoRSA(): void
+        {
+            // Generate RSA key
+            let rsaKeyResult = Crypto.Subtle.generateKey({modulusLength: 2048, publicExponent: 65537, hash: "SHA2-256"} as Crypto.RsaHashedKeyGenParams, true, ["decrypt", "sign"]);
+            let rsaKey = rsaKeyResult.data as Crypto.CryptoKey;
+            // Derive RSA public key
+            let publicRsaKeyResult = Crypto.Subtle.getPublicKey(rsaKey);
         }
         ```
     </Tab>
     <Tab value="Rust">
         For generating RSA key, the algorithm object to use is `RsaHashedKeyGenParams`.
+        
+        <Callout type="info">
+            When generating an RSA Key, only the private key is generated and not a key pair. 
+            Usages needs to be align with that, for instance an RSA private key can only be used for signing, decrypting or unwraping.
+        </Callout>
 
         ```rust
         pub struct RsaHashedKeyGenParams {
@@ -103,9 +135,43 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 public_exponent: 65537,  
                 hash: "SHA2-256"
             };
-            let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt", "sign", "verify"];
-            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let key_usages_slice: Vec<&str> = vec!["decrypt", "sign"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Rsa(rsa_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+        Public key derivation can be done directly from the private key and will automatically get the usages aligned with the private one.
+        
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `get_public_key` | `key: CryptoKey` | `Result<CryptoKey, Error>`  | Derive the public `CryptoKey` corresponding to the private `key` provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_rsa(input: String) {
+            let rsa_params = subtle::RsaHashedKeyGenParams { 
+                modulus_length: 2048, 
+                public_exponent: 65537,  
+                hash: "SHA2-256"
+            };
+            let key_usages_slice: Vec<&str> = vec!["decrypt", "sign"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Rsa(rsa_params);
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+
+            let public_crypto_key: CryptoKey = match subtle::get_public_key(&crypto_key) {
                 Ok(result) => result,
                 Err(err) => {
                     klave::notifier::send_string(&err.to_string());
@@ -122,7 +188,10 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         For generating EC key, the algorithm object to use is `Crypto.EcKeyGenParams`.
-
+        <Callout type="info">
+            When generating an EC Key, only the private key is generated and not a key pair. 
+            Usages needs to be align with that, for instance an EC private key can only be used for signing or for derivation.
+        </Callout>
         ```js copy
         export class EcKeyGenParams {
             namedCurve: string = 'P-256'; // "P-256", "P-384", "P-521"
@@ -137,13 +206,34 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         export function subtleCryptoEC(): void
         {
             // Generate EC key
-            let eccKey = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign", "verify"]);
+            let eccKey = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign"]);
+        }
+        ```
+        Public key derivation can be done directly from the private key and will automatically get the usages aligned with the private one.
+        
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `getPublicKey` | `key: CryptoKey` | `Result<CryptoKey, Error>`  | Derive the public `CryptoKey` corresponding to the private `key` provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
+
+        ```js copy
+        /**
+        * @query
+        */
+        export function subtleCryptoEC(): void
+        {
+            // Generate EC key
+            let eccKey = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["sign"]);
+            // Derive Public key
+            let public_eccKey = Crypto.Subtle.getPublicKey(eccKey);
         }
         ```
     </Tab>
     <Tab value="Rust">
         For generating EC key, the algorithm object to use is `EcKeyGenParams`.
-
+        <Callout type="info">
+            When generating an EC Key, only the private key is generated and not a key pair. 
+            Usages needs to be align with that, for instance an EC private key can only be used for signing or for derivation.
+        </Callout>
         ```rust
         pub struct EcKeyGenParams {
             pub named_curve: String // "P-256", "P-384", "P-521"
@@ -154,8 +244,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
         fn subtle_crypto_ec(input: String) {
             let ec_params = subtle::EcKeyGenParams { named_curve: "P-256" };
-            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
-            let gen_algorithm: subtle::GenAlgorithm = ec_params.into();
+            let key_usages_slice: Vec<&str> = vec!["sign"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Ecc(ec_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -165,6 +255,37 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             };
         }
         ```
+
+        Public key derivation can be done directly from the private key and will automatically get the usages aligned with the private one.
+
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `get_public_key` | `key: CryptoKey` | `Result<CryptoKey, Error>`  | Derive the public `CryptoKey` corresponding to the private `key` provided. Return a ResultSet `Result<CryptoKey, Error>` containing either the generated `CryptoKey` or an `Error`.|
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_ec(input: String) {
+            let ec_params = subtle::EcKeyGenParams { named_curve: "P-256" };
+            let key_usages_slice: Vec<&str> = vec!["sign"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Ecc(ec_params);
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            let public_key: CryptoKey = match subtle::get_public_key(&crypto_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+
     </Tab>
 </Tabs>
 
@@ -206,7 +327,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         fn subtle_crypto_aes(input: String) {
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -241,8 +362,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
     ```rust
     pub enum EncryptAlgorithm {
-        RsaOaepEncryptionMetadata(RsaOaepEncryptionMetadata),
-        AesGcmParams(AesGcmParams),
+        RsaOaep(RsaOaepParams),
+        AesGcm(AesGcmParams),
     }
     ```
     </Tab>
@@ -297,7 +418,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate AES key
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -321,7 +442,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 additionalData: vec![],
                 tagLength: 128
             };
-            let crypt_algorithm: subtle::EncryptAlgorithm = aes_params.into();
+            let crypt_algorithm = subtle::EncryptAlgorithm::AesGcm(aes_params);
 
             // Encrypt
             let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
@@ -393,7 +514,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 hash: "SHA2-256"
             };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Rsa(rsa_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -404,7 +525,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
             // Encrypt
             let rsa_oaep_params = subtle::RsaOaepParams { label: vec![] };
-            let crypt_algorithm: subtle::EncryptAlgorithm = rsa_oaep_params.into();
+            let crypt_algorithm = subtle::EncryptAlgorithm::RsaOaep(rsa_oaep_params);
             let encrypted_text = match subtle::encrypt(&crypt_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
@@ -448,8 +569,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
     ```rust
     pub enum SignAlgorithm {
-        EcdsaParams(EcdsaParams),
-        RsaPssParams(RsaPssParams),
+        Ecdsa(EcdsaParams),
+        RsaPss(RsaPssParams),
     }
     ```
     </Tab>
@@ -500,7 +621,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate Key
             let ec_params = subtle::EcKeyGenParams { named_curve: "P-256" };
             let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
-            let gen_algorithm: subtle::GenAlgorithm = ec_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Ecc(ec_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -510,7 +631,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             };
             // Sign
             let sign_ec_params = subtle::EcdsaParams { hash: "SHA2-256" };
-            let sign_algorithm: subtle::SignAlgorithm = sign_ec_params.into();
+            let sign_algorithm = subtle::SignAlgorithm::Ecdsa(sign_ec_params);
             let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
@@ -586,7 +707,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 hash: "SHA2-256"
             };
             let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
-            let gen_algorithm: subtle::GenAlgorithm = rsa_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Rsa(rsa_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -596,7 +717,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             };
             // Sign
             let sign_rsa_params = subtle::RsaPssParams { salt_length: 0 };
-            let sign_algorithm: subtle::SignAlgorithm = sign_rsa_params.into();
+            let sign_algorithm = subtle::SignAlgorithm::RsaPss(sign_rsa_params);
             let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {
@@ -643,10 +764,10 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         Depending on the type of wrapping that needs to be done a `WrapAlgorithm` `Enum variants` is passed as parameters.
 
         ```rust
-        pub enum WrapAlgorithm {
-            RsaOaepParams(RsaOaepParams),
-            AesGcmParams(AesGcmParams),
-            NamedAlgorithm(NamedAlgorithm),
+        pub enum KeyWrapAlgorithm {
+            RsaOaep(RsaOaepParams),
+            AesGcm(AesGcmParams),
+            AesKw,
         }
         ```
         Format that can be used depending on the key you want to wrap/unwrap are the following: `raw`, `spki`, `pkcs8`, `pkcs1`, `sec1`.
@@ -687,13 +808,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         ```
     </Tab>
     <Tab value="Rust">
-        To wrap and unwrap key with AES-KW you will need an AES key, a key to wrap and to use `NamedAlgorithm`.
+        To wrap and unwrap key with AES-KW you will need an AES key and a key to wrap .
 
-        ```rust
-        pub struct NamedAlgorithm {
-            pub name: String
-        }
-        ```
         ```rust
         use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
 
@@ -701,7 +817,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate wrapping AES key
             let aes_params_wrap_key = subtle::AesKeyGenParams { length: 256 };
             let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
-            let gen_algorithm_wrap_key: subtle::GenAlgorithm = aes_params_wrap_key.into();
+            let gen_algorithm_wrap_key = subtle::KeyGenAlgorithm::Aes(aes_params_wrap_key);
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
@@ -713,7 +829,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate AES key to wrap
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -723,7 +839,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             };
 
             // Wrap
-            let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &subtle::NamedAlgorithm { name: "AES-KW".to_string() }.into()) {
+            let kw_wrap_algo = subtle::KeyWrapAlgorithm::AesKw;
+            let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &kw_wrap_algo) {
                 Ok(result) => result,
                 Err(err) => {
                     klave::notifier::send_string(&err.to_string());
@@ -733,7 +850,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
             // Unwrap
             let unwrapped_key = match subtle::unwrap_key(&"raw", &wrapped_key, &wrapping_key, 
-                &subtle::NamedAlgorithm { name: "AES-KW".to_string() }.into(), 
+                &kw_wrap_algo, 
                 &gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -785,7 +902,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate wrapping AES key
             let aes_params_wrap_key = subtle::AesKeyGenParams { length: 256 };
             let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
-            let gen_algorithm_wrap_key: subtle::GenAlgorithm = aes_params_wrap_key.into();
+            let gen_algorithm_wrap_key = subtle::KeyGenAlgorithm::Aes(aes_params_wrap_key);
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
@@ -797,7 +914,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate AES key to wrap
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -821,7 +938,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 additionalData: vec![],
                 tagLength: 128
             };
-            let wrapping_algorithm: subtle::WrapAlgorithm = aes_params.into();
+            let wrapping_algorithm = subtle::KeyWrapAlgorithm::AesGcm(aes_params);
 
             // Wrap
             let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
@@ -889,7 +1006,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 hash: "SHA2-256"
             };
             let key_usages_wrap_key: Vec<&str> = vec!["wrap_key", "unwrap_key"];
-            let gen_algorithm_wrap_key: subtle::GenAlgorithm = rsa_params_wrap_key.into();
+            let gen_algorithm_wrap_key = subtle::KeyGenAlgorithm::Rsa(rsa_params_wrap_key);
             let wrapping_key: CryptoKey = match subtle::generate_key(&gen_algorithm_wrap_key, true, &key_usages_wrap_key) {
                 Ok(result) => result,
                 Err(err) => {
@@ -901,7 +1018,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate AES key to wrap
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages_slice: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
                 Ok(result) => result,
                 Err(err) => {
@@ -912,7 +1029,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 
             //Generate RSA-OAEP parameters
             let rsa_oaep_params = subtle::RsaOaepParams { label: vec![] };
-            let wrapping_algorithm: subtle::WrapAlgorithm = rsa_oaep_params.into();
+            let wrapping_algorithm = subtle::KeyWrapAlgorithm::RsaOaep(rsa_oaep_params);
 
             // Wrap
             let wrapped_key = match subtle::wrap_key(&"raw", &crypto_key, &wrapping_key, &wrapping_algorithm) {
@@ -986,7 +1103,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Generate AES key
             let aes_params = subtle::AesKeyGenParams { length: 256 };
             let key_usages: Vec<&str> = vec!["encrypt", "decrypt"];
-            let gen_algorithm: subtle::GenAlgorithm = aes_params.into();
+            let gen_algorithm = subtle::KeyGenAlgorithm::Aes(aes_params);
             let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages) {
                 Ok(result) => result,
                 Err(err) => {

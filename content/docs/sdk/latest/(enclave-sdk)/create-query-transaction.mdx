@@ -46,13 +46,25 @@ Your application deployed on Klave is a collections of query and transaction fun
     impl Guest for Component {
         // Function to declare to register Transaction and Query
         fn register_routes(){
-            // Notice how the _ must be replaced by - in the name for registration 
-            klave::router::add_user_transaction("my-transaction");
+            klave::router::add_user_transaction("my_transaction");
         }
 
         fn my_transaction(cmd: String){
           //develop your transactional logic here
         }
+    }
+    ```
+
+    Rust application are built as a wasm component and need to expose a `wit` interface to export the registered `transaction`.
+
+    ``` rust
+    package component:klave-rust-app-example;
+
+    /// An example world for the component to target.
+    world klave-rust-app-example {
+        //The exported route name need to use `-` instead of `_` by convention in the `.wit` file
+        export register-routes: func();
+        export my-transaction: func(cmd: string);
     }
     ```
   </Tab>
@@ -95,13 +107,25 @@ Your application deployed on Klave is a collections of query and transaction fun
     impl Guest for Component {
         // Function to declare to register Transaction and Query
         fn register_routes(){
-            // Notice how the _ must be replaced by - in the name for registration 
-            klave::router::add_user_query("my-query");
+            klave::router::add_user_query("my_query");
         }
 
         fn my_query(cmd: String){
           //develop your query logic here
         }
+    }
+    ```
+
+    Rust application are built as a wasm component and need to expose a `wit` interface to export the registered `query`.
+
+    ``` rust
+    package component:klave-rust-app-example;
+
+    /// An example world for the component to target.
+    world klave-rust-app-example {
+        //The exported route name need to use `-` instead of `_` by convention in the `.wit` file
+        export register-routes: func();
+        export my-query: func(cmd: string);
     }
     ```
   </Tab>
