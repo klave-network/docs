@@ -46,7 +46,10 @@ Your application deployed on Klave is a collections of query and transaction fun
     impl Guest for Component {
         // Function to declare to register Transaction and Query
         fn register_routes(){
-            klave::router::add_user_transaction("my_transaction");
+            //When registering routes by convention it is recommended to use the `wit` function name.
+            //Make sure, when calling your query that you use the name you used to register it.
+            //In that case you can register with either `my-transaction` (the `wit` name) or `my_transaction`.
+            klave::router::add_user_transaction("my-transaction");
         }
 
         fn my_transaction(cmd: String){
@@ -107,15 +110,21 @@ Your application deployed on Klave is a collections of query and transaction fun
     impl Guest for Component {
         // Function to declare to register Transaction and Query
         fn register_routes(){
-            klave::router::add_user_query("my_query");
+            //When registering routes by convention it is recommended to use the `wit` function name.
+            //Make sure, when calling your query that you use the name you used to register it.
+            //In that case you can register with either `my-query` (the `wit` name) or `my_query`.
+            klave::router::add_user_query("my-query");
         }
 
         fn my_query(cmd: String){
           //develop your query logic here
         }
+
+        fn my_transaction(cmd: String){
+          //develop your query logic here
+        }
     }
     ```
-
     Rust application are built as a wasm component and need to expose a `wit` interface to export the registered `query`.
 
     ``` rust

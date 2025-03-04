@@ -16,7 +16,14 @@ What **won't** be covered:
 -   Klave's architecture
 
 ## Prerequisites
-
-Trustless applications are developed in [AssemblyScript](https://www.assemblyscript.org/) and compiled in [WebAssembly](https://webassembly.org/).
-[Node.js](https://nodejs.org/) and [Git](https://git-scm.com/) needs to be installed beforehand to be able to use the sdk. For a smoother experience the [GitHub CLI](https://cli.github.com/) can be used.
-The [Klave SDK package](https://www.npmjs.com/package/create-on-klave) provides the simplest, quickest, and easiest way to create a new trustless applications using typescript.
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        Trustless applications are developed in [AssemblyScript](https://www.assemblyscript.org/) and compiled in [WebAssembly](https://webassembly.org/).
+        [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/) needs to be installed beforehand to be able to use the sdk. For a smoother experience the [GitHub CLI](https://cli.github.com/) can be used.
+        The [Klave SDK package](https://www.npmjs.com/package/create-on-klave) provides the simplest, quickest, and easiest way to create a new trustless applications using typescript.
+    </Tab>
+    <Tab value="Rust">
+        For deploying Rust applications on Klave you will need to have the The [Rust Toolchain](https://www.rust-lang.org/tools/install) (incl. rust, rustup, cargo), Cargo component : `cargo install cargo-component`, and the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) installed.
+        [Git](https://git-scm.com/) needs to be installed beforehand to be able to use the sdk. For a smoother experience the [GitHub CLI](https://cli.github.com/) can be used.
+    </Tab>
+</Tabs>
