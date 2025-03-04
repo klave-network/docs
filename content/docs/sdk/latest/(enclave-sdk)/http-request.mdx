@@ -14,44 +14,79 @@ Klave SDK provides a simple interface to create and send HTTP request from your 
     As querying an HTTP endpoint is not a deterministic operation, it can only be used in the context of a Query. The Query calling the `HTTP` interface will not be callable from a Transaction.
 </Callout>
 
-The set of operations is the following one:
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The set of operations is the following one:
 
-| Class  | Operation  | Parameters | Returns | Behavior |
-|--------|------------|------------|---------|----------|
-|`HTTP`| `request`  | `HttpRequest` | `HttpResponse` | Execute and `HttpRequest` and return an `HttpResponse`|
-|`HTTP`| `requestAsString` | `HttpRequest` | `HttpResponse` as `string` | Execute and `HttpRequest` and return an `HttpResponse` as a `string`|
-|`HTTP`| `requestAsArrayBuffer` | `HttpRequest` | `HttpResponse` as `ArrayBuffer` | Execute and `HttpRequest` and return an `HttpResponse` as an `ArrayBuffer`|
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`HTTP`| `request`  | `HttpRequest` | `HttpResponse` | Execute and `HttpRequest` and return an `HttpResponse`|
+        |`HTTP`| `requestAsString` | `HttpRequest` | `HttpResponse` as `string` | Execute and `HttpRequest` and return an `HttpResponse` as a `string`|
+        |`HTTP`| `requestAsArrayBuffer` | `HttpRequest` | `HttpResponse` as `ArrayBuffer` | Execute and `HttpRequest` and return an `HttpResponse` as an `ArrayBuffer`|
 
-```js copy
-import { Notifier, JSON, HTTP, HttpRequest } from '@klave/sdk';
-import { ErrorMessage, FxRateData, FxRateResult } from './types';
+        ```js copy
+        import { Notifier, JSON, HTTP, HttpRequest } from '@klave/sdk';
+        import { ErrorMessage, FxRateData, FxRateResult } from './types';
 
-/**
- * @query
- */
-export function grabFxRates(): void {
+        /**
+        * @query
+        */
+        export function grabFxRates(): void {
 
-    const query: HttpRequest = {
-        hostname: 'fx.monilytics.org',
-        port: 443,
-        path: '/?from=USD&to=EUR,GBP,CHF',
-        headers: [],
-        body: ''
-    };
+            const query: HttpRequest = {
+                hostname: 'fx.monilytics.org',
+                port: 443,
+                path: '/?from=USD&to=EUR,GBP,CHF',
+                headers: [],
+                body: ''
+            };
 
-    const response = HTTP.request(query);
-    if (!response) {
-        Notifier.sendJson<ErrorMessage>({
-            success: false,
-            message: `HTTP call went wrong !`
-        });
-        return;
-    }
+            const response = HTTP.request(query);
+            if (!response) {
+                Notifier.sendJson<ErrorMessage>({
+                    success: false,
+                    message: `HTTP call went wrong !`
+                });
+                return;
+            }
 
-    const ratesData = JSON.parse<FxRateData>(response.body);
-    Notifier.sendJson<FxRateResult>({
-        success: true,
-        rates: ratesData
-    });
-};
-```
+            const ratesData = JSON.parse<FxRateData>(response.body);
+            Notifier.sendJson<FxRateResult>({
+                success: true,
+                rates: ratesData
+            });
+        };
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The set of operations is the following one:
+
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`HTTP`| `request`  | `http::Request` | `http::Response` | Execute and `http::Request` and return an `http::Response`|
+
+        ```rust
+        use klave;
+        use http::{Request, Response, StatusCode};
+
+        fn http_outcall_example(input: String) {
+            let https_request = Request::builder()
+                .method("POST")
+                .uri(input)
+                .header("Content-Type", "application/json")
+                .body(String::from(""))
+                .unwrap();
+        
+            let response = match klave::https::request(&https_request) {
+                Ok(r) => r,
+                Err(e) => {
+                    klave::notifier::send_string(&format!("https_query {} failure: {}", https_request.body(), e));
+                    return
+                }
+            };        
+
+            klave::notifier::send_string(&response.body());    
+        }
+        ```
+    </Tab>
+</Tabs>

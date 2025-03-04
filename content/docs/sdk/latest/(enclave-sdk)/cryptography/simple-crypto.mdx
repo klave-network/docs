@@ -10,100 +10,223 @@ Key generation and storage is managed automatically and leverage high standard c
 
 ### Data Encryption and Decryption
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.AES`| `generateKey` | `keyName: string` | `Result<KeyAES, Error>`  |Generate an AES-256 key and store it in the ledger with the `keyName` provided. Return a ResultSet `Result<KeyAES, Error>` containing either the generated `KeyAES` or an `Error`.|
-|`Crypto.AES`| `getKey` | `keyName: string` | `KeyAES \| null` | Get the key associated with the specified `keyName`, return `null` if key does not exists. |
-|`KeyAES`| `encrypt` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Encrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<ArrayBuffer, Error>` containing the encrypted data as an `ArrayBuffer` or an `Error`. |
-|`KeyAES`| `decrypt` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Decrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<ArrayBuffer, Error>` containing the decrypted data as an `ArrayBuffer` or an `Error`. |
-
-<Callout type="warn">
-    the `generateKey` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
-</Callout>
-
-The interface can be accessed through the `Crypto.AES` keyword.
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
 
-    /**
-    * @transaction
-    */
-    export function simpleCryptoAES(): void
-    {
-        let aes = Crypto.AES.generateKey("MyAESKey");
-        let aesRes = aes.data as Crypto.KeyAES;
-        let aesEncrypted = aesRes.encrypt(String.UTF8.encode("Hello World"));
-        let aesDecrypted = aesRes.decrypt(aesEncrypted.data as ArrayBuffer);
-    }
-    ```
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.AES`| `generateKey` | `keyName: string` | `Result<KeyAES, Error>`  |Generate an AES-256 key and store it in the ledger with the `keyName` provided. Return a ResultSet `Result<KeyAES, Error>` containing either the generated `KeyAES` or an `Error`.|
+        |`Crypto.AES`| `getKey` | `keyName: string` | `KeyAES \| null` | Get the key associated with the specified `keyName`, return `null` if key does not exists. |
+        |`KeyAES`| `encrypt` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Encrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<ArrayBuffer, Error>` containing the encrypted data as an `ArrayBuffer` or an `Error`. |
+        |`KeyAES`| `decrypt` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Decrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<ArrayBuffer, Error>` containing the decrypted data as an `ArrayBuffer` or an `Error`. |
+
+        <Callout type="warn">
+            the `generateKey` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
+        </Callout>
+
+        The interface can be accessed through the `Crypto.AES` keyword.
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @transaction
+        */
+        export function simpleCryptoAES(): void
+        {
+            let aes = Crypto.AES.generateKey("MyAESKey");
+            let aesRes = aes.data as Crypto.KeyAES;
+            let aesEncrypted = aesRes.encrypt(String.UTF8.encode("Hello World"));
+            let aesDecrypted = aesRes.decrypt(aesEncrypted.data as ArrayBuffer);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::aes`| `generate_key` | `name: string` | `Result<KeyAES, Error>`  |Generate an AES-256 key and store it in the ledger with the `name` provided. Return a ResultSet `Result<KeyAES, Error>` containing either the generated `KeyAES` or an `Error`.|
+        |`crypto::aes`| `get_key` | `name: string` | `Result<KeyAES, Error>` | Get the key associated with the specified `name`, return `Error` if key does not exists. |
+        |`KeyAES`| `encrypt` | `data: [u8]` | `Result<Vec<u8>, Error>` | Encrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<Vec<u8>, Error>` containing the encrypted data as an `Vec<u8>` or an `Error`. |
+        |`KeyAES`| `decrypt` | `data: [u8]` | `Result<Vec<u8>, Error>` | Decrypt the `data` using AES-GCM. the IV is managed automatically. Return a ResultSet `Result<Vec<u8>, Error>` containing the decrypted data as an `Vec<u8>` or an `Error`. |
+
+        <Callout type="warn">
+            the `generate_key` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
+        </Callout>
+
+        ```rust
+        use klave::{self, crypto::aes};
+
+        fn crypto_aes_simple(input: String) {
+            // Generate Key
+            let key_aes = match aes::generate_key("key_name") {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            
+            let encrypted_text = match key_aes.encrypt(&String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            
+            let decrypted_text = match key_aes.decrypt(&encrypted_text) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            if decrypted_text == String::from("Hello World").into_bytes() {
+                klave::notifier::send_string("Verified");
+            }
+            else {
+                klave::notifier::send_string("Not Verified");
+            }
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### ECDSA: Signing and verifying
 
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.ECDSA`| `generateKey` | `keyName: string` | `Result<KeyECC, Error>`  |Generate a NIST P-256 key and store it in the ledger with the `keyName` provided. Return a ResultSet `Result<KeyECC, Error>` containing either the generated `KeyECC` or an `Error`.|
-|`Crypto.ECDSA`| `getKey` | `keyName: string` | `KeyECC \| null` | Get the key associated with the specified `keyName`, return `null` if key does not exists. |
-|`KeyECC`| `sign` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Provide an ECDSA signature of `data`. Return a ResultSet `Result<ArrayBuffer, Error>` containing the signature as an `ArrayBuffer` or an `Error`. |
-|`KeyECC`| `verify` | `data: ArrayBuffer, signature: ArrayBuffer` | `Result<VerifySignResult, Error>` | Verify the `signature` from the `data` provided. Return a ResultSet `Result<VerifySignResult, Error>` containing the signature verification `VerifySignResult` or an `Error`. |
-
-<Callout type="warn">
-    the `generateKey` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
-</Callout>
-
-The interface can be accessed through the `Crypto.ECDSA` keyword.
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
 
-    /**
-    * @transaction
-    */
-    export function simpleCryptoECC(): void
-    {
-        let ecc = Crypto.ECDSA.generateKey("MyECCKey");
-        let eccRes = ecc.data as Crypto.KeyECC;
-        let eccSigned = eccRes.sign(String.UTF8.encode("Hello World"));
-        let eccVerify = eccRes.verify(String.UTF8.encode("Hello World"), eccSigned.data as ArrayBuffer);
-        let verification = eccVerify.data as SignatureVerification;
-        // Validate signature : if(verification.isValid) ...
-    }
-    ```
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.ECDSA`| `generateKey` | `keyName: string` | `Result<KeyECC, Error>`  |Generate a NIST P-256 key and store it in the ledger with the `keyName` provided. Return a ResultSet `Result<KeyECC, Error>` containing either the generated `KeyECC` or an `Error`.|
+        |`Crypto.ECDSA`| `getKey` | `keyName: string` | `KeyECC \| null` | Get the key associated with the specified `keyName`, return `null` if key does not exists. |
+        |`KeyECC`| `sign` | `data: ArrayBuffer` | `Result<ArrayBuffer, Error>` | Provide an ECDSA signature of `data`. Return a ResultSet `Result<ArrayBuffer, Error>` containing the signature as an `ArrayBuffer` or an `Error`. |
+        |`KeyECC`| `verify` | `data: ArrayBuffer, signature: ArrayBuffer` | `Result<VerifySignResult, Error>` | Verify the `signature` from the `data` provided. Return a ResultSet `Result<VerifySignResult, Error>` containing the signature verification `VerifySignResult` or an `Error`. |
+
+        <Callout type="warn">
+            the `generateKey` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
+        </Callout>
+
+        The interface can be accessed through the `Crypto.ECDSA` keyword.
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @transaction
+        */
+        export function simpleCryptoECC(): void
+        {
+            let ecc = Crypto.ECDSA.generateKey("MyECCKey");
+            let eccRes = ecc.data as Crypto.KeyECC;
+            let eccSigned = eccRes.sign(String.UTF8.encode("Hello World"));
+            let eccVerify = eccRes.verify(String.UTF8.encode("Hello World"), eccSigned.data as ArrayBuffer);
+            let verification = eccVerify.data as SignatureVerification;
+            // Validate signature : if(verification.isValid) ...
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::ecc`| `generate_key` | `name: string` | `Result<KeyECC, Error>`  |Generate a NIST P-256 key and store it in the ledger with the `name` provided. Return a ResultSet `Result<KeyECC, Error>` containing either the generated `KeyECC` or an `Error`.|
+        |`crypto::ecc`| `get_key` | `name: string` | `Result<KeyECC, Error>` | Get the key associated with the specified `name`, return `Error` if key does not exists. |
+        |`KeyECC`| `sign` | `data: [u8]` | `Result<Vec<u8>, Error>` | Provide an ECDSA signature of `data`. Return a ResultSet `Result<Vec<u8>, Error>` containing the signature as an `Vec<u8>` or an `Error`. |
+        |`KeyECC`| `verify` | `data: [u8], signature: [u8]` | `Result<VerifySignResult, Error>` | Verify the `signature` from the `data` provided. Return a ResultSet `Result<VerifySignResult, Error>` containing the signature verification `VerifySignResult` or an `Error`. |
+
+        <Callout type="warn">
+            the `generateKey` method can be used only in the context of a `transaction` as the generated keys are saved into the `ledger`.
+        </Callout>
+
+        ```rust
+        use klave::{self, crypto::ecc};
+
+        fn crypto_ecc_simple(input: String) {
+            // Generate Key
+            let key_ecc = match ecc::generate_key("key_name") {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            
+            // Sign
+            let signature = match key_ecc.sign(&String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            
+            // Verify
+            let verify_result = match key_ecc.verify(&String::from("Hello World").into_bytes(), &signature) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            if verify_result.is_valid() {
+                klave::notifier::send_string("Verified");
+            }
+            else {
+                klave::notifier::send_string("Not Verified");
+            }        
+        }
+        ```
     </Tab>
 </Tabs>
 
 ### Making data digest
 
-The interface can be accessed through the `Crypto.SHA` keyword and is compatible with SHA2 and SHA3 digest.
-
-| Class  | Operation  | Parameters: type | Returns | Behavior |
-|--------|------------|------------------|---------|----------|
-|`Crypto.SHA`| `digest` | `algorithm: string, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<ArrayBuffer, Error>` containing either the digest in an `ArrayBuffer` or an `Error`.|
-
-<Tabs items={['AssemblyScript']}>
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-    ```js copy
-    import { Crypto } from '@klave/sdk';
+        The interface can be accessed through the `Crypto.SHA` keyword and is compatible with SHA2 and SHA3 digest.
 
-    /**
-    * @query
-    */
-    export function CryptoSHA_Test(): void
-    {
-        let data = String.UTF8.encode("Hello World");
-        let sha256 = Crypto.SHA.digest("SHA2-256", data);
-        let sha384 = Crypto.SHA.digest("SHA2-384", data);
-        let sha512 = Crypto.SHA.digest("SHA2-512", data);
-        let sha3_256 = Crypto.SHA.digest("SHA3-256", data);
-        let sha3_384 = Crypto.SHA.digest("SHA3-384", data);
-        let sha3_512 = Crypto.SHA.digest("SHA3-512", data);
-    }
-    ```
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.SHA`| `digest` | `algorithm: string, data: ArrayBuffer` | `Result<ArrayBuffer, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<ArrayBuffer, Error>` containing either the digest in an `ArrayBuffer` or an `Error`.|
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function CryptoSHA_Test(): void
+        {
+            let data = String.UTF8.encode("Hello World");
+            let sha256 = Crypto.SHA.digest("SHA2-256", data);
+            let sha384 = Crypto.SHA.digest("SHA2-384", data);
+            let sha512 = Crypto.SHA.digest("SHA2-512", data);
+            let sha3_256 = Crypto.SHA.digest("SHA3-256", data);
+            let sha3_384 = Crypto.SHA.digest("SHA3-384", data);
+            let sha3_512 = Crypto.SHA.digest("SHA3-512", data);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The interface can be accessed through the `crypto::sha` keyword and is compatible with SHA2 and SHA3 digest.
+
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::sha`| `digest` | `algorithm: string, data: [u8]` | `Result<Vec<u8>, Error>`  | Generate a digest of the `data` based on the `algorithm` specified. Return a ResultSet `Result<Vec<u8>, Error>` containing either the digest in an `Vec<u8>` or an `Error`.|
+
+        ```rust
+        use klave::{self, crypto::sha};
+        
+        fn crypto_digest_simple(input: String) {
+            let digest = match sha::digest("SHA2-256", &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {                
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
