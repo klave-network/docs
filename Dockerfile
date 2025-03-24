@@ -11,7 +11,8 @@ COPY package.json yarn.lock* ./
 COPY source.config.ts ./
 # Install git to get 'Last updated' time
 # RUN apk add --no-cache git
-RUN yarn --frozen-lockfile
+RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
+RUN corepack enable && yarn --frozen-lockfile
 
 
 # Rebuild the source code only when needed
