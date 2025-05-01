@@ -13,7 +13,7 @@ a cryptographic key. You can either import an existing key or create a new one t
 
 ## Connecting to Klave
 
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { Key, SCP } from '@secretarium/connector';
@@ -60,6 +60,33 @@ asyncio.run(main())
     to generate a private key with ECDSA algorithm and "secp256r1" curve.
 </Callout>
 </Tab>
+<Tab value="Rust">
+```rs
+use klave_connector::{SCP};
+
+#[tokio::main]
+async fn main() {    
+    let mut client = SCP::new("wss://on.klave.network", None, None);
+
+    match client.connect().await {
+        Ok(_) => println!("Connected to Klave successfully."),
+        Err(e) => {
+            eprintln!("Failed to connect to Klave: {}", e);
+            return;
+        }
+    };
+
+    match client.close().await {
+        Ok(_) => println!("Connection closed successfully."),
+        Err(e) => eprintln!("Failed to close connection: {}", e),
+    };
+}
+```
+<Callout type="info" emoji="ℹ️">
+    The creation of a key is available via the Key object and leverages the p256 crate 
+    to create an ECDSA keypair on the "secp256r1" curve.
+</Callout>
+</Tab>
 </Tabs>
 
 
@@ -70,7 +97,7 @@ asyncio.run(main())
 Klave provides the method ```Context.get('sender')``` to identify the key used for connection purposes. This allows you to whitelist a specific key in your Klave application.
 To this end, we provide the `exportKey` and `importKey` methods for exporting and importing keys in clear text, and the `seal` and `exportEncryptedKey` methods for exporting and importing keys in encrypted format in the TypeScript connector.
 
-<Tabs items={['TypeScript']}>
+<Tabs items={['TypeScript', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { SCP } from '@secretarium/connector';
@@ -99,6 +126,56 @@ main()
 ```
 <Callout type="info" emoji="ℹ️">
     The `importKey` method assumes that the public and private key are in JWK format.
+</Callout>
+</Tab>
+<Tab value="Rust">
+```rs
+use klave_connector::{SCP, Key};
+
+#[tokio::main]
+async fn main() {   
+    
+    let new_key = Key::new(None);
+    let exported_key = new_key.clone().export_jwk("<your password>").expect("Failed to export key");
+    println!("Exported key: {}", exported_key);
+    let imported_key = match Key::import_jwk(&exported_key, "<your password>") {
+        Ok(key) => {
+            println!("Key imported successfully.");
+            key
+        }
+        Err(e) => {
+            eprintln!("Failed to import key: {}", e);
+            return;
+        }
+    };
+
+    let mut client = SCP::new("wss://on.klave.network", Some(&imported_key), None);
+
+    let key_from_file = match Key::import_jwk_from_file("<Use your own key>", "<your password>") {
+        Ok(key) => {
+            println!("Key imported successfully.");
+            key
+        }
+        Err(e) => {
+            eprintln!("Failed to import key: {}", e);
+            return;
+        }
+    };
+    
+    let mut other_client = SCP::new("wss://on.klave.network", Some(&key_from_file), None);
+}
+```
+<Callout type="info" emoji="ℹ️">
+    Both `import_key` and `import_key_from_file` methods assumes that the private key is in JWK format with a data field encrypted using a password.
+    ```json
+{
+    "version": 2,
+    "name": "<your-key-name>",
+    "iv": "koQ4bHwMJ3oMlh",
+    "salt": "2z2-4i0NmPk5K3CX3Z8iekoQ4bHwMJ3oMlh3Q2mXHhW4=",
+    "data": "Xw-yBxGHSr70KRF6ukJPQaDQ4Zfw2CX3Z8iekoQ4bHwM06-DVnvEXtYCM67NA7T2w8fHpSQmHEeA5FmwpqeQJPkp3FAmQ4l-IqrqhYBspBqDiJwZm0nnSkatINmky1jXuEQ4TbL3wXwmBDdjL7isztp2bI2hQvBY6xeMMji82mEzrWE7OX-vzQT99s0dm44ub4x42OtI06_OZkDnQGyNYjx4MBxyXLzsfbVYCnkOwmON8wkW_VhA-In_7kfxWgbzROUN6AvfkPXzkvU71NPOwtYTGdQW6e_yIOWv96tF8VzIkVEf3t39XuFw1fsSel8RbokT-avTuDlcRgTrHD9iLhPCCredNBnzJtWfvkSfVRIblg4f8Iytey30FcisymkwkVaNDjIG39R5gow-kqvClB9ifXvdr-PtYS_25cBctYnu46Yl027YFezwRtVGd5YLdRB-h5oiGFPgJ98rBI3acycjUtiTqpR7m92sNzUVQPyroPQnBDsVnI2B6dXB7jxvPu8aa059kJBgCCL9lnOMEl5yQv8SEwDZzKyxiI"
+}
+    ```    
 </Callout>
 </Tab>
 </Tabs>

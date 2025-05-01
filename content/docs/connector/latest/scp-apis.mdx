@@ -8,7 +8,7 @@ This section describes several useful APIs of the SCP class.
 
 ## Create SCP with logger, connect, test, close and reset
 
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```ts
 import { Key, SCP } from '@secretarium/connector';
@@ -71,6 +71,85 @@ async def main():
 
 
 asyncio.run(main())
+```
+</Tab>
+<Tab value="Rust">
+```rs
+use std::{collections::HashMap, time::Duration};
+use tokio::time::sleep;
+use klave_connector::{SCP, Key};
+
+#[tokio::main]
+async fn main() {   
+    //Read file from connectionKeys folder
+    let key = match Key::import_jwk("<Use your own Key>", "klave") {
+        Ok(key) => {
+            println!("Key imported successfully.");
+            key
+        }
+        Err(e) => {
+            eprintln!("Failed to import key: {}", e);
+            return;
+        }
+    };
+    
+    let mut client = SCP::new(KLAVE_TEST, Some(&key), None);
+
+    // Connect to the WebSocket (this will now perform the default handshake)
+    match client.connect().await {
+        Ok(_) => println!("WebSocket client connected successfully."),
+        Err(e) => {
+            eprintln!("Failed to connect WebSocket client: {}", e);            
+        }
+    };
+
+    // Simulate sending messages after some delay
+    sleep(Duration::from_secs(2)).await;
+
+    println!("Sending a transaction with custom callbacks...");
+    let mut tx = client.new_tx("<your-app>", "version", None, None).await;
+    tx.on_error(|request_id, error_message| {
+        eprintln!("Transaction error occurred. RequestId: {:?}, Error: {:?}", request_id, error_message);
+    });
+    tx.on_executed(|request_id, message| {
+        eprintln!("Transaction executed. RequestId: {:?}, Message: {:?}", request_id, message);
+    });
+    tx.on_result(|request_id, result| {
+        eprintln!("LMB Result 1: RequestId: {:?}, Result: {:?}", request_id, result);
+    });
+    tx.on_result(|request_id, result| {
+        eprintln!("LMB Result 2: RequestId: {:?}, Result: {:?}", request_id, result);
+    });
+    let _ = tx.send().await;
+
+    sleep(Duration::from_secs(5)).await;
+
+    println!("Sending a transaction with default callbacks...");
+    let tx_default = client.new_tx("<your-app>", "version", None, None).await;
+    let _ = tx_default.send().await;
+
+    sleep(Duration::from_secs(5)).await;
+
+    println!("Sending periodic calls...");
+    let tx3_periodic = client.new_periodic_tx("<your-app>", "version", None, None, 5).await;
+    let _ = tx3_periodic.send().await;
+
+    // Keep the main task alive until you decide to close the connection
+    println!("Press Enter to close the WebSocket connection from main app.");
+    let mut buffer = String::new();
+    match std::io::stdin().read_line(&mut buffer).map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send + Sync + 'static>) {
+        Ok(_) => println!("Received input: {}", buffer),
+        Err(e) => eprintln!("Failed to read input: {}", e),
+    };
+
+    // Close the connection
+    match client.close().await {
+        Ok(_) => println!("WebSocket client closed successfully."),
+        Err(e) => eprintln!("Failed to close WebSocket client: {}", e),
+    };
+
+    println!("WebSocket client finished in main app.");        
+}
 ```
 </Tab>
 </Tabs>

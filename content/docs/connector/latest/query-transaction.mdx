@@ -71,7 +71,7 @@ async function main() {
     const myKey = await Key.createKey();
     const connection = await context.connect('wss://on.klave.network', myKey);
 
-    const app = 'master.785e78ea.hello-world.nico.klave.network';
+    const app = '785e78ea.hello-world.nico.klave.network';
     const command = 'fetchValue';
     const requestId = 'myRequestId';
     const args = { key: 'myKey' };
@@ -108,7 +108,7 @@ It returns an object `Transaction<ResultType, ErrorType>` or `Tx` respectively i
 
 ### newTx signature
 
-<Tabs items={['TypeScript','Python']}>
+<Tabs items={['TypeScript','Python','Rust']}>
 <Tab value="TypeScript">
 ```ts
 newTx<ResultType = any, ErrorType = any>(
@@ -127,6 +127,17 @@ newTx(
     requestId: Optional[str] = None,
     args: Optional[Union[Dict[str, Any], str]] = None
 ): Tx()
+```
+</Tab>
+<Tab value="Rust">
+```rs
+pub async fn new_tx(
+    &mut self, 
+    app: &str, 
+    command: &str, 
+    request_id: Option<String>, 
+    args: OptionalArgs
+) -> Tx
 ```
 </Tab>
 </Tabs>
@@ -148,7 +159,7 @@ Events:
 We use again the template `hello-world` provided when scaffolding your first Klave application.
 Instead of querying the ledger, we will now store a new value in the ledger using the transaction `storeValue`.
 
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { Key, SCP } from '@secretarium/connector';
@@ -159,7 +170,7 @@ async function main() {
     const myKey = await Key.createKey();
     const connection = await context.connect('wss://on.klave.network', myKey);
 
-    const app = 'master.785e78ea.hello-world.nico.klave.network';
+    const app = '785e78ea.hello-world.nico.klave.network';
     const command = 'storeValue';
     const requestId = 'myTransactionId';
     const args = { key: 'myKey2', value: 'myValue2' };
@@ -193,12 +204,12 @@ async def main():
     myKey = await Key.createKey()
     connection = await context.connect('wss://on.klave.network', myKey)
 
-    app = 'master.785e78ea.hello-world.nico.klave.network'
+    app = '785e78ea.hello-world.nico.klave.network'
     command = 'storeValue'
     requestId = 'myTransactionId'
     args = { key: 'myKey2', value: 'myValue2' }
 
-    myTransaction = connection.newTx(myAppId, 'storeValue', 'requestId1', keyValue1)
+    myTransaction = connection.newTx(app, command, requestId, args)
     #define all callbacks
     myTransaction.onAcknowledged(lambda message: print(f"onAcknowledged: transaction: {message}"))
     myTransaction.onCommitted(lambda message: print(f"onCommitted: transaction: {message}"))
@@ -210,6 +221,43 @@ async def main():
 
 asyncio.run(main())
 ```
+<Callout type="info" emoji="ℹ️">
+    `app` is defined within Klave as the address of the honest application as shown in the image above.
+</Callout>
+</Tab>
+<Tab value="Rust">
+```rs
+#[tokio::main]
+async fn main() {    
+    let mut client = SCP::new("wss://on.klave.network", None, None);
+
+    match client.connect().await {
+        Ok(_) => println!("Connected to Klave successfully."),
+        Err(e) => {
+            eprintln!("Failed to connect to Klave: {}", e);
+            return;
+        }
+    };
+
+    let app = "785e78ea.hello-world.nico.klave.network"
+    let command = "storeValue";
+    let requestId = "myTransactionId";
+    let args = Args::Map(HashMap::from([
+        ("test-rust-key".to_string(), "test-rust-value".to_string()),
+    ]));
+    let mut tx = client.new_tx(app, command, None, Some(args)).await;
+    tx.on_error(|request_id,  error | {eprintln!("Error occurred. RequestId: {:?}, Error : {:?}", request_id, error);});
+    tx.on_result(|request_id, result| {println!("Result received. RequestId: {:?}, Result: {:?}", request_id, result);});
+    tx.on_acknowledged(|request_id, result| {println!("onAcknowledged received. RequestId: {:?}", request_id);});
+    tx.on_committed(|request_id, result| {println!("onCommitted received. RequestId: {:?}", request_id);});
+    tx.on_executed(|request_id, result| {println!("onExecuted received. RequestId: {:?}", request_id);});
+    let _ = tx.send().await;
+
+    match client.close().await {
+        Ok(_) => println!("Connection closed successfully."),
+        Err(e) => eprintln!("Failed to close connection: {}", e),
+    };
+}```
 <Callout type="info" emoji="ℹ️">
     `app` is defined within Klave as the address of the honest application as shown in the image above.
 </Callout>
