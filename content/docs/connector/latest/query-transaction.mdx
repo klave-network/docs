@@ -71,7 +71,7 @@ async function main() {
     const myKey = await Key.createKey();
     const connection = await context.connect('wss://on.klave.network', myKey);
 
-    const app = '785e78ea.hello-world.nico.klave.network';
+    const app = '785e78ea.hello-world.example.klave.network';
     const command = 'fetchValue';
     const requestId = 'myRequestId';
     const args = { key: 'myKey' };
@@ -108,7 +108,7 @@ It returns an object `Transaction<ResultType, ErrorType>` or `Tx` respectively i
 
 ### newTx signature
 
-<Tabs items={['TypeScript','Python','Rust']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```ts
 newTx<ResultType = any, ErrorType = any>(
@@ -170,7 +170,7 @@ async function main() {
     const myKey = await Key.createKey();
     const connection = await context.connect('wss://on.klave.network', myKey);
 
-    const app = '785e78ea.hello-world.nico.klave.network';
+    const app = '785e78ea.hello-world.example.klave.network';
     const command = 'storeValue';
     const requestId = 'myTransactionId';
     const args = { key: 'myKey2', value: 'myValue2' };
@@ -204,7 +204,7 @@ async def main():
     myKey = await Key.createKey()
     connection = await context.connect('wss://on.klave.network', myKey)
 
-    app = '785e78ea.hello-world.nico.klave.network'
+    app = '785e78ea.hello-world.example.klave.network'
     command = 'storeValue'
     requestId = 'myTransactionId'
     args = { key: 'myKey2', value: 'myValue2' }
@@ -239,7 +239,7 @@ async fn main() {
         }
     };
 
-    let app = "785e78ea.hello-world.nico.klave.network"
+    let app = "785e78ea.hello-world.example.klave.network"
     let command = "storeValue";
     let requestId = "myTransactionId";
     let args = Args::Map(HashMap::from([
@@ -257,7 +257,8 @@ async fn main() {
         Ok(_) => println!("Connection closed successfully."),
         Err(e) => eprintln!("Failed to close connection: {}", e),
     };
-}```
+};
+```
 <Callout type="info" emoji="ℹ️">
     `app` is defined within Klave as the address of the honest application as shown in the image above.
 </Callout>

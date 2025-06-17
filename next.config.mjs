@@ -5,7 +5,14 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
     output: 'standalone',
-	reactStrictMode: true
+    reactStrictMode: true,
+    webpack: config => {
+        config.resolve.fallback = {
+            fs: false,
+        };
+
+        return config;
+    },
 };
 
 export default withMDX(config);
