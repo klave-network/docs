@@ -13,7 +13,7 @@ the server and client sides (including web browsers, IoT devices, etc...).
 ## The basics
 
 To start using Klave's TypeScript connector you will first need to install it from NPM
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
     <Tab value="TypeScript">
         <Tabs items={['yarn', 'npm', 'pnpm']}>
             <Tab value="yarn">
@@ -48,11 +48,23 @@ To start using Klave's TypeScript connector you will first need to install it fr
             On the server the **secretarium_connector** package requires Python version 3.11.0+.
         </Callout>
     </Tab>
+    <Tab value="Rust">
+        <Tabs items={['cargo']}>
+            <Tab value="cargo">
+            ```bash copy
+            cargo add klave-connector
+            ```
+            </Tab>
+        </Tabs>
+        <Callout type="info" emoji="ℹ️">
+            On the server the **klave-connector** component requires Rust version 1.86.0+.
+        </Callout>
+    </Tab>
 </Tabs>
 
 Once done, you will need to setup a few things to get running. You can see the example code right here:
 
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { SCP } from '@secretarium/connector';
@@ -91,12 +103,35 @@ async def main():
 asyncio.run(main())
 ```
 </Tab>
+<Tab value="Rust">
+```rs
+use klave_connector::{SCP};
+
+#[tokio::main]
+async fn main() {    
+    let mut client = SCP::new("wss://on.klave.network", None, None);
+
+    match client.connect().await {
+        Ok(_) => println!("Connected to Klave successfully."),
+        Err(e) => {
+            eprintln!("Failed to connect to Klave: {}", e);
+            return;
+        }
+    };
+
+    match client.close().await {
+        Ok(_) => println!("Connection closed successfully."),
+        Err(e) => eprintln!("Failed to close connection: {}", e),
+    };
+}
+```
+</Tab>
 </Tabs>
 
 From there calling your functions is very easy. Take a look at the example below using the `storeValue`
 and `fetchValue` methods defined in the hello_world app in the Create section:
 
-<Tabs items={['TypeScript', 'Python']}>
+<Tabs items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { SCP, Key } from '@secretarium/connector';
@@ -157,6 +192,37 @@ async def main():
     await queryResults.send()
 
 asyncio.run(main())
+```
+</Tab>
+<Tab value="Rust">
+```rs
+#[tokio::main]
+async fn main() {    
+    let mut client = SCP::new("wss://on.klave.network", None, None);
+
+    match client.connect().await {
+        Ok(_) => println!("Connected to Klave successfully."),
+        Err(e) => {
+            eprintln!("Failed to connect to Klave: {}", e);
+            return;
+        }
+    };
+
+    // Send a transaction
+    let mut tx = client.new_tx("<your-app>", "version", None, None).await;
+    tx.on_error(|request_id, error_message| {
+        eprintln!("Transaction error occurred. RequestId: {:?}, Error: {:?}", request_id, error_message);
+    });
+    tx.on_result(|request_id, result| {
+        println!("Result received. RequestId: {:?}, Result: {:?}", request_id, result);
+    });
+    let _ = tx.send().await;
+
+    match client.close().await {
+        Ok(_) => println!("Connection closed successfully."),
+        Err(e) => eprintln!("Failed to close connection: {}", e),
+    };
+}
 ```
 </Tab>
 </Tabs>

@@ -1,0 +1,54 @@
+---
+title: Generating Randomness
+---
+
+import Image from 'next/image';
+
+Many applicative use cases are dealing with generating randomness. On klave, randomness generation can be used in the context of `query` via a true random number generator, and `transaction` via a pseudo random number generator in order to derive the same randomness on each nodes of the cluster.
+In both case, this is transparently done in a safe, secure and trustless way (within enclaves, nobody can access, guess or tamper with the random seed).
+
+## Generating randomness within Application
+
+To generate randomness within application Klave expose a simple API as part of the SDK.
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`Crypto`| `getRandomValues`  | size: `i32` | `Uint8Array` or `null`  | Return an `Uint8Array` of size `size` or `null` if error |
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function generateRandomness(): void
+        {
+            // Generate iv
+            let iv = Crypto.getRandomValues(12);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+
+        | Class    | Operation    | Parameters    | Returns | Behavior |
+        |----------|--------------|---------------|---------|----------|
+        |`crypto::random`| `get_random_bytes`  | size: `i32` | `Result<Vec<u8>, Error>` | Return a `Vec<u8>` of size `size` or an `Error` |
+
+        ```rust
+        use klave;
+        
+        fn generate_randomness(cmd: String){
+            let random_bytes = match klave::crypto::random::get_random_bytes(12) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>        

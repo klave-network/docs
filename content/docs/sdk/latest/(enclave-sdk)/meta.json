@@ -4,6 +4,7 @@
     "ledger",
     "notify",
     "http-request",
+    "randomness",
     "cryptography"
   ]
 }

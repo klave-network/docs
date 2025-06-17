@@ -30,15 +30,15 @@ export default function Layout({ children }: { children: ReactNode }): JSX.Eleme
 
   const pathname = usePathname();
 
-	return (
-  	<DocsLayout
+  return (
+    <DocsLayout
       tree={source.pageTree}
       githubUrl='https://github.com/klave-network'
       nav={{
-        title: <Logo />
+        title: <Logo className='block md:hidden' />,
       }}
       sidebar={{
-	      banner: <SidebarBanner/>,
+        banner: <SidebarBanner />,
         tabs: !pathname.startsWith('/sdk') && !pathname.startsWith('/connector')
           ? false
           : {
@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: ReactNode }): JSX.Eleme
                   ...option,
                   icon: (
                     <Slot
-                      className="bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
+                      className="bg-linear-to-t from-fd-background/80 p-1 [&_svg]:size-5"
                       style={{
                         color: `hsl(var(--sdk-color))`,
                         backgroundColor: `hsl(var(--sdk-color)/.3)`,
@@ -101,9 +101,9 @@ export default function Layout({ children }: { children: ReactNode }): JSX.Eleme
           )
         }
       ]}
-   >
-     	<NavMenu />
-     	{children}
-  	</DocsLayout>
-	)
+    >
+      <NavMenu />
+      {children}
+    </DocsLayout>
+  )
 }
