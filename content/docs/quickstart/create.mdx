@@ -17,24 +17,14 @@ to detect and automatically deploy changes brought to your applications.
 
         <Steps>
             <Step>
-                **Prerequisites: Check you have Node installed (node >=v20)**
+                **Prerequisites: Check you have Node installed (node >=v24)**
                 ```bash copy
-                node -v v20.9.0
+                node -v v24.2.0
                 ```
             </Step>
             <Step>
                 **Scaffold your Klave application**
-                <Tabs items={['npm', 'npx', 'yarn']}>
-                    <Tab value="npm">
-                    ```bash copy
-                    npm create on-klave
-                    ```
-                    </Tab>
-                    <Tab value="npx">
-                    ```bash copy
-                    npx create on-klave
-                    ```
-                    </Tab>
+                <Tabs items={['yarn']}>
                     <Tab value="yarn">
                     ```bash copy
                     yarn create on-klave
