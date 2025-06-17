@@ -1,6 +1,7 @@
 import { Rss, GraduationCap, Store, BookOpenText, Library } from 'lucide-react';
 import Link from 'fumadocs-core/link';
 import { Button } from '~/components/ui/button';
+import { Footer } from './footer';
 
 export default function WelcomePage() {
   return (
@@ -35,6 +36,7 @@ export default function WelcomePage() {
           </Link>
         ))}
       </div>
+      <Footer />
     </div>
   )
 }
