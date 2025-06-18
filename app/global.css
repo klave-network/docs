@@ -104,50 +104,52 @@
     --color-chart-3: hsl(var(--chart-3));
     --color-chart-4: hsl(var(--chart-4));
     --color-chart-5: hsl(var(--chart-5));
-
-    --fd-nav-height: 2rem !important;
 }
 
-.dark {
-    :root {
-        --background: 0 0% 0%;
-        --foreground: 190 100% 98.82%;
+@layer base {
+    @variant dark {
+        :root {
+            --background: 0 0% 0%;
+            --foreground: 190 100% 98.82%;
 
-        --primary: 195.06 100% 50%;
-        --primary-foreground: 194.4 100% 4.9%;
+            --primary: 195.06 100% 50%;
+            --primary-foreground: 194.4 100% 4.9%;
 
-        --card: 216 26.32% 7.45%;
-        --card-foreground: 195.79 100% 92.55%;
+            --card: 216 26.32% 7.45%;
+            --card-foreground: 195.79 100% 92.55%;
 
-        --popover: 0 0% 0%;
-        --popover-foreground: 195.79 100% 92.55%;
+            --popover: 0 0% 0%;
+            --popover-foreground: 195.79 100% 92.55%;
 
-        --secondary: 194.83 100% 17.45%;
-        --secondary-foreground: 0 0% 100%;
+            --secondary: 194.83 100% 17.45%;
+            --secondary-foreground: 0 0% 100%;
 
-        --muted: 0 0% 9.8%;
-        --muted-foreground: 0 0% 69.8%;
+            --muted: 0 0% 9.8%;
+            --muted-foreground: 0 0% 69.8%;
 
-        --accent: 194.83 100% 17.45%;
-        --accent-foreground: 195.79 100% 92.55%;
+            --accent: 194.83 100% 17.45%;
+            --accent-foreground: 195.79 100% 92.55%;
 
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
 
-        --border: 195.29 100% 10%;
-        --input: 196.15 25.49% 20%;
-        --ring: 195.06 100% 50%;
+            --border: 195.29 100% 10%;
+            --input: 196.15 25.49% 20%;
+            --ring: 195.06 100% 50%;
 
-        --chart-1: 195.06 100% 50%;
-        --chart-2: 195.21 100% 42.55%;
-        --chart-3: 195.18 100% 32.55%;
-        --chart-4: 195 100% 27.45%;
-        --chart-5: 195.13 100% 22.55%;
+            --chart-1: 195.06 100% 50%;
+            --chart-2: 195.21 100% 42.55%;
+            --chart-3: 195.18 100% 32.55%;
+            --chart-4: 195 100% 27.45%;
+            --chart-5: 195.13 100% 22.55%;
 
-        --radius: 0.5rem;
+            --radius: 0.5rem;
+        }
     }
 }
 
-#nd-tocnav {
-    margin-top: 3rem;
+@media (width > 48rem) {
+    #nd-tocnav {
+        margin-top: 3rem;
+    }
 }
