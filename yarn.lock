@@ -3479,7 +3479,7 @@ __metadata:
     git-rev-sync: "npm:3.0.2"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^16.1.2"
-    lucide-react: "npm:^0.516.0"
+    lucide-react: "npm:^0.523.0"
     next: "npm:15.3.4"
     postcss: "npm:^8.5.6"
     prettier: "npm:^3.5.3"
@@ -5971,12 +5971,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.516.0":
-  version: 0.516.0
-  resolution: "lucide-react@npm:0.516.0"
+"lucide-react@npm:^0.523.0":
+  version: 0.523.0
+  resolution: "lucide-react@npm:0.523.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/6689c23d8aad3aee584234ff4cb09a853a8376d42c483126f389f2bd059cd02cff84219e714b93e1f3432c3b3780e4fc17dbdfefb68597f12d0557f11c9245e0
+  checksum: 10c0/dafd180d05326edc81d928f37d6574930f0592da08b91c536ae5675d0b764295368e8daf9bcc81a5283c18e2f19412060d1da475b4f26112168245e708bd562f
   languageName: node
   linkType: hard
 
