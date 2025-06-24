@@ -9,43 +9,51 @@ import { usePathname } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 
 export const NavMenu = () => {
-
     const pathname = usePathname();
 
     return (
         <div className="hidden md:block">
             <header
                 id="nd-nav"
-                className='fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-background/80 backdrop-blur-lg rounded-none max-w-full mt-0 shadow-none border-t-0 border-x-0 overflow-auto'
+                // className="fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg"
             >
-                <nav className='max-w-fd-container mx-auto font-medium flex h-12 flex-row items-center gap-6 px-4'>
+                <nav className="mx-auto flex h-12 flex-row items-center gap-6 px-4">
                     <Link href="/">
                         <Logo />
                     </Link>
                     <div className="flex items-center gap-2">
                         <Button
                             variant="link"
-                            className={cn(pathname.includes('sdk') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                            className={cn(
+                                pathname.includes('sdk')
+                                    ? 'text-fd-primary'
+                                    : 'text-fd-muted-foreground',
+                                'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4'
+                            )}
                         >
-                            <Link href="/sdk/latest">
-                                SDK
-                            </Link>
+                            <Link href="/sdk/latest">SDK</Link>
                         </Button>
                         <Button
                             variant="link"
-                            className={cn(pathname.includes('connector') ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                            className={cn(
+                                pathname.includes('connector')
+                                    ? 'text-fd-primary'
+                                    : 'text-fd-muted-foreground',
+                                'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4'
+                            )}
                         >
-                            <Link href="/connector/latest">
-                                Connector
-                            </Link>
+                            <Link href="/connector/latest">Connector</Link>
                         </Button>
                         <Button
                             variant="link"
-                            className={cn(pathname === '/whitepaper' ? 'text-fd-primary' : 'text-fd-muted-foreground', 'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4')}
+                            className={cn(
+                                pathname === '/whitepaper'
+                                    ? 'text-fd-primary'
+                                    : 'text-fd-muted-foreground',
+                                'font-medium hover:no-underline inline-flex items-center gap-1 p-2 transition-colors hover:text-fd-accent-foreground [&_svg]:size-4'
+                            )}
                         >
-                            <Link href="/whitepaper">
-                                Whitepaper
-                            </Link>
+                            <Link href="/whitepaper">Whitepaper</Link>
                         </Button>
                         <Button
                             variant="link"
@@ -88,7 +96,8 @@ export const NavMenu = () => {
                             href="https://app.klave.com/login"
                             className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors duration-100 disabled:pointer-events-none disabled:opacity-50 border bg-fd-secondary text-fd-secondary-foreground hover:bg-fd-accent hover:text-fd-accent-foreground gap-1.5 [&_svg]:size-4"
                         >
-                            <ArrowRight />Login
+                            <ArrowRight />
+                            Login
                         </Link>
                     </div>
                 </nav>

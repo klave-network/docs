@@ -1,115 +1,152 @@
-@import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* @config '../tailwind.config.js'; */
-@source '../node_modules/fumadocs-ui/dist*.js';
+.sdk {
+    --primary: var(--sdk-color);
+    /* --primary-foreground: var(--sdk-foreground-color); */
+}
 
-@theme {
-    --fd-background: 0 0% 100%;
-    --foreground: 194.4 100% 4.9%;
+/* .connector {
+  --primary: var(--connector-color);
+}
 
-    --primary: 195.06 100% 50%;
-    --primary-foreground: 194.4 100% 4.9%;
+.whitepaper {
+  --primary: var(--whitepaper-color);
+} */
 
-    --card: 193.85 100% 97.45%;
-    --card-foreground: 194.4 100% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 194.4 100% 4.9%;
-
-    --secondary: 195.79 100% 92.55%;
-    --secondary-foreground: 0 0% 0%;
-
-    --muted: 194.4 100% 95.1%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: 194.4 100% 95.1%;
-    --accent-foreground: 194.21 100% 7.45%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 195.29 100% 90%;
-    --input: 195 33.33% 81.18%;
-    --ring: 195.06 100% 50%;
-
-    --chart-1: 195.06 100% 50%;
-    --chart-2: 194.93 100% 57.45%;
-    --chart-3: 195.18 100% 67.45%;
-    --chart-4: 195 100% 72.55%;
-    --chart-5: 195.13 100% 77.45%;
-
-    --radius: 0.5rem;
-    --fd-nav-height: 2rem !important;
-
-    --font-family-owners: 'Owners', 'owners', sans-serif;
-    --border-radius-lg: var(--radius);
-    --border-radius-md: calc(var(--radius) - 2px);
-    --border-radius-sm: calc(var(--radius) - 4px);
-    --background-image-gradient-radial: radial-gradient(
-        circle,
-        var(--tw-gradient-stops)
-    );
-    --background-image-repeat-gradient-to-r: repeating-linear-gradient(
-        to right,
-        var(--tw-gradient-stops)
-    );
-    --background-image-repeat-gradient-to-br: repeating-linear-gradient(
-        to bottom right,
-        var(--tw-gradient-stops)
-    );
-    --background-image-cta-gradient: radial-gradient(
-        ellipse 50% 50% at right,
-        rgba(0, 191, 255, 0.3),
-        transparent
-    );
-    --color-klave-blue: #00bfff;
-    --color-klave-strong-blue: #007fff;
-    --color-klave-teal: #00ffd5;
-    --color-klave-strong-teal: #00b395;
-    --color-klave-peach: #fca870;
-    --color-klave-purple: #b291ed;
-    --color-fd-background: hsl(var(--background));
-    --color-fd-foreground: hsl(var(--foreground));
-    --color-fd-border: hsl(var(--border));
-    --color-fd-input: hsl(var(--input));
-    --color-fd-ring: hsl(var(--ring));
-    --color-fd-card: hsl(var(--card));
-    --color-fd-card-foreground: hsl(var(--card-foreground));
-    --color-fd-popover: hsl(var(--popover));
-    --color-fd-popover-foreground: hsl(var(--popover-foreground));
-    --color-fd-primary: hsl(var(--primary));
-    --color-fd-primary-foreground: hsl(var(--primary-foreground));
-    --color-fd-secondary: hsl(var(--secondary));
-    --color-fd-secondary-foreground: hsl(var(--secondary-foreground));
-    --color-fd-muted: hsl(var(--muted));
-    --color-fd-muted-foreground: hsl(var(--muted-foreground));
-    --color-fd-accent: hsl(var(--accent));
-    --color-fd-accent-foreground: hsl(var(--accent-foreground));
-    --color-fd-destructive: hsl(var(--destructive));
-    --color-fd-destructive-foreground: hsl(var(--destructive-foreground));
-    --color-primary: hsl(var(--primary));
-    --color-primary-foreground: hsl(var(--primary-foreground));
-    --color-secondary: hsl(var(--secondary));
-    --color-secondary-foreground: hsl(var(--secondary-foreground));
-    --color-muted: hsl(var(--muted));
-    --color-muted-foreground: hsl(var(--muted-foreground));
-    --color-accent: hsl(var(--accent));
-    --color-accent-foreground: hsl(var(--accent-foreground));
-    --color-destructive: hsl(var(--destructive));
-    --color-destructive-foreground: hsl(var(--destructive-foreground));
-    --color-chart-1: hsl(var(--chart-1));
-    --color-chart-2: hsl(var(--chart-2));
-    --color-chart-3: hsl(var(--chart-3));
-    --color-chart-4: hsl(var(--chart-4));
-    --color-chart-5: hsl(var(--chart-5));
-
-    --fd-nav-height: 2rem !important;
+:root {
+    /* --connector-color: 170 100% 40%;
+  --whitepaper-color: 262 72% 75%; */
+    --sdk-color: 195 100% 50%;
+    /* --sdk-color: 210 100% 50%; */
+    /* --sdk-foreground-color: 230 242% 255%; */
 }
 
 .dark {
+    /* --connector-color: 170 100% 50%;
+  --whitepaper-color: 262 72% 75%; */
+    --sdk-color: 195 100% 50%;
+    /* --sdk-foreground-color: 194.40 100.00% 4.90%; */
+}
+
+/*
+Uncomment only if topbar from <HomeLayout/> is present
+*/
+[data-toc] {
+    top: 48px;
+}
+
+h1 {
+    font-family: owners, sans-serif;
+}
+
+/* a, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, option {
+  font-family: owners, sans-serif;
+} */
+
+/* #nd-sidebar>div>div>button:first-of-type {
+  display: none;
+} */
+
+@media screen(md) {
+    #nd-sidebar {
+        top: 48px;
+        height: calc(100vh - 48px);
+        background-color: transparent;
+    }
+
+    #nd-sidebar > div > div > div:first-child {
+        display: none;
+    }
+}
+
+@layer base {
+    /* :root {
+    --background: 195 100% 95%;
+    --foreground: 195 5% 0%;
+    --card: 195 50% 90%;
+    --card-foreground: 195 5% 10%;
+    --popover: 195 100% 95%;
+    --popover-foreground: 195 100% 0%;
+    --primary: 195 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 195 30% 70%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 157 30% 85%;
+    --muted-foreground: 195 5% 35%;
+    --accent: 157 30% 80%;
+    --accent-foreground: 195 5% 10%;
+    --destructive: 0 100% 30%;
+    --destructive-foreground: 195 5% 90%;
+    --border: 195 30% 50%;
+    --input: 195 30% 18%;
+    --ring: 195 100% 50%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 195 50% 5%;
+    --foreground: 195 5% 90%;
+    --card: 195 50% 0%;
+    --card-foreground: 195 5% 90%;
+    --popover: 195 50% 5%;
+    --popover-foreground: 195 5% 90%;
+    --primary: 195 100% 50%;
+    --primary-foreground: 194.40 100.00% 4.90%;
+    --secondary: 195 30% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 157 30% 15%;
+    --muted-foreground: 195 5% 60%;
+    --accent: 157 30% 15%;
+    --accent-foreground: 195 5% 90%;
+    --destructive: 0 100% 30%;
+    --destructive-foreground: 195 5% 90%;
+    --border: 195 30% 18%;
+    --input: 195 30% 18%;
+    --ring: 195 100% 50%;
+    --radius: 0.5rem;
+  } */
+
     :root {
+        --background: 0 0% 100%;
+        --foreground: 194.4 100% 4.9%;
+
+        --primary: 195.06 100% 50%;
+        --primary-foreground: 194.4 100% 4.9%;
+
+        --card: 193.85 100% 97.45%;
+        --card-foreground: 194.4 100% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 194.4 100% 4.9%;
+
+        --secondary: 195.79 100% 92.55%;
+        --secondary-foreground: 0 0% 0%;
+
+        --muted: 194.4 100% 95.1%;
+        --muted-foreground: 0 0% 40%;
+
+        --accent: 194.4 100% 95.1%;
+        --accent-foreground: 194.21 100% 7.45%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 195.29 100% 90%;
+        --input: 195 33.33% 81.18%;
+        --ring: 195.06 100% 50%;
+
+        --chart-1: 195.06 100% 50%;
+        --chart-2: 194.93 100% 57.45%;
+        --chart-3: 195.18 100% 67.45%;
+        --chart-4: 195 100% 72.55%;
+        --chart-5: 195.13 100% 77.45%;
+
+        --radius: 0.5rem;
+    }
+
+    .dark {
         --background: 0 0% 0%;
         --foreground: 190 100% 98.82%;
 
@@ -148,6 +185,22 @@
     }
 }
 
-#nd-tocnav {
-    margin-top: 3rem;
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@layer components {
+    #nd-nav {
+        @apply fixed left-1/2 top-[var(--fd-banner-height)] z-40 w-full -translate-x-1/2 border-b border-border transition-colors bg-fd-background/80 backdrop-blur-lg rounded-none max-w-full mt-0 shadow-none border-t-0 border-x-0;
+    }
+
+    #nd-nav nav {
+        @apply max-w-fd-container mx-auto font-medium;
+    }
 }
