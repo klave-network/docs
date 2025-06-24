@@ -14,14 +14,7 @@ const config = {
         NEXT_REPO_BRANCH: git.branch(),
         NEXT_REPO_DIRTY: `${git.isDirty()}`,
         NEXT_REPO_VERSION: version
-    },
-    webpack: config => {
-        config.resolve.fallback = {
-            fs: false,
-        };
-
-        return config;
-    },
+    }
 };
 
 export default withMDX(config);
