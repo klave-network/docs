@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { source } from '~/utils/source';
 import { Logo } from '~/components/logo';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { NavMenu } from '~/components/nav-menu';
 import { Globe, AppWindowMac, ChevronLeft } from 'lucide-react';
 import { Slot } from '@radix-ui/react-slot';
@@ -26,7 +26,7 @@ const SidebarBanner = () => {
   )
 };
 
-export default function Layout({ children }: { children: ReactNode }): JSX.Element {
+export default function Layout({ children }: { children: ReactNode }): ReactElement {
 
   const pathname = usePathname();
 

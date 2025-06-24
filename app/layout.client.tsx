@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, usePathname } from 'next/navigation';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { cn } from '~/lib/utils';
 import { ApiVersionSelect } from '~/utils/api-version-select';
 import { Library, type LucideIcon, PlugZap } from 'lucide-react';
@@ -32,7 +32,7 @@ const toggleOptions: ToggleOption[] = [
 	}
 ];
 
-export function Body({ children }: { children: ReactNode }): JSX.Element {
+export function Body({ children }: { children: ReactNode }): ReactElement {
 	const mode = useMode();
 	// might need to remove width styles max-w-container mx-auto
 	return (
