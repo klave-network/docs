@@ -1,33 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+@config '../tailwind.config.js';
+@plugin 'tailwindcss-animate';
+@source '../node_modules/fumadocs-ui/dist*.js';
 
 .sdk {
     --primary: var(--sdk-color);
-    /* --primary-foreground: var(--sdk-foreground-color); */
 }
-
-/* .connector {
-  --primary: var(--connector-color);
-}
-
-.whitepaper {
-  --primary: var(--whitepaper-color);
-} */
 
 :root {
-    /* --connector-color: 170 100% 40%;
-  --whitepaper-color: 262 72% 75%; */
     --sdk-color: 195 100% 50%;
-    /* --sdk-color: 210 100% 50%; */
-    /* --sdk-foreground-color: 230 242% 255%; */
 }
 
 .dark {
-    /* --connector-color: 170 100% 50%;
-  --whitepaper-color: 262 72% 75%; */
     --sdk-color: 195 100% 50%;
-    /* --sdk-foreground-color: 194.40 100.00% 4.90%; */
 }
 
 /*
@@ -49,65 +37,7 @@ h1 {
   display: none;
 } */
 
-@media screen(md) {
-    #nd-sidebar {
-        top: 48px;
-        height: calc(100vh - 48px);
-        background-color: transparent;
-    }
-
-    #nd-sidebar > div > div > div:first-child {
-        display: none;
-    }
-}
-
 @layer base {
-    /* :root {
-    --background: 195 100% 95%;
-    --foreground: 195 5% 0%;
-    --card: 195 50% 90%;
-    --card-foreground: 195 5% 10%;
-    --popover: 195 100% 95%;
-    --popover-foreground: 195 100% 0%;
-    --primary: 195 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 195 30% 70%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 157 30% 85%;
-    --muted-foreground: 195 5% 35%;
-    --accent: 157 30% 80%;
-    --accent-foreground: 195 5% 10%;
-    --destructive: 0 100% 30%;
-    --destructive-foreground: 195 5% 90%;
-    --border: 195 30% 50%;
-    --input: 195 30% 18%;
-    --ring: 195 100% 50%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 195 50% 5%;
-    --foreground: 195 5% 90%;
-    --card: 195 50% 0%;
-    --card-foreground: 195 5% 90%;
-    --popover: 195 50% 5%;
-    --popover-foreground: 195 5% 90%;
-    --primary: 195 100% 50%;
-    --primary-foreground: 194.40 100.00% 4.90%;
-    --secondary: 195 30% 10%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 157 30% 15%;
-    --muted-foreground: 195 5% 60%;
-    --accent: 157 30% 15%;
-    --accent-foreground: 195 5% 90%;
-    --destructive: 0 100% 30%;
-    --destructive-foreground: 195 5% 90%;
-    --border: 195 30% 18%;
-    --input: 195 30% 18%;
-    --ring: 195 100% 50%;
-    --radius: 0.5rem;
-  } */
-
     :root {
         --background: 0 0% 100%;
         --foreground: 194.4 100% 4.9%;
@@ -203,4 +133,17 @@ h1 {
     #nd-nav nav {
         @apply max-w-fd-container mx-auto font-medium;
     }
+}
+
+/* Media queries */
+@media (min-width: 768px) {
+    #nd-sidebar {
+        top: 48px;
+        height: calc(100vh - 48px);
+        background-color: transparent;
+    }
+
+    /* #nd-sidebar > div > div:first-child {
+        display: none;
+    } */
 }
