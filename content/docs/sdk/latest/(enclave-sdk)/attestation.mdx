@@ -1,0 +1,230 @@
+---
+title: TEE Attestation
+---
+import Image from 'next/image';
+
+Klave provides comprehensive TEE Attestation capabilities for your applications. The Klave attestation system enables applications to generate cryptographic proofs of their execution environment and verify the integrity of remote attestations.
+
+Attestation quotes are cryptographically signed statements that prove an application is running in a genuine trusted execution environment (TEE). These quotes contain measurements of the application code, platform configuration, and other security-relevant information that can be verified by external parties.
+
+The quotes returned by applications running on Klave a Intel SGX quotes.
+
+To learn more about attestation fundamentals, check out [Trusted Execution Environment (TEE)](/learn/confidential-computing/tee) and [Attestation](/learn/confidential-computing/attestation).
+
+## Generating Attestation Quotes
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The `getQuote` function generates an attestation quote using a provided challenge/report data and return a binary Intel SGX quote (Quote3).
+
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`Attestation`| `getQuote` | challenge: u8[] | `Result<Uint8Array, Error>` | Generate a TEE attestation quote using the provided challenge bytes. Returns the Intel SGX raw quote data that can be verified by external parties. |
+
+        <Callout type="warn">
+            Quote generation is not a deterministic operation and can be called only from a query contexts. The operation includes randomness and current system state.
+        </Callout>
+
+        ```js copy
+        import { Attestation, Crypto, Notifier } from '@klave/sdk';
+
+        @serializable
+        export class QuoteRequest {
+            challenge!: u8[];
+        }
+
+        /**
+         * @query
+         */
+        export function getQuote(input: QuoteRequest): void {
+            // Generate attestation quote
+            let quoteResult = Attestation.getQuote(Crypto.Utils.convertToUint8Array(input.challenge));
+            
+            if (quoteResult.err) {
+                Notifier.sendString("Failed to generate quote: " + quoteResult.err!.message);
+                return;
+            }
+
+            let quote = quoteResult.data!;
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The `get_quote` function generates an attestation quote using a provided challenge/report data and return a binary Intel SGX quote (Quote3).
+
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`attestation`| `get_quote` | challenge: &[u8] | `Result<Vec<u8>, Box<dyn std::error::Error>>` | Generate a TEE attestation quote using the provided challenge bytes. Returns the Intel SGX raw quote data that can be verified by external parties. |
+
+        <Callout type="warn">
+            Quote generation is not a deterministic operation and can be called only from a query contexts. The operation includes randomness and current system state.
+        </Callout>
+
+        ```rust
+        use klave;
+
+        fn get_quote(challenge_str: String) {
+            let challenge = challenge_str.as_bytes();
+            
+            // Generate attestation quote
+            let quote = match klave::attestation::get_quote(challenge) {
+                Ok(quote) => quote,
+                Err(e) => {
+                    klave::notifier::send_string(&format!("Failed to generate quote: {}", e));
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
+## Parsing Attestation Quotes
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The `parseQuote` function parses raw TEE attestation quotes into structured data.
+
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`Attestation`| `parseQuote` | binaryQuote: Uint8Array | `Result<ParsedQuote, Error>` | Parse a raw TEE attestation quote into its structured components. Automatically detects and handles both Quote3 (SGX) and Quote4 (TDX) formats. |
+
+        <Callout type="info">
+            Quote parsing is deterministic and can be called from any context. The function automatically detects the quote version (3 for SGX, 4 for TDX).
+        </Callout>
+
+        ```js copy
+        import { Attestation, Crypto, Notifier } from '@klave/sdk';
+
+        @json
+        export class QuoteBinary {
+            quote!: Array<u8>;
+        }
+
+        /**
+         * @query
+         */
+        export function parseQuoteData(input: QuoteBinary): void {
+            // Parse the quote
+            let quoteResult = Attestation.parseQuote(Crypto.Utils.convertToUint8Array(input.quote));
+
+            if (quoteResult.err) {
+                Notifier.sendString("Failed to parse quote: " + quoteResult.err!.message);
+                return;
+            }
+
+            let parsedQuote = quoteResult.data!;
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The `parse_quote` function parses raw TEE attestation quotes into structured data.
+        
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`attestation`| `parse_quote` | quote: &[u8] | `Result<Quote, Box<dyn std::error::Error>>` | Parse a TEE raw attestation quote into its structured components. Automatically detects and handles both Quote3 (SGX) and Quote4 (TDX) formats. |
+
+        <Callout type="info">
+            Quote parsing is deterministic and can be called from any context. The function automatically detects the quote version (3 for SGX, 4 for TDX).
+        </Callout>
+
+        ```rust
+        use klave;
+
+        fn parse_quote(quote_bytes: Vec<u8>) {
+            // Parse the quote
+            let parsed_quote = match klave::attestation::parse_quote(&quote_bytes) {
+                Ok(quote) => quote,
+                Err(e) => {
+                    klave::notifier::send_string(&format!("Failed to parse quote: {}", e));
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
+## Verifying Attestation Quotes
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The `verifyQuote` function verifies the cryptographic integrity and validity of attestation quotes. It leverages our own DCAP server and quote verification capabilities.
+    
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`Attestation`| `verifyQuote` | current_time: i64, binaryQuote: Uint8Array | `Result<QuoteVerificationResponse, Error>` | Verify the cryptographic integrity and validity of an attestation quote using the current timestamp. |
+
+        <Callout type="warn">
+            Quote verification is not a deterministic operation and can be called only from a query contexts. Quote verification requires an accurate timestamp to validate certificate chains. Always use trusted time sources.
+        </Callout>
+
+        ```js copy
+        import { Attestation, Crypto, Notifier } from '@klave/sdk';
+
+        @serializable
+        export class VerifyQuoteInput {
+            quoteBytes!: u8[];
+            timestamp!: i64;
+        }
+
+        /**
+         * @query
+         */
+        export function verifyQuote(input: VerifyQuoteInput): void {
+            // Verify the quote
+            let verifyResult = Attestation.verifyQuote(input.timestamp, Crypto.Utils.convertToUint8Array(input.quoteBytes));
+            if (verifyResult.err) {
+                Notifier.sendString("Failed to verify quote: " + verifyResult.err!.message);
+                return;
+            }
+            
+            let verification = verifyResult.data!;
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The `verify_quote` (Rust) function verifies the cryptographic integrity and validity of attestation quotes.  It leverages our own DCAP server and quote verification capabilities.
+
+        | Module | Operation | Parameters | Returns | Behavior |
+        |--------|-----------|------------|---------|----------|
+        |`attestation`| `verify_quote` | quote: &[u8], current_time: i64 | `Result<VerifyQuoteResponse, Box<dyn std::error::Error>>` | Verify the cryptographic integrity and validity of an attestation quote using the current timestamp. |
+
+        <Callout type="warn">
+            Quote verification is not a deterministic operation and can be called only from a query contexts. Quote verification requires an accurate timestamp to validate certificate chains. Always use trusted time sources.
+        </Callout>
+
+        ```rust
+        use klave;
+
+        fn verify_quote(quote_bytes: Vec<u8>) {
+            // Get timestamp
+            let Ok(current_time_str) = klave::context::get("trusted_time") else {
+                klave::notifier::send_string("Failed to get current time");
+                return;
+            };
+
+            let Ok(current_time) = current_time_str.parse::<i64>() else {
+                klave::notifier::send_string("Failed to parse current time as i64");
+                return;
+            };
+
+            let quote_verification = match klave::attestation::verify_quote(&quote_bytes, current_time) {
+                Ok(v) => v,
+                Err(e) => {
+                    klave::notifier::send_string(&format!("Failed to verify quote: {}", e));
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
+### Best Practices
+
+1. **Challenge Security**: Always use cryptographically secure random challenges of 64 bytes length
+2. **Time Accuracy**: Ensure accurate timestamps when verifying quotes to properly validate certificate chains
+3. **Error Handling**: Check all verification results and handle both cryptographic failures and policy violations
+4. **Quote Freshness**: Verify quotes promptly after generation as supporting certificates have limited validity
+5. **Platform Support**: Handle both Quote3 (SGX) and Quote4 (TDX) formats for broad compatibility
