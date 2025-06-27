@@ -1,0 +1,202 @@
+---
+title: PostGreSQL Management
+---
+import Image from 'next/image';
+
+While Klave provides access to a tamper-proof NoSQL key-value datastore [Ledger APIs](/sdk/latest/ledger), there are many use-cases that need a connection to a relational database outside of Klave hosting.
+To that intent, we manage a dedicated service hosted in an enclave that manages PostGreSQL connection, queries and executes transactions on your behalf.
+
+## Using PostGreSQL Interface from Applications
+
+The Klave SDK exposes 4 different routes to interact with a PostGreSQL database hosted outside of Klave.
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        The set of operations is the following one:
+
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`PostGreSQL`| `connectionString`  | host, dbname, user, password | uri | Builds the connection_string to be provided in the route connectionOpen.|
+        |`PostGreSQL`| `connectionOpen`  | connection_string | handle | This route returns the handle to the database. It's mandatory to open a connection before any query or execution.|
+        |`PostGreSQL`| `sqlQuery` | connection_handle, query | value | Returns a string value which is the result of your specific query. |
+        |`PostGreSQL`| `sqlExec` | connection_handle, command | value | Returns a string code indicating the completion of your command. |
+
+        <Callout type="warn">
+            Routes connectionOpen, sqlQuery and sqlExec have to be called within the context of a query (@query), as the result isn't deterministic.
+
+            Always run the connectionOpen route first to open an handle whose lifetime will be limited to the context of the query.
+        </Callout>
+
+        In AssemblyScript, these different routes can be accessed through the `PostGreSQL` keyword. For example:
+        ```js
+        import { PostGreSQL } from '@klave/sdk';
+
+        @json
+        export class OutputMessage {
+            success!: boolean;
+            message!: string;
+        }
+
+        @json
+        export class DBInputDetails {
+            host!: string;
+            dbname!: string;
+            user!: string;
+            password!: string;
+        }
+
+        @json
+        export class QueryInput {
+            query!: string;
+            dbInputDetails!: DBInputDetails;
+        }
+
+        /**
+        * @query
+        */
+        export function sql_query(input: QueryInput): void {
+
+            let uri: string = "";
+            if (input.dbInputDetails.host && input.dbInputDetails.dbname
+                && input.dbInputDetails.user && input.dbInputDetails.password ) {
+                    uri = PostGreSQL.connectionString(input.dbInputDetails.host, input.dbInputDetails.dbname, input.dbInputDetails.user, input.dbInputDetails.password);
+            }
+            else {
+                Notifier.sendJson<OutputMessage>({
+                    success: false,
+                    message: "Wrong database input details"
+                });
+                return
+            }
+
+            let opaqueHandleRes = PostGreSQL.connectionOpen(uri);
+            if (opaqueHandleRes.err) {
+                Notifier.sendJson<OutputMessage>({
+                    success: false,
+                    message: "Connection issue: " + opaqueHandleRes.err!.message
+                });
+                return
+            }
+
+            let queryRes = PostGreSQL.sqlQuery(opaqueHandleRes.data!, input.query);
+            if (queryRes.err) {
+                Notifier.sendJson<OutputMessage>({
+                    success: false,
+                    message: "Query issue: " + queryRes.err!.message
+                });
+                return
+            }
+
+            Notifier.sendJson<OutputMessage>({
+                success: true,
+                message: queryRes.data!
+            });
+        }
+
+        ```
+    </Tab>
+    <Tab value="Rust">
+        The set of operations is the following one:
+
+        | Class  | Operation  | Parameters | Returns | Behavior |
+        |--------|------------|------------|---------|----------|
+        |`sql`| `connection_string`  | host, dbname, user, password | uri  |Builds the connection_string to be provided in the route connection_open.|
+        |`sql`| `connection_open` | uri | handle | This route returns the handle to the database. It's mandatory to open a connection before any query or execution.|
+        |`sql`| `query` | handle, command | value | Returns a string value which is the result of the command. |
+        |`sql`| `execute` | handle, command | value | Returns a string code indicating the completion of your command. |
+
+        <Callout type="warn">
+             Routes connectionOpen, sqlQuery and sqlExec have to be called within the context of a query (@query), as the result isn't deterministic.
+
+            Always run the connectionOpen route first to open an handle whose lifetime will be limited to the context of the query.
+        </Callout>
+
+        In Rust, the PostGreSQL routes will be accessed through the keyword sql
+        ```rust
+        use klave::{self, sql};
+        use serde::{Serialize, Deserialize};
+
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct DBInputDetails {
+            pub host: String,
+            pub dbname: String,
+            pub user: String,
+            pub password: String,
+        }
+
+        pub struct QueryInput {
+            dbInputDetails: DBInputDetails,
+            query: String
+        }
+
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct Field {
+            pub name: String,
+            #[serde(rename = "type")] // "type" is a reserved keyword in Rust, so we rename it
+            pub field_type: u32,
+            pub size: u64,
+            pub scale: u32,
+            pub nullable: bool,
+            pub description: Option<String>, // Use Option<String> for nullable fields
+        }
+
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct PostGreResponse<T> {
+            pub fields: Vec<Field>,
+            pub resultset: T, // Use Vec<Vec<Value>> for the varying resultset
+        }
+
+        fn sql_query(cmd: String) {
+            let input: QueryInput = match serde_json::from_str(&cmd) {
+                Ok(input) => input,
+                Err(err) => {
+                    klave::notifier::send_string(&format!("Invalid input: {}", err));
+                    return;
+                }
+            };
+
+            let client_connection : String = sql::connection_string(&input.db_input_details.host, &input.db_input_details.dbname,
+                    &input.db_input_details.user, &input.db_input_details.password);
+
+            // Connect to the DB and establish a handle
+            let handle = match sql::connection_open(&client_connection) {
+                Ok(res) => res,
+                Err(err) => {
+                    klave::notifier::send_string(&format!("Failed to connect: {}", err));
+                    return;
+                }
+            };
+
+            // Execute query
+            let _ = match sql::query(&handle, &input.query) {
+                Ok(res) => {
+                    let _ = klave::notifier::send_string(&res);
+                    return;
+                },
+                Err(err) => {
+                    klave::notifier::send_string(&format!("Failed to execute query: {}", err));
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
+Output of a query is an object with `fields` definition and `resultset` arrays. You will find an example as defined below:
+
+``` json
+{
+  "fields": [
+    { "name": "id", "type": 3, "size": 18446744073709551615, "scale": 0, "nullable":false, "description":null },
+    { "name": "name", "type": 12, "size": 104, "scale": 0, "nullable":true, "description":null },
+    { "name": "price", "type": 15, "size": 655366, "scale": 0, "nullable":true, "description":null }
+  ],
+  "resultset": [
+    [1, "Laptop Pro", 1200.00],
+    [2, "Mouse", 25.50]
+    // ... more rows
+  ]
+}
+
+```

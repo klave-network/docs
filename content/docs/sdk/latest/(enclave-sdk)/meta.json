@@ -6,6 +6,7 @@
     "http-request",
     "randomness",
     "cryptography",
-    "attestation"
+    "attestation",
+    "postgresql"
   ]
 }

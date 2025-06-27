@@ -34,9 +34,9 @@ Your application deployed on Klave is a collections of query and transaction fun
   <Tab value="Rust">
     In Rust, The transaction template function in Klave take exactly one `string` argument and the return type is always `void`.
     App in Rust are built as a wasm component. Therefore transaction function have to be declared within the Guest implementation of the Component.
-    
+
     In addition, as opposed to AssemblyScript that can use annotations to register transaction, for Rust an extra step of registering is needed by calling `add_user_transaction`  within the `register_routes` function.
-    
+
     ``` rust
     mod bindings;
     use bindings::Guest;
@@ -98,7 +98,7 @@ Your application deployed on Klave is a collections of query and transaction fun
   <Tab value="Rust">
     In a similar fashion the query template function in Klave take one `string` parameter and the return type is always `void`.
     App in Rust are built as a wasm component. Therefore query function have to be declared within the Guest implementation of the Component.
-    
+
     In addition, as opposed to AssemblyScript that can use annotations to register query, for Rust an extra step of registering is needed by calling `add_user_query`  within the `register_routes` function.
 
     ``` rust
@@ -157,7 +157,7 @@ Your application deployed on Klave is a collections of query and transaction fun
   </Tab>
   <Tab value="Rust">
     In Rust, user defined function declared can only accept a single `string` parameters.
-    
+
     You can pass `json` formatted `string` and then use `json` library such as `serde_json` to deserialize within your function.
   </Tab>
 </Tabs>
