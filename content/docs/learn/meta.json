@@ -3,6 +3,7 @@
     "architecture",
     "confidential-computing",
     "ledger-and-integrity",
-    "klave-ai"
+    "klave-ai",
+    "klave-db"
   ]
 }

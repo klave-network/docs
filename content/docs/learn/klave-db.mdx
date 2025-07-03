@@ -1,0 +1,79 @@
+---
+title: Klave DB
+---
+
+import Image from 'next/image'
+
+## Overview
+
+Klave DB brings the power of [Confidential Computing](https://docs.klave.com/learn/confidential-computing/overview) to secure your legacy databases, particularly all the PII (Personally Identifiable Information) stored within them. By leveraging [Trusted Execution Environments (TEEs)](https://docs.klave.com/learn/confidential-computing/tee) and advanced cryptographic techniques integrated within the Klave SDK, Klave DB ensures that sensitive data remains protected from untrusted administrators while still allowing for standard database operations like grouping, filtering, joining, and aggregation.
+
+### Key Principles
+
+1. **Zero-Trust Architecture**: No database, server, or cloud administrators have access to plaintext data
+2. **Data Sovereignty**: Data remains where it is
+3. **No Migration**: Keep your legacy database and encrypt what matters
+
+### Architecture
+
+Klave DB is a cluster of dedicated services running within Intel SGX enclaves. This allows you to build Klave applications that connect securely to your existing databases. Moreover, Klave DB offers a set of APIs that enable deterministic encryption of PII with the crucial advantage that encryption keys remain within the enclaves.
+
+This design allows you to segregate users: those who can access PII in clear text and perform standard database operations through Klave, from untrusted users like Database Administrators (DBAs) who will only ever access the PII in encrypted form.
+
+Here is a high-level architecture of Klave DB:
+
+<Image className="hidden dark:block" src="/resources/klave-db-architecture.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+<Image className="block dark:hidden" src="/resources/klave-db-architecture-light.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+
+*Fig. 1 - Klave DB Architecture*
+
+A Klave application interacts with Klave DB through the Klave SDK, which then communicates with the Klave DB service running in an enclave. The Klave DB service itself communicates securely with your external database, while you manage all encryption keys through the Klave SDK cryptographic APIs (see [Cryptography](/sdk/latest/cryptography/cryptographic-apis)).
+
+### Klave DB Workflow
+
+Klave DB acts as a proxy for SQL queries and transactions that process encrypted data. The rest of the architecture remains unchanged, greatly reducing the cost of securing your databases.
+
+<Image className="hidden dark:block" src="/resources/klave-db-workflow.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+<Image className="block dark:hidden" src="/resources/klave-db-workflow-light.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+
+## Klave DB Configuration
+
+### Cryptography
+
+Klave DB uses two types of keys: Database Master Key and Column Encryption Keys.
+
+- A **Database Master Key (DMK)** is a 256-bit derivation key used to derive cryptographic material. The DMK is used for the deterministic derivation of Column Encryption Keys (CEK) and encryption initial vectors (IV) when using deterministic encryption.
+
+- **Column Encryption Keys (CEK)** are symmetric encryption keys (AES-256) that are derived from the DMK through a [Hash-based Key Derivation Function (HKDF)](https://datatracker.ietf.org/doc/html/rfc5869).
+
+The column encryption cryptographic algorithm used is [AES-GCM](https://datatracker.ietf.org/doc/html/rfc5084) with a random 96-bit IV or derived deterministically from the DMK for deterministic encryption and a 128-bit tag.
+
+### Key Provision
+
+The Klave DB DMK needs to be stored in a trusted key store outside of the database system. It can be stored on the Klave DB [ledger](https://docs.klave.com/learn/ledger-and-integrity) or any other secure vault and hardware security module.
+
+All other keys (CEK) exist only within the context of the secure enclave (Intel SGX) and nowhere else.
+
+### Column Encryption
+
+In Klave DB, you can create new tables with encrypted columns or encrypt existing columns and data. When configuring encryption for a column, you need to specify the type of encryption:
+
+- **Deterministic encryption** produces consistent encrypted values for identical plaintext inputs. This consistency enables database operations like point lookups, equality joins, grouping, and indexing to work seamlessly on encrypted columns. The trade-off is that columns containing predictable or repetitive data may be vulnerable to pattern analysis attacks.
+
+- **Randomised encryption** generates unique encrypted outputs even for identical plaintext inputs, using random initialisation vectors. This approach provides stronger security guarantees by preventing pattern analysis, but limits the types of operations that can be performed on the encrypted data.
+
+## Klave DB SDK
+
+The Klave SDK provides a set of APIs to interact with Klave DB. These APIs allow you to perform standard database operations while ensuring that sensitive data remains encrypted and secure. Please refer to the [Klave SDK documentation](/sdk/latest/postgresql) for more details on how to use these APIs.
+
+### Existing Template
+
+Klave DB comes with a template that you can use to get started quickly. The template is available in the [Klave GitHub repository](https://klave.com/templates/postgresql-db-management/).
+
+## Limitations
+
+### Computation on Encrypted Columns
+No computations on columns encrypted using randomised encryption are allowed. Deterministic encryption supports operations involving equality comparisons, no other operations are allowed.
+
+### Supported Databases
+At the moment, we support connections to PostgreSQL databases and we are working on expanding support to other databases like MySQL and more.
