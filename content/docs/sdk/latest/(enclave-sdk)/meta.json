@@ -5,6 +5,8 @@
     "notify",
     "http-request",
     "randomness",
-    "cryptography"
+    "cryptography",
+    "attestation",
+    "postgresql"
   ]
 }
