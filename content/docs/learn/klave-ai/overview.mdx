@@ -50,15 +50,15 @@ Model owners can deploy proprietary models while maintaining complete control ov
 Klave AI protects against sophisticated adversaries who may have complete control over host infrastructure, access to cloud service provider systems, physical access to hardware, or the ability to intercept network traffic.
 Our security model assumes that only the TEE itself is trusted, not the underlying operating system, hypervisor, or service provider.
 
-### Technical Architecture
+## Technical Architecture
 
 Klave AI leverages multiple TEE technologies based on workload requirements:
 
-#### CPU-Based Confidential Computing
+### CPU-Based Confidential Computing
 - **Intel SGX**: Maximum security isolation for sensitive operations
 - **Intel TDX**: VM-level confidentiality with better performance characteristics
 
-#### GPU-Accelerated Confidential Computing  
-- **Intel TDX + NVIDIA H100CC**: Confidential inference with hardware acceleration
+### GPU-Accelerated Confidential Computing  
+- **Intel TDX + NVIDIA H100 (with CC enabled)**: Confidential inference with hardware acceleration
 
 All communications between components use **local attestation** or **RA-TLS (Remote Attestation TLS)**, ensuring that data only flows between verified, attested enclaves.
