@@ -1,16 +1,17 @@
 ---
 title: Create
-description: Create and deploy your first Klave application
 ---
 
 import Image from 'next/image';
+
+## Scaffold, develop and build your first Klave application
 
 Klave is built to make your life as easy as possible when creating application for confidential computing.
 
 At the moment Klave leverages on a git developer workflow and is able to connect directly to your GitHub repository
 to detect and automatically deploy changes brought to your applications.
 
-## Scaffold your App
+### Scaffold your App
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         We will first start by using the Klave NPM package to scaffold a small app automagically.
@@ -60,17 +61,15 @@ to detect and automatically deploy changes brought to your applications.
             <Step>
                 **Scaffold your Klave application**
                 ```bash copy
-                cargo generate --git https://github.com/klave-network/rust-template --name your_app_name
+                cargo generate --git https://github.com/klave-network/rust-template ledger --name your_app_name
+                cd your_app_name
                 ```
-            </Step>
-            <Step>
-                **Move to the application directory and get your code ready**
             </Step>
         </Steps>
     </Tab>
 </Tabs>
 
-## Develop your app
+### Develop your app
 
 Once the scaffold has been created you will find the template application in the `/apps` folder.
 
@@ -83,14 +82,52 @@ Once the scaffold has been created you will find the template application in the
         -   A transaction to store data in the ledger: `storeValue`
         -   A Query to fetch the data stored in the ledger: `fetchValue`
 
-        <Image
-            src="/resources/develop.png"
-            alt="Develop your app"
-            style={{ margin: 'auto', padding: '4rem 0 4rem 0' }}
-            height={700}
-            width={700}
-        />
+        ```js copy
+        import { Notifier, Ledger, JSON } from '@klave/sdk';
+        import { FetchInput, FetchOutput, StoreInput, StoreOutput, ErrorMessage } from './types';
 
+        const myTableName = "my_storage_table";
+
+        /**
+        * @query
+        * @param {FetchInput} input - A parsed input argument
+        */
+        export function fetchValue(input: FetchInput): void {
+
+            let value = Ledger.getTable(myTableName).get(input.key);
+            if (value.length === 0) {
+                Notifier.sendJson<ErrorMessage>({
+                    success: false,
+                    message: `key '${input.key}' not found in table`
+                });
+            } else {
+                Notifier.sendJson<FetchOutput>({
+                    success: true,
+                    value
+                });
+            }
+        }
+
+        /**
+        * @transaction
+        * @param {StoreInput} input - A parsed input argument
+        */
+        export function storeValue(input: StoreInput): void {
+
+            if (input.key && input.value) {
+                Ledger.getTable(myTableName).set(input.key, input.value);
+                Notifier.sendJson<StoreOutput>({
+                    success: true
+                });
+                return;
+            }
+
+            Notifier.sendJson<ErrorMessage>({
+                success: false,
+                message: `Missing value arguments`
+            });
+        }
+        ```
         You can build you application locally to check that everything is in order and that Klave will compile your code successfully.
     </Tab>
     <Tab value="Rust">
@@ -150,7 +187,7 @@ Once the scaffold has been created you will find the template application in the
     </Tab>
 </Tabs>
 
-## Build your application (Optional)
+### Build your application (Optional)
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         ```bash copy
@@ -158,7 +195,9 @@ Once the scaffold has been created you will find the template application in the
         ```
     </Tab>
     <Tab value="Rust">
-        - Use the command : `cargo component build --target wasm32-unknown-unknown --release`
+        ``` bash
+        cargo component build --target wasm32-unknown-unknown --release
+        ```
 
         This will create a `target` folder with the built wasm files in  `target\wasm32-unknown-unknown\release\`
     </Tab>
@@ -175,8 +214,17 @@ Once you've made the changes you wanted you're ready to deploy. This can be done
     <Tabs items={['Github CLI', 'Git']}>
         <Tab value="Github CLI">
             ```bash copy
-            gh repo create git add . git commit -m "your commit message" git push --set-upstream origin master
+            gh repo create
             ```
+            Make sure you select:
+            ```
+            > Push an existing local repository to github.com
+            ```
+            And press enter when prompted:
+            ```
+            ? Path to local repository (.)
+            ```
+            to select automatically the local path (.)
         </Tab>
         <Tab value="Git">
             First create a new repo on your GitHub.

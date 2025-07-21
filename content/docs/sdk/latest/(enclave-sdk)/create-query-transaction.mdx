@@ -4,11 +4,15 @@ title: Defining APIs
 
 import Image from 'next/image';
 
+Your application deployed on Klave is a collections of `query` and `transaction` functions. Klave SDK provides a simple way to declare query and transaction functions.
 
+## Transaction Function
 
-## Defining Query and Transaction
+[Transaction](/concepts/state-management#transaction) on Klave are strongly consistent, deterministic requests that modify app state and execute across all TEE cluster nodes, but their deterministic requirements limit which SDK features can be used within transaction scope compared to queries.
 
-Your application deployed on Klave is a collections of query and transaction functions. Klave SDK provides a simple way to declare query and transaction functions.
+<Callout type="warn">
+    Check for warning signs in the Klave SDK documentation to see if a feature is compatible with transaction contexts.
+</Callout>
 
 ### Declaring a Transaction Function
 <Tabs groupId="language" items={["AssemblyScript", "Rust"]}>
@@ -72,6 +76,10 @@ Your application deployed on Klave is a collections of query and transaction fun
     ```
   </Tab>
 </Tabs>
+
+## Query Function
+
+[Query](/concepts/state-management#query) on Klave are non-state-modifying, eventually consistent requests that can be non-deterministic and run on a single TEE node, making them less expensive and more scalable than transactions.
 
 ### Declaring a Query Function
 <Tabs groupId="language" items={["AssemblyScript", "Rust"]}>
@@ -140,7 +148,7 @@ Your application deployed on Klave is a collections of query and transaction fun
   </Tab>
 </Tabs>
 
-### Input Parameters Management
+## Input Parameters Management
 
 <Tabs groupId="language" items={["AssemblyScript", "Rust"]}>
   <Tab value="AssemblyScript">
