@@ -20,13 +20,26 @@ to detect and automatically deploy changes brought to your applications.
             <Step>
                 **Prerequisites: Check you have Node installed (node >=v24)**
                 ```bash copy
-                node -v v24.2.0
+                node -v
                 ```
             </Step>
             <Step>
                 **Scaffold your Klave application**
-                <Tabs items={['yarn']}>
+                <Tabs items={['npm', 'npx', 'yarn']}>
+                    <Tab value="npm">
+                    ```bash copy
+                    npm create on-klave
+                    ```
+                    </Tab>
+                    <Tab value="npx">
+                    ```bash copy
+                    npx create-on-klave
+                    ```
+                    </Tab>
                     <Tab value="yarn">
+                    <Callout type="warn">
+                    Only compatible with `yarn` `1.x`. For installation see https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable
+                    </Callout>
                     ```bash copy
                     yarn create on-klave
                     ```
@@ -190,9 +203,20 @@ Once the scaffold has been created you will find the template application in the
 ### Build your application (Optional)
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
-        ```bash copy
-        yarn build
-        ```
+        <Tabs items={['npm', 'yarn']}>
+            <Tab value="npm">
+            ```bash copy
+            npm install
+            npm run build
+            ```
+            </Tab>
+            <Tab value="yarn">
+            ```bash copy
+            yarn install
+            yarn build
+            ```
+            </Tab>
+        </Tabs>
     </Tab>
     <Tab value="Rust">
         ``` bash
