@@ -16,8 +16,8 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
 
         | Class  | Operation  | Parameters | Returns | Behavior |
         |--------|------------|------------|---------|----------|
-        |`PostGreSQL`| `connectionString`  | host, dbname, user, password | uri | Builds the connection_string to be provided in the route connectionOpen.|
-        |`PostGreSQL`| `open`  | uri | Connection | This route returns the Connection to the database. It's mandatory to open a connection before any query or execution.|
+        |`PostGreSQL`| `connectionString`  | host, dbname, user, password | uri | Builds the connection_string to be provided in the `open` method.|
+        |`PostGreSQL`| `open`  | uri | `Connection` | This route returns the `Connection` to the database. It's mandatory to open a connection before any query or execution.|
         |`Connection`| `query` | query | value | Returns a string value which is the result of your specific query. |
         |`Connection`| `execute` | command | value | Returns a string code indicating the completion of your command. |
 
@@ -100,17 +100,16 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
 
         | Class  | Operation  | Parameters | Returns | Behavior |
         |--------|------------|------------|---------|----------|
-        |`Connection`| `connection_string`  | host, dbname, user, password | uri  |Builds the connection_string to be provided in the route connection_open.|
-        |`Connection`| `open` | uri | handle | This route returns a Connection to the database. It's mandatory to open a connection before any query or execution.|
+        |`Connection`| `connection_string`  | host, dbname, user, password | uri  | A static method that builds the connection_string to be provided in the method `open`.|
+        |`Connection`| `open` | uri | `Connection` | A static factory method that returns a `Connection` to the database. It's mandatory to open a connection before any query or execution.|
         |`Connection`| `query` | query | value | Returns a string value which is the result of the command. |
         |`Connection`| `execute` | command | value | Returns a string code indicating the completion of your command. |
 
         <Callout type="warn">
             Methods `open`, `query` and `execute` have to be called within the context of a query (@query), as the result isn't deterministic.
-            Always run `open` first to open an handle whose lifetime will be limited to the context of the query.
+            Always run `open` first to open a connection whose lifetime will be limited to the context of the query.
         </Callout>
 
-        In Rust, the PostGreSQL routes will be accessed through the keyword sql
         ```rust
         use klave::{self, postgresql};
         use serde::{Serialize, Deserialize};
