@@ -1,0 +1,64 @@
+---
+title: Overview
+---
+
+import Image from 'next/image';
+
+Every day, millions of users entrust AI systems with their most sensitive information. Modern AI workflows are complex, involving multiple data sources, retrieval systems, and external services before reaching inference. Protecting user security requires securing not just the final AI model, but the entire data journey.
+
+Klave AI provides the platform and infrastructure to guarantee end-to-end data security throughout AI workflows using [Confidential Computing](http://localhost:3000/learn/confidential-computing/overview) technologies.
+
+## Securing the Modern AI Stack
+
+<Image className="hidden dark:block" src="/resources/klave-ai-overview.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+<Image className="block dark:hidden" src="/resources/klave-ai-overview-light.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 1 - *Klave AI Overview.*
+
+Nowadays, AI Agents operate through a complex stack involving data retrieval, prompt engineering, inference, and real-world action through external APIs. Each component introduces privacy and compliance risks:
+
+- Prompt augmentation requires access to private databases and documents
+- Unstructured content from files (PDF, DOCX, images) contains confidential information
+- MCP (Model Context Protocol) servers process private data and call internal APIs
+- RAG (Retrieval-Augmented Generation) systems store and retrieve proprietary knowledge
+- Inference engines must secure both model weights and user inputs
+
+To guarantee end-to-end data protection at all times (at rest, in transit, during processing) in AI workflows, security must extend beyond individual components to encompass the entire data journey.
+
+## End-to-End Confidential AI Workflows
+
+Klave AI ensures that sensitive data remains confidential in an attestable manner throughout the entire AI workflow using [Trusted Execution Environments (TEEs)](http://localhost:3000/learn/confidential-computing/tee).
+
+Klave AI makes this possible by providing secure, attestable runtimes for inference and data processing, protecting all I/O operations with encryption and attestation, ensuring agents run in secure enclaves with verifiable integrity, and enabling confidential communication between agents and MCP servers.
+
+### Key Principles
+
+1. **Unbroken Encryption Chain**: Data remains encrypted from ingestion through processing to output
+2. **Attestation-Based**: Every component can cryptographically prove its integrity
+3. **Zero-Trust Architecture**: No service provider has access to plaintext data or model weights
+4. **Comprehensive Coverage**: Security spans all workflow components, not just inference
+
+### Confidential Data Protection
+
+Klave AI ensures that user inputs and model outputs remain encrypted throughout processing, creating a comprehensive shield against multiple security threats. This protection prevents data exfiltration by service providers or other third parties who might otherwise have access to sensitive information during processing. The system blocks unauthorised access to personally identifiable information (PII, PHI), and proprietary data that could compromise individual privacy or corporate competitive advantage. Additionally, this Klave AI holistic approach helps organisations avoid compliance violations in regulated industries where data protection standards are strictly enforced and penalties for breaches can be severe.
+
+### Confidential Model Protection
+
+Model owners can deploy proprietary models while maintaining complete control over their intellectual property. Klave AI preserves weight confidentiality from service providers or other third parties, ensuring that even the infrastructure hosting the model cannot access the underlying parameters. The platform provides robust protection against model extraction attacks where adversaries attempt to reverse-engineer and extract model weight and architecture. Furthermore, Klave AI enables secure model distribution to edge deployments, allowing organisations to extend their AI capabilities to distributed environments without compromising the confidentiality of their core intellectual property.
+
+### Threat Model
+
+Klave AI protects against sophisticated adversaries who may have complete control over host infrastructure, access to cloud service provider systems, physical access to hardware, or the ability to intercept network traffic.
+Our security model assumes that only the TEE itself is trusted, not the underlying operating system, hypervisor, or service provider.
+
+## Technical Architecture
+
+Klave AI leverages multiple TEE technologies based on workload requirements:
+
+### CPU-Based Confidential Computing
+- **Intel SGX**: Maximum security isolation for sensitive operations
+- **Intel TDX**: VM-level confidentiality with better performance characteristics
+
+### GPU-Accelerated Confidential Computing  
+- **Intel TDX + NVIDIA H100 (with CC enabled)**: Confidential inference with hardware acceleration
+
+All communications between components use **local attestation** or **RA-TLS (Remote Attestation TLS)**, ensuring that data only flows between verified, attested enclaves.

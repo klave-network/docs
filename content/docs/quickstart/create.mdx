@@ -10,7 +10,7 @@ Klave is built to make your life as easy as possible when creating application f
 At the moment Klave leverages on a git developer workflow and is able to connect directly to your GitHub repository
 to detect and automatically deploy changes brought to your applications.
 
-## Create a scaffold
+## Scaffold your App
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         We will first start by using the Klave NPM package to scaffold a small app automagically.
@@ -50,7 +50,23 @@ to detect and automatically deploy changes brought to your applications.
         </Steps>
     </Tab>
     <Tab value="Rust">
-        For scaffolding a Rust applications on Klave you just need to fork the [rust-template](https://github.com/klave-network/rust-template/fork) repository and start from there.
+        <Steps>
+            <Step>
+                **Prerequisites: Check you have `cargo-generate` installed**
+                ```bash copy
+                cargo install cargo-generate
+                ```
+            </Step>
+            <Step>
+                **Scaffold your Klave application**
+                ```bash copy
+                cargo generate --git https://github.com/klave-network/rust-template --name your_app_name
+                ```
+            </Step>
+            <Step>
+                **Move to the application directory and get your code ready**
+            </Step>
+        </Steps>
     </Tab>
 </Tabs>
 

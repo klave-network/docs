@@ -1,0 +1,110 @@
+---
+title: Core Components
+---
+
+import Image from 'next/image';
+
+<Image className="hidden dark:block" src="/resources/klave-ai-core-components.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+<Image className="block dark:hidden" src="/resources/klave-ai-core-components-light.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={900} width={900} />
+
+## Confidential AI Inference Engines
+
+Klave AI Engines run open-source models (LLMs, SLMs, VLMs) within TEEs using optimised inference frameworks like [llama.cpp](https://github.com/ggml-org/llama.cpp) and [Bitnet](https://github.com/microsoft/BitNet). Each engine maintains a unique cryptographic identity that can be remotely verified.
+
+### Attestation Process 
+Before processing begins, clients can verify that:
+- The correct model is loaded and unmodified
+- The inference engine runs in a genuine TEE
+- No unauthorised code can access model weights or user data
+
+### Bring Your Own Model (BYOM)
+Model owners can deploy proprietary models by:
+1. Spinning up a new Klave AI Engine instance
+2. Verifying the enclave through remote attestation
+3. Transferring encrypted model weights
+4. Decrypting only within the verified enclave
+
+## Private Retrieval-Augmented Generation (RAG)
+
+Private RAG allows users to leverage private and confidential knowledge sources to enhance LLM performance. This allows LLMs to access and utilise data beyond their training set, leadings to more accurate and contextually relevant responses.
+The RAG process retrieves relevant information from external sources, augment the user request input with these data and feed them to the the LLM to generate a more accurate response.
+
+Traditional RAG systems expose private knowledge bases to administrators and infrastructure providers. 
+Klave AI's Private RAG runs entirely within Intel SGX enclaves leverage [Klave DB](), ensuring that:
+- Document content never appears in plaintext outside the enclave
+- Vector embeddings are generated and stored confidentially
+- Retrieval operations maintain data privacy
+
+### Architecture
+
+<Image className="hidden dark:block" src="/resources/klave-ai-private-rag.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+<Image className="block dark:hidden" src="/resources/klave-ai-private-rag-light.svg" alt="Klave AI Overview" style={{margin: "auto", padding: "4rem 0 4rem 0"}} height={700} width={700} />
+Fig. 1 - *Private RAG Overview.*
+
+### Document to Text extraction
+
+The extraction engine converts diverse document formats into clean, searchable text while preserving semantic structure and metadata.
+
+**Supported Formats:**
+- PDF documents (including scanned/OCR processing)
+- Microsoft Office files (Word, Excel, PowerPoint)
+- HTML and web content
+- Plain text and markdown files
+- Email formats (PST, EML, MSG)
+- Image files with OCR capabilities
+
+### Processing Pipeline
+1. **Document Ingestion**: Files are processed within SGX enclaves
+2. **Embedding Generation**: Text is converted to vectors using confidential models
+3. **Secure Storage**: Vectors are encrypted and stored in Klave DB
+4. **Private Retrieval**: User queries retrieve relevant context without exposing source data
+
+In Klave AI, users can simply drag and drop documents to enable RAG.
+
+## System Prompt Enhancement
+
+Klave AI lets you customise system prompt to taylor and optimise the context provided to LLMs in order to shape the model's output,
+allowing organisation to:
+- Define custom system prompts with proprietary guidelines
+- Inject context from private data sources
+- Maintain consistent model behavior across deployments
+- Audit prompt modifications for compliance
+
+System Prompt Enhancement is facilitated by AI Agents.
+
+## Confidential AI Agents
+
+Klave AI Agents are Klave Apps and therefore encapsulate all their characteristics. They run in TEEs, communicate via SA2A with other agents, and support fine grained identity, role-based access control (RBAC), and auditability through Attestation.
+
+They provides the following capabilities:
+- Confidential logic and data handling
+- MCP clients for interactions with MCP servers
+- Interactions with other Agents
+- Interactions with Klave AI Engines
+
+Klave AI Agents communicate leveraging an Attested version of the Agent-to-Agent (A2A) protocol called Secure-enclave A2A (SA2A).
+
+### SA2A (Secure-enclave Agent-to-Agent) Protocol
+
+SA2A is the Klave AI purpose-built agent communication protocol. It follows the [A2A](https://a2aprotocol.ai/) standardised communication (JSON-RPC over HTTP(S)) and augments it with TEEs Attestation capabilities to enforce encrypted communication with identified Agents running within secure enclaves.
+
+In adition of A2A capabilities (Agent discovery, Flexible interaction, etc.), SA2A covers:
+- Attestation exchange before data sharing
+- Proof of authorised access to specific data sources
+- Cryptographic audit trails for regulatory compliance
+
+## Model Context Protocol Server Apps
+
+**[Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction)** enables AI agents to interact with external services.
+Klave AI provides the industry's first fully encrypted and attestatble MCP infrastructure.
+Klave Apps can be easily transformed into a fully fledged MCP server to augment AI Agents capabilities.
+In addition of running within secure enclaves, they also enhance the MCP by communication with AI Agents trough an Attested MCP named Secure-enclave MCP (SMCP).
+
+### Enhanced MCP Protocol (SMCP - Secure-enclave MCP):
+
+SMCP is the Klave AI purpose-built MCP. It leverages TEEs capabilities to ensure secure communication through Attestation.
+
+- All MCP communications use attestation-based encryption
+- Server capabilities are cryptographically verified
+- Service execution occurs within confidential environments
+- Data lineage is maintained across all MCP interactions

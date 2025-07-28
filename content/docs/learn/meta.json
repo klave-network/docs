@@ -2,6 +2,8 @@
   "pages": [
     "architecture",
     "confidential-computing",
-    "ledger-and-integrity"
+    "ledger-and-integrity",
+    "klave-ai",
+    "klave-db"
   ]
 }
