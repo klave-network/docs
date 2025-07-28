@@ -6,9 +6,7 @@ import Image from 'next/image';
 The Subtle Crypto Interface provides an advanced way to manage cryptographic operations such as encryption, decryption, signing, signature verifications, key wrapping/unwrapping, key import/export, etc.
 The Key lifecycle management should be done by the developers. The Subtle Crypto interface offers more algoritm and cryptographic mode as well as configuration.
 
-## Using Subtle Crypto APIs from Applications
-
-### Generating Keys
+## Generating Keys
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         | Class  | Operation  | Parameters: type | Returns | Behavior |
@@ -56,7 +54,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### Generating RSA Key
+### RSA Key
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -183,7 +181,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### Generating EC Key
+### EC Key
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -289,7 +287,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### Generating AES Key
+### AES Key
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -340,7 +338,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-### Data encryption and decryption
+## Data encryption and decryption
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -369,7 +367,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### AES-GCM
+### AES-GCM
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -466,7 +464,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### RSA-OAEP
+### RSA-OAEP
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -547,7 +545,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-### Signing and Verifying
+## Signing and Verifying
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -576,7 +574,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### ECDSA
+### ECDSA
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         For ECDSA signature you need an EC key pair and to use the `Crypto.EcdsaParams` algorithm object.
@@ -658,7 +656,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### RSA-PSS
+### RSA-PSS
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         For RSA-PSS signature you need an RSA key pair and to use the `Crypto.RsaPssParams` algorithm object.
@@ -745,7 +743,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-### Key wrapping
+## Key wrapping
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         | Class  | Operation  | Parameters: type | Returns | Behavior |
@@ -774,7 +772,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### AES-KW
+### AES-KW
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         To wrap and unwrap key with AES-KW you will need an AES key, a key to wrap and to use `NamedAlgorithm`.
@@ -863,7 +861,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### AES-GCM
+### AES-GCM
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         To wrap and unwrap key with AES-GCM you will need an AES key, a key to wrap and to use `Crypto.AesGcmParams` algorithm object.
@@ -964,7 +962,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-#### RSA-OAEP
+### RSA-OAEP
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         To wrap and unwrap key with RSA-OAEP you will need an RSA key, a key to wrap and to use `Crypto.RsaOaepParams` algorithm object.
@@ -1055,7 +1053,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-### Importing and Exporting key
+## Importing and Exporting key
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
@@ -1134,7 +1132,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
-### Making data digest
+## Making data digest
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
         The interface can be accessed through the `Crypto.SHA` keyword and is compatible with SHA2 and SHA3 digest.

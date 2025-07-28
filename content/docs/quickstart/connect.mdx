@@ -1,8 +1,9 @@
 ---
 title: Connect
-description: Connect to an app on Klave
 ---
- 
+
+## Connect to an App running on Klave
+
 Once your Klave app is ready and deployed, you will want to leverage it in your applications.
 Klave implements a Secure Connection Protocol ([SCP](/learn/architecture#secure-connection-protocol-scp)) which provides validatable direct access to your applications.
 
@@ -10,10 +11,10 @@ You can refer to the protocol above to implement your own custom connectors.
 However, Klave provides ready-to-use TypeScript and Python connectors that can be utilized on both
 the server and client sides (including web browsers, IoT devices, etc...).
 
-## The basics
+### Get the Klave connector
 
 To start using Klave's TypeScript connector you will first need to install it from NPM
-<Tabs items={['TypeScript', 'Python', 'Rust']}>
+<Tabs groupId="language" items={['TypeScript', 'Python', 'Rust']}>
     <Tab value="TypeScript">
         <Tabs items={['yarn', 'npm', 'pnpm']}>
             <Tab value="yarn">
@@ -62,9 +63,11 @@ To start using Klave's TypeScript connector you will first need to install it fr
     </Tab>
 </Tabs>
 
+### Setup the connection
+
 Once done, you will need to setup a few things to get running. You can see the example code right here:
 
-<Tabs items={['TypeScript', 'Python', 'Rust']}>
+<Tabs groupId="language" items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { SCP } from '@secretarium/connector';
@@ -128,10 +131,12 @@ async fn main() {
 </Tab>
 </Tabs>
 
+### Interact with a Klave App
+
 From there calling your functions is very easy. Take a look at the example below using the `storeValue`
 and `fetchValue` methods defined in the hello_world app in the Create section:
 
-<Tabs items={['TypeScript', 'Python', 'Rust']}>
+<Tabs groupId="language" items={['TypeScript', 'Python', 'Rust']}>
 <Tab value="TypeScript">
 ```js
 import { SCP, Key } from '@secretarium/connector';
