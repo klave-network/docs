@@ -16,15 +16,14 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
 
         | Class  | Operation  | Parameters | Returns | Behavior |
         |--------|------------|------------|---------|----------|
-        |`PostGreSQL`| `connectionString`  | host, dbname, user, password | uri | Builds the connection_string to be provided in the route connectionOpen.|
-        |`PostGreSQL`| `connectionOpen`  | connection_string | handle | This route returns the handle to the database. It's mandatory to open a connection before any query or execution.|
-        |`PostGreSQL`| `sqlQuery` | connection_handle, query | value | Returns a string value which is the result of your specific query. |
-        |`PostGreSQL`| `sqlExec` | connection_handle, command | value | Returns a string code indicating the completion of your command. |
+        |`PostGreSQL`| `connectionString`  | host, dbname, user, password | uri | Builds the connection_string to be provided in the `open` method.|
+        |`PostGreSQL`| `open`  | uri | `Connection` | This route returns the `Connection` to the database. It's mandatory to open a connection before any query or execution.|
+        |`Connection`| `query` | query | value | Returns a string value which is the result of your specific query. |
+        |`Connection`| `execute` | command | value | Returns a string code indicating the completion of your command. |
 
         <Callout type="warn">
-            Routes connectionOpen, sqlQuery and sqlExec have to be called within the context of a query (@query), as the result isn't deterministic.
-
-            Always run the connectionOpen route first to open an handle whose lifetime will be limited to the context of the query.
+            Methods `open`, `query` and `execute` have to be called within the context of a query (@query), as the result isn't deterministic.
+            Always run the `open` route first to open an handle whose lifetime will be limited to the context of the query.
         </Callout>
 
         In AssemblyScript, these different routes can be accessed through the `PostGreSQL` keyword. For example:
@@ -69,16 +68,17 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
                 return
             }
 
-            let opaqueHandleRes = PostGreSQL.connectionOpen(uri);
-            if (opaqueHandleRes.err) {
+            let connectionResult = PostGreSQL.open(uri);
+            if (connectionResult.err) {
                 Notifier.sendJson<OutputMessage>({
                     success: false,
-                    message: "Connection issue: " + opaqueHandleRes.err!.message
+                    message: "Connection issue: " + connectionResult.err!.message
                 });
                 return
             }
 
-            let queryRes = PostGreSQL.sqlQuery(opaqueHandleRes.data!, input.query);
+            let conn = connectionResult.data!;
+            let queryRes = conn.query(input.query);
             if (queryRes.err) {
                 Notifier.sendJson<OutputMessage>({
                     success: false,
@@ -100,20 +100,18 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
 
         | Class  | Operation  | Parameters | Returns | Behavior |
         |--------|------------|------------|---------|----------|
-        |`sql`| `connection_string`  | host, dbname, user, password | uri  |Builds the connection_string to be provided in the route connection_open.|
-        |`sql`| `connection_open` | uri | handle | This route returns the handle to the database. It's mandatory to open a connection before any query or execution.|
-        |`sql`| `query` | handle, command | value | Returns a string value which is the result of the command. |
-        |`sql`| `execute` | handle, command | value | Returns a string code indicating the completion of your command. |
+        |`Connection`| `connection_string`  | host, dbname, user, password | uri  | A static method that builds the connection_string to be provided in the method `open`.|
+        |`Connection`| `open` | uri | `Connection` | A static factory method that returns a `Connection` to the database. It's mandatory to open a connection before any query or execution.|
+        |`Connection`| `query` | query | value | Returns a string value which is the result of the command. |
+        |`Connection`| `execute` | command | value | Returns a string code indicating the completion of your command. |
 
         <Callout type="warn">
-             Routes connectionOpen, sqlQuery and sqlExec have to be called within the context of a query (@query), as the result isn't deterministic.
-
-            Always run the connectionOpen route first to open an handle whose lifetime will be limited to the context of the query.
+            Methods `open`, `query` and `execute` have to be called within the context of a query (@query), as the result isn't deterministic.
+            Always run `open` first to open a connection whose lifetime will be limited to the context of the query.
         </Callout>
 
-        In Rust, the PostGreSQL routes will be accessed through the keyword sql
         ```rust
-        use klave::{self, sql};
+        use klave::{self, postgresql};
         use serde::{Serialize, Deserialize};
 
         #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -155,11 +153,11 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
                 }
             };
 
-            let client_connection : String = sql::connection_string(&input.db_input_details.host, &input.db_input_details.dbname,
+            let client_connection : String = postgresql::Connection::connection_string(&input.db_input_details.host, &input.db_input_details.dbname,
                     &input.db_input_details.user, &input.db_input_details.password);
 
-            // Connect to the DB and establish a handle
-            let handle = match sql::connection_open(&client_connection) {
+            // Connect to the DB
+            let conn = match postgresql::Connection::open(&client_connection) {
                 Ok(res) => res,
                 Err(err) => {
                     klave::notifier::send_string(&format!("Failed to connect: {}", err));
@@ -168,7 +166,7 @@ The Klave SDK exposes 4 different routes to interact with a PostGreSQL database 
             };
 
             // Execute query
-            let _ = match sql::query(&handle, &input.query) {
+            let _ = match conn.query(&input.query) {
                 Ok(res) => {
                     let _ = klave::notifier::send_string(&res);
                     return;
