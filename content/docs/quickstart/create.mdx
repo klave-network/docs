@@ -219,10 +219,18 @@ Once the scaffold has been created you will find the template application in the
         </Tabs>
     </Tab>
     <Tab value="Rust">
+        First, Make sure you have the `wasm32-unknown-unknow` target installed.
+        ``` bash
+        rustup target add wasm32-unknown-unknown
+        ```
+        Then ensure `cargo-component` is installed
+        ``` bash
+        cargo install cargo-component
+        ```
+        Then build with:
         ``` bash
         cargo component build --target wasm32-unknown-unknown --release
         ```
-
         This will create a `target` folder with the built wasm files in  `target\wasm32-unknown-unknown\release\`
     </Tab>
 </Tabs>
