@@ -598,7 +598,6 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
 </Tabs>
 
 ## Signing and Verifying
-
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
     <Tab value="AssemblyScript">
 
@@ -878,6 +877,65 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         ```
     </Tab>
 </Tabs>
+
+## Key derivation
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`Crypto.Subtle`| `deriveKey` | `algorithm: T, baseKeyName: CryptoKey, derivedKeyAlgorithm: E, extractable: boolean, usages: string[]`| `Result<CryptoKey, Error>` | Wrap the `key`in the `format` specified with the `wrappingKey` using the wrapping `algorithm`. Return an `ArrayBuffer` containing the wrapped key or an `Error`.|
+        
+        There are multiple types of key derivation algorithm available for `algorithm`: `EcdhKeyDeriveParams` and `HmacKeyGenParams`.
+
+        ```js
+        class EcdhKeyDeriveParams {
+            name: string = 'ECDH';
+            publicKey!: string; // The public key to derive the shared secret from
+        }
+
+        class HkdfParams {
+            hash: string = 'SHA2-256'; //SHA2-384, SHA2-512
+            salt: ArrayBuffer;
+            info: ArrayBuffer;
+        }
+        ```
+
+        There are multiple types of derived key that can be built, represented by `derivedKeyAlgorithm` : `AesKeyGenParams` and `HmacKeyGenParams`.
+
+        ```js
+        class AesKeyGenParams {
+            length: u32 = 256;
+        }
+
+        class HmacKeyGenParams {
+            hash: string = 'SHA2-256'; //SHA2-384, SHA2-512
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        | Class  | Operation  | Parameters: type | Returns | Behavior |
+        |--------|------------|------------------|---------|----------|
+        |`crypto::subtle`| `derive_key` | `derivation_algorithm: KeyDerivationAlgorithm, base_key: CryptoKey, derived_key_algorithm: DerivedKeyAlgorithm, extractable: bool, usages: [&str]` | `Result<CryptoKey, Error>`  | Use the `derivation_algorithm` to derive the `base_key` key into a new `CryptoKey` built from the `derived_key_algorithm` algoritm. Return the derived key as a `CryptoKey` or an `Error`.|
+
+        There are multiple types of key derivation algorithm available and represented by `KeyDerivationAlgorithm` as well as different derived key that can be built, represented by `DerivedKeyAlgorithm`.
+
+        ```rust
+        pub enum KeyDerivationAlgorithm {
+            Ecdh(EcdhDerivParams),
+            Hkdf(HkdfDerivParams),
+        }
+
+        pub enum DerivedKeyAlgorithm {
+            Aes(AesKeyGenParams),
+            Hmac(HmacKeyGenParams),
+        }
+        ```
+    </Tab>
+</Tabs>
+
+### ECDH 
+
+### HKDF 
 
 ## Key wrapping
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
