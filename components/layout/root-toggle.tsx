@@ -1,4 +1,5 @@
 'use client';
+
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { type ComponentProps, type ReactNode, useMemo, useState } from 'react';
 import Link from 'fumadocs-core/link';
@@ -68,6 +69,10 @@ export function RootToggle({
     ) : (
         placeholder
     );
+
+    if (!pathname.startsWith('/sdk') && !pathname.startsWith('/connector')) {
+        return <></>;
+    }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>

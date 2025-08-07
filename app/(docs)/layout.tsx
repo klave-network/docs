@@ -1,41 +1,16 @@
-'use client';
-
-import Link from 'fumadocs-core/link';
-import { usePathname } from 'next/navigation';
-import { source } from '~/utils/source';
+import { source } from '~/lib/source';
 import { Logo } from '~/components/logo';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { DocsLayout } from '~/components/layouts/docs';
 import type { ReactElement, ReactNode } from 'react';
 import { NavMenu } from '~/components/nav-menu';
-import { Globe, AppWindowMac, ChevronLeft } from 'lucide-react';
-import { Slot } from '@radix-ui/react-slot';
-
-const SidebarBanner = () => {
-    const pathname = usePathname();
-
-    if (!pathname.startsWith('/sdk') && !pathname.startsWith('/connector')) {
-        return <></>;
-    }
-
-    return (
-        <>
-            <Link
-                href="/"
-                className="flex items-center gap-1 order-first pb-2 text-fd-muted-foreground font-medium hover:no-underline transition-colors hover:text-fd-accent-foreground \[&_svg\]:size-4"
-            >
-                <ChevronLeft className="w-4" /> Back to main
-            </Link>
-        </>
-    );
-};
+import { Globe, AppWindowMac } from 'lucide-react';
+import { SidebarBanner } from '~/components/layout/sidebar-banner';
 
 export default function Layout({
     children
 }: {
     children: ReactNode;
 }): ReactElement {
-    const pathname = usePathname();
-
     return (
         <DocsLayout
             tree={source.pageTree}
@@ -44,38 +19,7 @@ export default function Layout({
                 title: <Logo />
             }}
             sidebar={{
-                banner: <SidebarBanner />,
-                tabs:
-                    !pathname.startsWith('/sdk') &&
-                    !pathname.startsWith('/connector')
-                        ? false
-                        : {
-                              transform(option, node) {
-                                  const meta = source.getNodeMeta(node);
-                                  if (!meta) return option;
-
-                                  const dirname =
-                                      meta.file.dirname.split('/')[0];
-
-                                  // Display only current folder
-                                  if (pathname.startsWith(`/${dirname}`)) {
-                                      return {
-                                          ...option,
-                                          icon: (
-                                              <Slot
-                                                  className="bg-gradient-to-t from-fd-background/80 p-1 [&_svg]:size-5"
-                                                  style={{
-                                                      color: `hsl(var(--sdk-color))`,
-                                                      backgroundColor: `hsl(var(--sdk-color)/.3)`
-                                                  }}
-                                              >
-                                                  {node.icon}
-                                              </Slot>
-                                          )
-                                      };
-                                  } else return null;
-                              }
-                          }
+                banner: <SidebarBanner />
             }}
             containerProps={{
                 className: 'md:pt-[48px]'
