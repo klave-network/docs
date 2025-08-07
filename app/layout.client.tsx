@@ -3,7 +3,7 @@
 import { useParams, usePathname } from 'next/navigation';
 import type { ReactElement, ReactNode } from 'react';
 import { cn } from '~/lib/utils';
-import { ApiVersionSelect } from '~/utils/api-version-select';
+import { ApiVersionSelect } from '~/lib/api-version-select';
 import { Library, type LucideIcon, PlugZap } from 'lucide-react';
 import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle';
 
