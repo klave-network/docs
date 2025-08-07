@@ -10,7 +10,6 @@ import { cn } from '~/lib/utils';
 import { buttonVariants } from '../ui/button';
 import {
     Sidebar,
-    SidebarCollapseTrigger,
     SidebarContent,
     SidebarContentMobile,
     SidebarFooter,
@@ -163,7 +162,7 @@ export function DocsLayout({
         const content = (
             <SidebarContent {...rest}>
                 <SidebarHeader>
-                    <div className="flex">
+                    {/*<div className="flex">
                         <Link
                             href={nav.url ?? '/'}
                             className="inline-flex text-[15px] items-center gap-2.5 font-medium me-auto"
@@ -185,7 +184,7 @@ export function DocsLayout({
                                 <SidebarIcon />
                             </SidebarCollapseTrigger>
                         )}
-                    </div>
+                    </div>*/}
                     {searchToggle.enabled !== false &&
                         (searchToggle.components?.lg ?? (
                             <LargeSearchToggle hideIfDisabled />

@@ -4,6 +4,7 @@ import { Open_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { baseUrl, createMetadata } from '~/lib/metadata';
 import { Body } from '~/app/layout.client';
+import type { Metadata } from 'next';
 
 const openSans = Open_Sans({
     subsets: ['latin'],
@@ -61,7 +62,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     );
 }
 
-export const metadata = createMetadata({
+export const metadata: Metadata = createMetadata({
     title: {
         template: '%s | Klave Docs',
         default: 'Klave Documentation'
