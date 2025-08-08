@@ -7,7 +7,7 @@ export default function WelcomePage() {
     return (
         <div className="flex flex-col gap-8 items-center justify-center text-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 gap-4 md:gap-8">
-                <div className="bg-cta-gradient sm:col-span-2 sm:row-span-2 flex flex-col gap-4 justify-center rounded-lg border bg-transparent p-4 md:p-6 shadow-md">
+                <div className="bg-card sm:col-span-2 sm:row-span-2 flex flex-col gap-4 justify-center rounded-lg border p-4 md:p-6 shadow-md">
                     <div className="flex justify-between items-center">
                         <span className="text-2xl sm:text-4xl font-owners font-medium tracking-wide">
                             Quickstart Guide
@@ -32,7 +32,7 @@ export default function WelcomePage() {
                     <Link
                         key={block.title}
                         href={block.link}
-                        className="no-underline flex flex-col rounded-lg border p-4 md:p-6 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
+                        className="bg-card no-underline flex flex-col rounded-lg border p-4 md:p-6 shadow-md transition-all hover:border-fd-primary hover:bg-fd-primary/20"
                     >
                         <div className="flex justify-between items-center">
                             <span className="text-2xl font-owners font-medium tracking-wide">
