@@ -1,7 +1,7 @@
-import { source } from '~/lib/source';
 import { DocsLayout } from '~/components/layouts/docs';
 import type { ReactElement, ReactNode } from 'react';
 import { NavMenu } from '~/components/nav-menu';
+import { docsLayoutOptions } from '~/app/layout.config';
 
 export default function Layout({
     children
@@ -11,15 +11,7 @@ export default function Layout({
     return (
         <>
             <NavMenu />
-            <DocsLayout
-                tree={source.pageTree}
-                githubUrl="https://github.com/klave-network"
-                containerProps={{
-                    className: 'md:pt-[48px]'
-                }}
-            >
-                {children}
-            </DocsLayout>
+            <DocsLayout {...docsLayoutOptions}>{children}</DocsLayout>
         </>
     );
 }

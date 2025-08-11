@@ -3,7 +3,6 @@ import { RootProvider } from 'fumadocs-ui/provider';
 import { Open_Sans } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { baseUrl, createMetadata } from '~/lib/metadata';
-import { Body } from '~/app/layout.client';
 import type { Metadata } from 'next';
 
 const openSans = Open_Sans({
@@ -54,9 +53,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 />
             </head>
             <body>
-                <RootProvider>
-                    <Body>{children}</Body>
-                </RootProvider>
+                <RootProvider>{children}</RootProvider>
             </body>
         </html>
     );
