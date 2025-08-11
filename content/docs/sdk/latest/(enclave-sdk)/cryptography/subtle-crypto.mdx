@@ -49,6 +49,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             Rsa(RsaHashedKeyGenParams),
             Ecc(EcKeyGenParams),
             Aes(AesKeyGenParams),
+            Hmac(HmacKeyGenParams),
         }
         ```
     </Tab>
@@ -338,6 +339,57 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     </Tab>
 </Tabs>
 
+### HMAC Key
+
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        For generating HMAC key, the algorithm object to use is `Crypto.HmacKeyGenParams`.
+
+        ```js copy
+        export class HmacKeyGenParams {
+            hash: string = 'SHA2-256'; //SHA2-384, SHA2-512
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoHMAC(): void
+        {
+            // Generate HMAC key
+            let hmacKey = Crypto.Subtle.generateKey({hash: 'SHA2-256'} as Crypto.HmacKeyGenParams, true, ["sign", "verify"]);
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For generating HMAC key, the algorithm object to use is `HmacKeyGenParams`.
+
+        ```rust
+        pub struct HmacKeyGenParams {
+            pub hash: String, //"SHA2-256", "SHA2-384", "SHA2-512"
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_hmac(input: String) {
+            let hmac_params = subtle::HmacKeyGenParams { hash: "SHA2-256".to_string() };
+            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Hmac(hmac_params);
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+    </Tab>
+</Tabs>
+
 ## Data encryption and decryption
 
 <Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
@@ -569,6 +621,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     pub enum SignAlgorithm {
         Ecdsa(EcdsaParams),
         RsaPss(RsaPssParams),
+        Hmac(HmacParams),
     }
     ```
     </Tab>
@@ -716,6 +769,89 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             // Sign
             let sign_rsa_params = subtle::RsaPssParams { salt_length: 0 };
             let sign_algorithm = subtle::SignAlgorithm::RsaPss(sign_rsa_params);
+            let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            // Verify
+            let verify_result = match subtle::verify(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes(), &signature) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+
+            if verify_result.is_valid() {
+                klave::notifier::send_string("Verified");
+            }
+            else {
+                klave::notifier::send_string("Not Verified");
+            }
+        }
+        ```
+    </Tab>
+</Tabs>
+
+### HMAC
+<Tabs groupId="language" items={['AssemblyScript', 'Rust']}>
+    <Tab value="AssemblyScript">
+        For HMAC signature you need an HMAC key and to use the `Crypto.HmacKeyGenParams` algorithm object.
+
+        ```js copy
+        export class HmacKeyGenParams {
+            hash: string = 'SHA2-256'; //SHA2-384, SHA2-512
+        }
+        ```
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoHMAC(): void
+        {
+            // Generate HMAC key
+            let hmacKeyResult = Crypto.Subtle.generateKey({hash: 'SHA2-256'} as Crypto.HmacKeyGenParams, true, ["sign", "verify"]);
+            let hmacKey = hmacKeyResult.data as Crypto.CryptoKey;
+            // Sign and Verify
+            let hmacParams = {hash: 'SHA2-256'} as Crypto.HmacKeyGenParams;
+            let signHmac = Crypto.Subtle.sign(hmacParams, hmacKey, String.UTF8.encode("Hello World"));
+            let verifyHmac = Crypto.Subtle.verify(hmacParams, hmacKey, String.UTF8.encode("Hello World"), signHmac.data as ArrayBuffer);
+            let verification = verifyHmac.data as SignatureVerification;
+            // Validate signature : if(verification.isValid) ...
+        }
+        ```
+    </Tab>
+    <Tab value="Rust">
+        For HMAC signature you need an HMAC key and to use the `HmacParams` algorithm object.
+
+        ```rust
+        pub struct HmacParams {
+            pub hash: String,
+        }
+        ```
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_hmac(input: String) {
+            // Generate HMAC key
+            let hmac_params = subtle::HmacKeyGenParams { hash: "SHA2-256".to_string() };
+            let key_usages_slice: Vec<&str> = vec!["sign", "verify"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Hmac(hmac_params);
+            let crypto_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            // Sign
+            let sign_hmac_params = subtle::HmacParams { hash: "SHA2-256".to_string() };
+            let sign_algorithm = subtle::SignAlgorithm::Hmac(sign_hmac_params);
             let signature = match subtle::sign(&sign_algorithm, &crypto_key, &String::from("Hello World").into_bytes()) {
                 Ok(result) => result,
                 Err(err) => {

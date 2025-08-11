@@ -23,7 +23,20 @@ What **won't** be covered:
         The [Klave SDK package](https://www.npmjs.com/package/create-on-klave) provides the simplest, quickest, and easiest way to create a new trustless applications using typescript.
     </Tab>
     <Tab value="Rust">
-        For deploying Rust applications on Klave you will need to have the The [Rust Toolchain](https://www.rust-lang.org/tools/install) (incl. rust, rustup, cargo), Cargo component : `cargo install cargo-component`, and the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) installed.
+        For deploying Rust applications on Klave you will need to have the The [Rust Toolchain](https://www.rust-lang.org/tools/install) (incl. rust, rustup, cargo) with:
+        
+        cargo-component :
+        ``` bash
+        cargo install cargo-component
+        ```
+        `wasm32-unknown-unknown` target :
+        ``` bash
+        rustup target add wasm32-unknown-unknown
+        ```
+        cargo-generate :
+        ``` bash
+        cargo install cargo-generate
+        ```
         [Git](https://git-scm.com/) needs to be installed beforehand to be able to use the sdk. For a smoother experience the [GitHub CLI](https://cli.github.com/) can be used.
     </Tab>
 </Tabs>
