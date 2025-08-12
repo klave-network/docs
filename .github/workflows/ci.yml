@@ -12,7 +12,7 @@ jobs:
         node-version: [22.x]
         os-version: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -38,7 +38,7 @@ jobs:
         os-version: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup Node ${{ matrix.node-version }}
       uses: actions/setup-node@v4
