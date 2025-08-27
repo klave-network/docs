@@ -22,7 +22,7 @@ export default async function Page(props: {
 
     const MDX = page.data.body;
 
-    const path = `content/docs/${page.file.path}`;
+    const path = `content/docs/${page.path}`;
 
     return (
         <DocsPage
@@ -35,6 +35,7 @@ export default async function Page(props: {
             editOnGithub={{
                 repo: 'docs',
                 owner: 'klave-network',
+                sha: 'main',
                 path
             }}
             lastUpdate={page.data.lastModified}
