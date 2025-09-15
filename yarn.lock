@@ -3478,7 +3478,7 @@ __metadata:
     git-rev-sync: "npm:3.0.2"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^16.1.2"
-    lucide-react: "npm:^0.536.0"
+    lucide-react: "npm:^0.544.0"
     motion: "npm:^12.23.12"
     next: "npm:15.5.2"
     next-themes: "npm:^0.4.6"
@@ -5770,12 +5770,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.536.0":
-  version: 0.536.0
-  resolution: "lucide-react@npm:0.536.0"
+"lucide-react@npm:^0.544.0":
+  version: 0.544.0
+  resolution: "lucide-react@npm:0.544.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/643d6960630c5e8678c8140ccb60710b019a385c847f4ad089b2598ae3321f80ddc7f73c2b3a648576674c3e475a6effa2fc58665da9c07e568a010e677cab42
+  checksum: 10c0/2503f8cf65e62915997073b6053423bf8091b9470cb397560b417ef2f1628ea162c49e821b787cf153afb86828482d941f051c3f2aa642a1fa58c3de227e0113
   languageName: node
   linkType: hard
 
