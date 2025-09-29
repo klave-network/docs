@@ -51,6 +51,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                     rel="stylesheet"
                     href="https://use.typekit.net/tcp0xtf.css"
                 />
+                <script
+                    defer
+                    data-domain="docs.klave.com,klave.com,klave.network"
+                    src="https://plausible.secretarium.org/js/script.js"
+                />
             </head>
             <body>
                 <RootProvider>{children}</RootProvider>
