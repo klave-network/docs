@@ -879,7 +879,8 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
     <Tab value="AssemblyScript">
         | Class  | Operation  | Parameters: type | Returns | Behavior |
         |--------|------------|------------------|---------|----------|
-        |`Crypto.Subtle`| `deriveKey` | `algorithm: T, baseKeyName: CryptoKey, derivedKeyAlgorithm: E, extractable: boolean, usages: string[]`| `Result<CryptoKey, Error>` | Wrap the `key`in the `format` specified with the `wrappingKey` using the wrapping `algorithm`. Return an `ArrayBuffer` containing the wrapped key or an `Error`.|
+        |`Crypto.Subtle`| `deriveKey` | `algorithm: T, baseKey: CryptoKey, derivedKeyAlgorithm: E, extractable: boolean, usages: string[]`| `Result<CryptoKey, Error>` | Derive a `CryptoKey` from the `baseKeyName` using the specified `algorithm` and `derivedKeyAlgorithm`. Return a `CryptoKey` or an `Error`.|
+        |`Crypto.Subtle`| `deriveBits` | `algorithm: T, baseKey: CryptoKey, length: u32`| `Result<ArrayBuffer, Error>` | Derive raw bits from the `baseKey` using the specified `algorithm` and desired bit `length`. Return an `ArrayBuffer` containing the derived bits or an `Error`.|
         
         There are multiple types of key derivation algorithm available for `algorithm`: `EcdhKeyDeriveParams` and `HmacKeyGenParams`.
 
@@ -912,6 +913,7 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
         | Class  | Operation  | Parameters: type | Returns | Behavior |
         |--------|------------|------------------|---------|----------|
         |`crypto::subtle`| `derive_key` | `derivation_algorithm: KeyDerivationAlgorithm, base_key: CryptoKey, derived_key_algorithm: DerivedKeyAlgorithm, extractable: bool, usages: [&str]` | `Result<CryptoKey, Error>`  | Use the `derivation_algorithm` to derive the `base_key` key into a new `CryptoKey` built from the `derived_key_algorithm` algoritm. Return the derived key as a `CryptoKey` or an `Error`.|
+        |`crypto::subtle`| `derive_bits` | `derivation_algorithm: KeyDerivationAlgorithm, base_key: CryptoKey, length: u32` | `Result<Vec<u8>, Error>`  | Use the `derivation_algorithm` to derive raw bits from the `base_key` with the specified bit `length`. Return the derived bits as a `Vec<u8>` or an `Error`.|
 
         There are multiple types of key derivation algorithm available and represented by `KeyDerivationAlgorithm` as well as different derived key that can be built, represented by `DerivedKeyAlgorithm`.
 
@@ -991,6 +993,31 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 ["sign", "verify"]
             );
             let derivedHmacKey = derivedHmacKeyResult.data as Crypto.CryptoKey;
+        }
+        ```
+
+        You can also derive raw bits directly using `deriveBits`:
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoECDH_Bits(): void
+        {
+            // Generate EC key pair
+            let eccPrivateKeyResult = Crypto.Subtle.generateKey({namedCurve: "P-256"} as Crypto.EcKeyGenParams, true, ["deriveBits"]);
+            let eccPrivateKey = eccPrivateKeyResult.data as Crypto.CryptoKey;
+            
+            // Get the corresponding public key
+            let eccPublicKeyResult = Crypto.Subtle.getPublicKey(eccPrivateKey);
+            let eccPublicKey = eccPublicKeyResult.data as Crypto.CryptoKey;
+
+            // Derive raw bits using ECDH
+            let ecdhParams = {publicKey: eccPublicKey} as Crypto.EcdhKeyDeriveParams;
+            let derivedBitsResult = Crypto.Subtle.deriveBits(ecdhParams, eccPrivateKey, 256); // 256 bits = 32 bytes
+            let derivedBits = derivedBitsResult.data as ArrayBuffer;
         }
         ```
     </Tab>
@@ -1102,6 +1129,47 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
             };
         }
         ```
+
+        You can also derive raw bits directly using `derive_bits`:
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_ecdh_bits(input: String) {
+            // Generate EC private key
+            let ec_params = subtle::EcKeyGenParams { named_curve: "P-256".to_string() };
+            let key_usages_slice: Vec<&str> = vec!["deriveBits"];
+            let gen_algorithm = subtle::KeyGenAlgorithm::Ecc(ec_params);
+            let private_key: CryptoKey = match subtle::generate_key(&gen_algorithm, true, &key_usages_slice) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+
+            // Get the corresponding public key
+            let public_key: CryptoKey = match subtle::get_public_key(&private_key) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+
+            // Derive raw bits using ECDH
+            let ecdh_params = subtle::EcdhDerivParams { public_key };
+            let derivation_algorithm = subtle::KeyDerivationAlgorithm::Ecdh(ecdh_params);
+            
+            let derived_bits: Vec<u8> = match subtle::derive_bits(&derivation_algorithm, &private_key, 256) { // 256 bits = 32 bytes
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
     </Tab>
 </Tabs>
 
@@ -1185,6 +1253,35 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 ["sign", "verify"]
             );
             let derivedHmacKey = derivedHmacKeyResult.data as Crypto.CryptoKey;
+        }
+        ```
+
+        You can also derive raw bits directly using `deriveBits`:
+
+        ```js copy
+        import { Crypto } from '@klave/sdk';
+
+        /**
+        * @query
+        */
+        export function subtleCryptoHKDF_Bits(): void
+        {
+            // Generate base key material
+            let baseKeyResult = Crypto.Subtle.generateKey({length: 256} as Crypto.AesKeyGenParams, true, ["deriveBits"]);
+            let baseKey = baseKeyResult.data as Crypto.CryptoKey;
+
+            // Prepare HKDF parameters
+            let salt = Crypto.getRandomValues(32); // 32 bytes salt
+            let info = String.UTF8.encode("raw-bits-derivation"); // Context info
+            let hkdfParams = {
+                hash: "SHA2-256",
+                salt: salt.buffer,
+                info: info
+            } as Crypto.HkdfParams;
+
+            // Derive raw bits using HKDF
+            let derivedBitsResult = Crypto.Subtle.deriveBits(hkdfParams, baseKey, 512); // 512 bits = 64 bytes
+            let derivedBits = derivedBitsResult.data as ArrayBuffer;
         }
         ```
     </Tab>
@@ -1302,6 +1399,53 @@ The Key lifecycle management should be done by the developers. The Subtle Crypto
                 true,
                 &key_usages_derived
             ) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+        }
+        ```
+
+        You can also derive raw bits directly using `derive_bits`:
+
+        ```rust
+        use klave::{self, crypto::subtle, crypto::subtle::CryptoKey};
+
+        fn subtle_crypto_hkdf_bits(input: String) {
+            // Generate base key material
+            let aes_params_base = subtle::AesKeyGenParams { length: 256 };
+            let key_usages_base: Vec<&str> = vec!["deriveBits"];
+            let gen_algorithm_base = subtle::KeyGenAlgorithm::Aes(aes_params_base);
+            let base_key: CryptoKey = match subtle::generate_key(&gen_algorithm_base, true, &key_usages_base) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+
+            // Generate salt and info
+            let salt = match klave::crypto::random::get_random_bytes(32) {
+                Ok(result) => result,
+                Err(err) => {
+                    klave::notifier::send_string(&err.to_string());
+                    return;
+                }
+            };
+            let info = "raw-bits-derivation".as_bytes().to_vec();
+
+            // Prepare HKDF parameters
+            let hkdf_params = subtle::HkdfDerivParams {
+                hash: "SHA2-256".to_string(),
+                salt,
+                info
+            };
+            let derivation_algorithm = subtle::KeyDerivationAlgorithm::Hkdf(hkdf_params);
+
+            // Derive raw bits using HKDF
+            let derived_bits: Vec<u8> = match subtle::derive_bits(&derivation_algorithm, &base_key, 512) { // 512 bits = 64 bytes
                 Ok(result) => result,
                 Err(err) => {
                     klave::notifier::send_string(&err.to_string());
